@@ -244,13 +244,17 @@ public final class UntersuchungPrinter {
             // audiogrammRechts
             basePrinter.addKeyValue("printer.kinderdossier.anlass.table.audiogrammRechts.label", "", document);
             Audiogramm audiogrammRechts =
-                KinderdossierPrintUtil.extractAudiogramm(untersuchung, UntersuchungHoerenAudiogramm::getAudiogrammRechts);
+                KinderdossierPrintUtil.extractAudiogramm(
+                    untersuchung,
+                    UntersuchungHoerenAudiogramm::getAudiogrammRechts);
             addAudiogramTable(audiogrammRechts, basePrinter, document);
 
             // audiogrammLinks
             basePrinter.addKeyValue("printer.kinderdossier.anlass.table.audiogrammLinks.label", "", document);
             Audiogramm audiogrammLinks =
-                KinderdossierPrintUtil.extractAudiogramm(untersuchung, UntersuchungHoerenAudiogramm::getAudiogrammLinks);
+                KinderdossierPrintUtil.extractAudiogramm(
+                    untersuchung,
+                    UntersuchungHoerenAudiogramm::getAudiogrammLinks);
             addAudiogramTable(audiogrammLinks, basePrinter, document);
         }
 
@@ -394,9 +398,9 @@ public final class UntersuchungPrinter {
                 groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getGroesse())),
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.groessePerzentile",
-                anlassConfig.getGroesseGewichtGroessePerzentile().isVisible(),
+                anlassConfig.getGroesseGewichtGroessePerzentileSingleValue().isVisible(),
                 groesseGewicht -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
-                    groesseGewicht.getGroessePerzentile(),
+                    groesseGewicht.getGroessePerzentileSingleValue(),
                     PerzentileGroesse.class))),
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.gewicht",
@@ -404,9 +408,9 @@ public final class UntersuchungPrinter {
                 groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getGewicht())),
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.gewichtPerzentile",
-                anlassConfig.getGroesseGewichtGewichtPerzentile().isVisible(),
+                anlassConfig.getGroesseGewichtGewichtPerzentileSingleValue().isVisible(),
                 groesseGewicht -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
-                    groesseGewicht.getGewichtPerzentile(),
+                    groesseGewicht.getGewichtPerzentileSingleValue(),
                     PerzentileGewicht.class))),
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.bmi",
@@ -414,9 +418,9 @@ public final class UntersuchungPrinter {
                 groesseGewicht -> PrintUtil.trimToPlaceholder(groesseGewicht.getBmi())),
             new PrintUtilRecord<>(
                 "printer.kinderdossier.anlass.bmiPerzentile",
-                anlassConfig.getGroesseGewichtBmiPerzentile().isVisible(),
+                anlassConfig.getGroesseGewichtBmiPerzentileSingleValue().isVisible(),
                 groesseGewicht -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
-                    groesseGewicht.getBmiPerzentile(),
+                    groesseGewicht.getBmiPerzentileSingleValue(),
                     PerzentileBmi.class))),
             new PrintUtilRecord<>(
                 BEMERKUNG_KEY,

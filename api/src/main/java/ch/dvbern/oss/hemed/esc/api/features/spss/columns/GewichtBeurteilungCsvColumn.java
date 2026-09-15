@@ -21,8 +21,8 @@ public class GewichtBeurteilungCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungGroesseGewicht(
             einladung,
             untersuchungGroesseGewicht -> {
-                PerzentileGewicht resultat =
-                    ValueEnhancedUtil.getEnumValueOrNull(untersuchungGroesseGewicht.getGewichtPerzentile(), PerzentileGewicht.class);
+                PerzentileGewicht resultat = ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungGroesseGewicht.getGewichtPerzentileSingleValue(), PerzentileGewicht.class);
                 if (resultat == null) {
                     return "";
                 }

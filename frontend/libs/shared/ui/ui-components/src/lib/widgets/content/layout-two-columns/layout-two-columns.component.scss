@@ -7,7 +7,6 @@
 .svui_columns {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-areas: 'left right';
   column-gap: spacing.$gutter-width;
 
   &__area {
@@ -18,13 +17,15 @@
       margin-top: spacing.$layout-outer;
     }
 
-    &--left {
-      grid-area: left;
-    }
-
-    &--right {
-      grid-area: right;
+    // collapse a column that has no projected content
+    &:not(:has(> *)) {
+      display: none;
     }
   }
-}
 
+  // when one column has no content, the other spans the full width
+  &:has(.svui_columns__area--left:empty),
+  &:has(.svui_columns__area--right:empty) {
+    grid-template-columns: 1fr;
+  }
+}

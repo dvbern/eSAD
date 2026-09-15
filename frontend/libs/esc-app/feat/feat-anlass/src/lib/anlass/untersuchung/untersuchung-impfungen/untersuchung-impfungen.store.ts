@@ -9,12 +9,15 @@ import {
   EinladungenService,
   UntersuchungImpfstatusListSaveJson,
   UntersuchungImpfungenChecklisteSaveJson,
-  UntersuchungImpfungenDataMinimalJson, UntersuchungImpfungenDataMinimalSaveJson,
+  UntersuchungImpfungenDataMinimalJson,
+  UntersuchungImpfungenDataMinimalSaveJson,
   UntersuchungImpfungenDoppelkontrolleSaveJson,
   UntersuchungImpfungenImpfausweisSaveJson,
   UntersuchungImpfungenJson,
   UntersuchungImpfungenMassnahmenJson,
   UntersuchungImpfungenMassnahmenSaveJson,
+  UntersuchungImpfungenNurUnvollstaendigeJson,
+  UntersuchungImpfungenNurUnvollstaendigeSaveJson,
   UntersuchungImpfungenSaveJson,
   UntersuchungImpfungenService,
   UntersuchungImpfungInternJson,
@@ -34,6 +37,7 @@ import {EventBusStore} from "@dvb/feat-shared";
 
 type UntersuchungState = {
   dataMinimal: UntersuchungImpfungenDataMinimalJson | undefined;
+  nurUnvollstaendige: UntersuchungImpfungenNurUnvollstaendigeJson | undefined;
   impfausweis: UntersuchungImpfungenImpfausweisSaveJson | undefined;
   checklist: UntersuchungImpfungenChecklisteSaveJson | undefined;
   doppelkontrolle: UntersuchungImpfungenDoppelkontrolleSaveJson | undefined;
@@ -47,6 +51,7 @@ type UntersuchungState = {
 
 const initialState: UntersuchungState = {
   dataMinimal: undefined,
+  nurUnvollstaendige: undefined,
   impfausweis: undefined,
   checklist: undefined,
   doppelkontrolle: undefined,
@@ -109,6 +114,7 @@ export class UntersuchungImpfungenStore extends signalStore(
   readonly saveImpfungenLoader = new Loader();
   readonly saveMassnahmenLoader = new Loader();
   readonly saveDataMinimalLoader = new Loader();
+  readonly saveNurUnvollstaendigeLoader = new Loader();
   readonly impffolgetermineLoader = new Loader();
 
   loadUntersuchungImpfungenData = rxMethod<{ anlassId: BackendEntityId; einladungId: BackendEntityIdWithClass }>(
@@ -127,6 +133,7 @@ export class UntersuchungImpfungenStore extends signalStore(
         next: result => {
           patchState(this, {
             dataMinimal: result.dataMinimal,
+            nurUnvollstaendige: result.nurUnvollstaendige,
             impfausweis: result.untersuchungImpfungen.data.impfausweis,
             checklist: result.untersuchungImpfungen.data.checkliste,
             doppelkontrolle: result.untersuchungImpfungen.data.doppelkontrolle,
@@ -288,6 +295,40 @@ export class UntersuchungImpfungenStore extends signalStore(
       tapResponse({
         next: ({ dataMinimal, params }) => {
           patchState(this, { dataMinimal: dataMinimal });
+          // have to reload checkmark state and whole impfungData for version number
+          this.#untersuchungStore.loadTabsSaved({
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          });
+          this.loadUntersuchungImpfungenData({ anlassId: params.anlassId, einladungId: params.einladungId });
+          this.#appNotificationStore.addSuccessNotification(this.#transloco.translate('global.data.saved'));
+        },
+        error: console.error,
+      }),
+    ),
+  );
+
+  saveNurUnvollstaendige = rxMethod<{
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
+    untersuchungImpfungenNurUnvollstaendigeSaveJson: UntersuchungImpfungenNurUnvollstaendigeSaveJson;
+  }>(
+    pipe(
+      exhaustMap(params =>
+        this.saveNurUnvollstaendigeLoader.tapLoading$(
+          this.#impfungenService
+            .saveUntersuchungImpfungenNurUnvollstaendige$({
+              anlassId: params.anlassId,
+              einladungId: params.einladungId,
+              untersuchungImpfungenNurUnvollstaendigeSaveJson: params.untersuchungImpfungenNurUnvollstaendigeSaveJson,
+            })
+            .pipe(map(nurUnvollstaendige => ({ nurUnvollstaendige, params }))),
+          error => this.#appErrorHandlerService.handleError(error),
+        ),
+      ),
+      tapResponse({
+        next: ({ nurUnvollstaendige, params }) => {
+          patchState(this, { nurUnvollstaendige: nurUnvollstaendige });
           // have to reload checkmark state and whole impfungData for version number
           this.#untersuchungStore.loadTabsSaved({
             anlassId: params.anlassId,

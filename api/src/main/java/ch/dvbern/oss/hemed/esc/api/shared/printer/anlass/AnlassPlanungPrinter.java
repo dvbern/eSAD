@@ -67,7 +67,7 @@ public final class AnlassPlanungPrinter {
 
         Anlass anlass = dto.getAnlass();
         Document document = basePrinter.getDocument(outputStream, PageSize.A4.rotate());
-        basePrinter.addHeader(document);
+        basePrinter.addHeader(document, tenantSettingsService.isTenantHeaderInExportsEnabled());
 
         // Anlass-Titel
         var tl = new TLProducer(dto::getLanguage, dto::getTenant).forAppLanguage(dto.getLanguage());

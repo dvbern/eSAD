@@ -17,77 +17,100 @@
         (ngSubmit)="submitIfValid()">
 
     <!-- Groesse -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.groesse' | transloco">
-        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroessePerzentile !== RequirementSetting.NOT_VISIBLE) {
+    @if (showTitleGroesse()) {
+      <svui-kachel-form-section [heading]="'untersuchung.tab.groessegewicht.groesse' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroesse !== RequirementSetting.NOT_VISIBLE) {
+          <svui-form-control
+            class="textcontrol"
+            [label]="'untersuchung.tab.groessegewicht.groesse' | transloco"
+            [topLabelVisibility]="'hidden'"
+            [viewValue]="''"
+            data-testid="untersuchung-groesse-input">
+            <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
+            <span class="fs-6"
+                  control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
+          </svui-form-control>
+        }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroessePerzentileSingleValue !== RequirementSetting.NOT_VISIBLE) {
           <feat-value-enhanced
-            [form]="form.groessePerzentileValueEnhancedForm"
+            [form]="form.groesseSingleValueForm"
             [valueTitleKey]="''"
             [valuePrefix]="'PerzentileGroesse'"
             [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-            >
-            <div ngProjectAs="fieldsBeforeSingle">
-              <svui-form-control
-                class="textcontrol"
-                [label]="'untersuchung.tab.groessegewicht.groesse' | transloco"
-                [topLabelVisibility]="'hidden'"
-                [viewValue]="''"
-                data-testid="untersuchung-groesse-input">
-                <input [svuiTextInput]="'number'" [formControl]="form.group.controls.groesse"/>
-                <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.groesse.einheit' | transloco }}</span>
-              </svui-form-control>
-            </div>
+          </feat-value-enhanced>
+        }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGroessePerzentileMultiValue !== RequirementSetting.NOT_VISIBLE) {
+          <feat-value-enhanced
+            [form]="form.groesseMultiValueForm"
+            [valueTitleKey]="''"
+            [valuePrefix]="'PerzentileGroesse'"
+            [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
           </feat-value-enhanced>
         }
       </svui-kachel-form-section>
     }
 
     <!-- Gewicht -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewicht !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.gewicht' | transloco">
-        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewichtPerzentile !== RequirementSetting.NOT_VISIBLE) {
+    @if (showTitleGewicht()) {
+      <svui-kachel-form-section [heading]="'untersuchung.tab.groessegewicht.gewicht' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewicht !== RequirementSetting.NOT_VISIBLE) {
+          <svui-form-control
+            class="textcontrol"
+            [label]="'untersuchung.tab.groessegewicht.gewicht' | transloco"
+            [topLabelVisibility]="'hidden'"
+            [viewValue]="''"
+            data-testid="untersuchung-gewicht-input">
+            <input [svuiTextInput]="'number'" [formControl]="form.group.controls.gewicht"/>
+            <span class="fs-6"
+                  control-message>{{ 'untersuchung.tab.groessegewicht.gewicht.einheit' | transloco }}</span>
+          </svui-form-control>
+        }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewichtPerzentileSingleValue !== RequirementSetting.NOT_VISIBLE) {
           <feat-value-enhanced
-            [form]="form.gewichtPerzentileValueEnhancedForm"
+            [form]="form.gewichtSingleValueForm"
             [valueTitleKey]="''"
             [valuePrefix]="'PerzentileGewicht'"
             [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-            >
-            <div ngProjectAs="fieldsBeforeSingle">
-              <svui-form-control
-                class="textcontrol"
-                [label]="'untersuchung.tab.groessegewicht.gewicht' | transloco"
-                [topLabelVisibility]="'hidden'"
-                [viewValue]="''"
-                data-testid="untersuchung-gewicht-input">
-                <input [svuiTextInput]="'number'" [formControl]="form.group.controls.gewicht"/>
-                <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.gewicht.einheit' | transloco }}</span>
-              </svui-form-control>
-            </div>
+          </feat-value-enhanced>
+        }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtGewichtPerzentileMultiValue !== RequirementSetting.NOT_VISIBLE) {
+          <feat-value-enhanced
+            [form]="form.gewichtMultiValueForm"
+            [valueTitleKey]="''"
+            [valuePrefix]="'PerzentileGewicht'"
+            [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
           </feat-value-enhanced>
         }
       </svui-kachel-form-section>
     }
 
     <!-- BMI -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmi !== RequirementSetting.NOT_VISIBLE) {
-      <svui-kachel-form-section [heading]=" 'untersuchung.tab.groessegewicht.bmi' | transloco">
-        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmiPerzentile !== RequirementSetting.NOT_VISIBLE) {
+    @if (showTitleBmi()) {
+      <svui-kachel-form-section [heading]="'untersuchung.tab.groessegewicht.bmi' | transloco">
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmi !== RequirementSetting.NOT_VISIBLE) {
+          <svui-form-control
+            class="textcontrol"
+            [label]="'untersuchung.tab.groessegewicht.bmi' | transloco"
+            [topLabelVisibility]="'hidden'"
+            [viewValue]="''">
+            <input svuiTextInput [formControl]="form.group.controls.bmi"/>
+            <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.bmi.einheit' | transloco }}</span>
+          </svui-form-control>
+        }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmiPerzentileSingleValue !== RequirementSetting.NOT_VISIBLE) {
           <feat-value-enhanced
-            [form]="form.bmiPerzentileValueEnhancedForm"
+            [form]="form.bmiSingleValueForm"
             [valueTitleKey]="''"
             [valuePrefix]="'PerzentileBmi'"
             [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-            >
-            <div ngProjectAs="fieldsBeforeSingle">
-              <svui-form-control
-                class="textcontrol"
-                [label]="'untersuchung.tab.groessegewicht.bmi' | transloco"
-                [topLabelVisibility]="'hidden'"
-                [viewValue]="''">
-                <input svuiTextInput [formControl]="form.group.controls.bmi"/>
-                <span class="fs-6" control-message>{{ 'untersuchung.tab.groessegewicht.bmi.einheit' | transloco }}</span>
-              </svui-form-control>
-            </div>
+          </feat-value-enhanced>
+        }
+        @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBmiPerzentileMultiValue !== RequirementSetting.NOT_VISIBLE) {
+          <feat-value-enhanced
+            [form]="form.bmiMultiValueForm"
+            [valueTitleKey]="''"
+            [valuePrefix]="'PerzentileBmi'"
+            [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
           </feat-value-enhanced>
         }
       </svui-kachel-form-section>
@@ -96,32 +119,41 @@
     <!-- Perzentil-Diagramme (all 6 because sometimes we need to show all)-->
 
     <!-- Maennlich -->
-    @if (showDiagarammMale() && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
+    @if (showDiagrammMale() && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
       <div class="mt-5 percentile-charts">
-        @if (showDiagarammMale() && showDiagrammGroesse()) {
+        @if (showDiagrammMale() && showDiagrammGroesse()) {
           <svui-percentilechart [dataset]="form.chartGroesseMale"/>
         }
-        @if (showDiagarammMale() && showDiagrammGewicht()) {
+        @if (showDiagrammMale() && showDiagrammGewicht()) {
           <svui-percentilechart [dataset]="form.chartGewichtMale"/>
         }
-        @if (showDiagarammMale() && showDiagrammBmi()) {
+        @if (showDiagrammMale() && showDiagrammBmi()) {
           <svui-percentilechart [dataset]="form.chartBmiMale"/>
         }
       </div>
     }
     <!-- Weiblich -->
-    @if (showDiagarammFemale() && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
+    @if (showDiagrammFemale() && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
       <div class="mt-5 percentile-charts">
-        @if (showDiagarammFemale() && showDiagrammGroesse()) {
+        @if (showDiagrammFemale() && showDiagrammGroesse()) {
           <svui-percentilechart [dataset]="form.chartGroesseFemale"/>
         }
-        @if (showDiagarammFemale() && showDiagrammGewicht()) {
+        @if (showDiagrammFemale() && showDiagrammGewicht()) {
           <svui-percentilechart [dataset]="form.chartGewichtFemale"/>
         }
-        @if (showDiagarammFemale() && showDiagrammBmi()) {
+        @if (showDiagrammFemale() && showDiagrammBmi()) {
           <svui-percentilechart [dataset]="form.chartBmiFemale"/>
         }
       </div>
+    }
+    <!-- Quellenangabe: required by the licence of the Wachstumskurven 2026. Only shown for that
+         reference; the older curves are displayed as before, without a source line. -->
+    @if (percentileReference() === 'PCH_2026'
+      && (showDiagrammMale() || showDiagrammFemale())
+      && (showDiagrammGroesse() || showDiagrammGewicht() || showDiagrammBmi())) {
+      <p class="mt-3 percentile-charts-quelle">
+        {{ 'perzentile.diagramm.quelle.PCH_2026' | transloco }}
+      </p>
     }
     <!-- Bemerkung -->
     @if (anlassStore.selectedEntity()?.anlassConfig?.data?.groesseGewichtBemerkungen !== RequirementSetting.NOT_VISIBLE) {

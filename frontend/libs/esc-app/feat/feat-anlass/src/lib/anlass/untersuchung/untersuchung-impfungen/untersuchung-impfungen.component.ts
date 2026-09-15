@@ -1,25 +1,38 @@
-import { ChangeDetectionStrategy, Component, computed, inject, viewChild } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NotizTyp, RequirementSetting, UntersuchungImpfstatusListSaveJson } from '@dvb/data-access-backend';
-import { BackendEntityId, toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
-import { NavigationService } from '@dvb/feat-shared';
-import { CardInCardComponent, LayoutTwoColumnsComponent } from '@dvb/ui-components';
-import { DetailMode, DirtyMarker } from '@dvb/util-angular';
-import { requireValue } from '@dvb/util-shared';
-import { TranslocoService } from '@jsverse/transloco';
-import { AnlassStore } from '../../anlass.store';
-import { AnlassKinderStore } from '../../anlasse-detail/anlass-kinder.store';
-import { UntersuchungStore } from '../untersuchung.store';
-import { UntersuchungDoppelkontrolleImpfentscheidComponent } from './untersuchung-doppelkontrolle-impfentscheid/untersuchung-doppelkontrolle-impfentscheid.component';
-import { UntersuchungImpfstatusComponent } from './untersuchung-impfstatus/untersuchung-impfstatus.component';
-import { UntersuchungImpfungenChecklistComponent } from './untersuchung-impfungen-checklist/untersuchung-impfungen-checklist.component';
-import { UntersuchungImpfungenHeaderComponent } from './untersuchung-impfungen-header/untersuchung-impfungen-header.component';
-import { UntersuchungImpfungenInternListComponent } from './untersuchung-impfungen-intern-list/untersuchung-impfungen-intern-list.component';
-import { UntersuchungImpfungenMassnahmenComponent } from './untersuchung-impfungen-massnahmen/untersuchung-impfungen-massnahmen.component';
-import { UntersuchungImpfungenStore } from './untersuchung-impfungen.store';
+import {ChangeDetectionStrategy, Component, computed, inject, signal, viewChild} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {NotizTyp, RequirementSetting, UntersuchungImpfstatusListSaveJson} from '@dvb/data-access-backend';
+import {BackendEntityId} from '@dvb/data-access-types';
+import {NavigationService} from '@dvb/feat-shared';
+import {CardInCardComponent, LayoutTwoColumnsComponent} from '@dvb/ui-components';
+import {DetailMode, DirtyMarker} from '@dvb/util-angular';
+import {requireValue} from '@dvb/util-shared';
+import {TranslocoService} from '@jsverse/transloco';
+import {AnlassStore} from '../../anlass.store';
+import {AnlassKinderStore} from '../../anlasse-detail/anlass-kinder.store';
+import {UntersuchungStore} from '../untersuchung.store';
+import {
+  UntersuchungDoppelkontrolleImpfentscheidComponent
+} from './untersuchung-doppelkontrolle-impfentscheid/untersuchung-doppelkontrolle-impfentscheid.component';
+import {UntersuchungImpfstatusComponent} from './untersuchung-impfstatus/untersuchung-impfstatus.component';
+import {
+  UntersuchungImpfungenChecklistComponent
+} from './untersuchung-impfungen-checklist/untersuchung-impfungen-checklist.component';
+import {
+  UntersuchungImpfungenHeaderComponent
+} from './untersuchung-impfungen-header/untersuchung-impfungen-header.component';
+import {
+  UntersuchungImpfungenInternListComponent
+} from './untersuchung-impfungen-intern-list/untersuchung-impfungen-intern-list.component';
+import {
+  UntersuchungImpfungenMassnahmenComponent
+} from './untersuchung-impfungen-massnahmen/untersuchung-impfungen-massnahmen.component';
+import {UntersuchungImpfungenStore} from './untersuchung-impfungen.store';
 import {
   UntersuchungImpfungenDataMinimalComponent
 } from "./untersuchung-impfungen-data-minimal/untersuchung-impfungen-data-minimal.component";
+import {
+  UntersuchungImpfungenNurUnvollstaendigeComponent
+} from "./untersuchung-impfungen-nur-unvollstaendige/untersuchung-impfungen-nur-unvollstaendige.component";
 
 @Component({
   selector: 'feat-untersuchung-impfungen',
@@ -37,15 +50,18 @@ import {
     UntersuchungImpfungenChecklistComponent,
     UntersuchungImpfungenMassnahmenComponent,
     LayoutTwoColumnsComponent,
-    UntersuchungImpfungenDataMinimalComponent
+    UntersuchungImpfungenDataMinimalComponent,
+    UntersuchungImpfstatusComponent,
+    UntersuchungImpfungenNurUnvollstaendigeComponent
   ],
 })
 export class UntersuchungImpfungenComponent implements DirtyMarker {
-  doppelkontrolleComponent = viewChild(UntersuchungDoppelkontrolleImpfentscheidComponent);
-  impfstatusComponent = viewChild(UntersuchungImpfstatusComponent);
-  impfChecklistComponent = viewChild(UntersuchungImpfungenChecklistComponent);
-  impfMassnahmenComponent = viewChild(UntersuchungImpfungenMassnahmenComponent);
-  impfungenDataMinimalComponent = viewChild(UntersuchungImpfungenDataMinimalComponent);
+  readonly doppelkontrolleComponent = viewChild(UntersuchungDoppelkontrolleImpfentscheidComponent);
+  readonly impfstatusComponent = viewChild(UntersuchungImpfstatusComponent);
+  readonly impfChecklistComponent = viewChild(UntersuchungImpfungenChecklistComponent);
+  readonly impfMassnahmenComponent = viewChild(UntersuchungImpfungenMassnahmenComponent);
+  readonly impfungenDataMinimalComponent = viewChild(UntersuchungImpfungenDataMinimalComponent);
+  readonly untersuchungImpfungenNurUnvollstaendigeComponent = viewChild(UntersuchungImpfungenNurUnvollstaendigeComponent);
 
   readonly anlassStore = inject(AnlassStore);
   readonly untersuchungStore = inject(UntersuchungStore);
@@ -58,12 +74,22 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
   protected readonly DetailMode = DetailMode;
   protected readonly RequirementSetting = RequirementSetting;
 
-  einladung = computed(() => {
+  private readonly currentValueOfImpfausweisVollstaendigNein = signal(false);
+
+  readonly einladung = computed(() => {
     const currentEinladungId: BackendEntityId | undefined = this.untersuchungStore.currentTab()?.einladungID;
     if (currentEinladungId) {
       return this.anlassKinderStore.einladungById(currentEinladungId);
     }
     return undefined;
+  });
+
+  readonly showOtherFieldsForImpfausweisVollstaendig = computed(() => {
+    // Wenn das Feature "nur unvollstaendige" in der Config aktiv ist, werden die anderen components
+    // nur eingeblendet, wenn bei ImpfausweisVollstaendig = NEIN ausgewaehlt wurde
+    const featureEnabled = this.anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenNurUnvollstaendige !== RequirementSetting.NOT_VISIBLE;
+    const impfausweisVollstaendigNein = this.currentValueOfImpfausweisVollstaendigNein();
+    return !featureEnabled || impfausweisVollstaendigNein;
   });
 
   isDirty(): boolean {
@@ -73,6 +99,7 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
       this.impfChecklistComponent()?.form.isDirty() ||
       this.impfMassnahmenComponent()?.form.isDirty() ||
       this.impfungenDataMinimalComponent()?.isDirty() ||
+      this.untersuchungImpfungenNurUnvollstaendigeComponent()?.form.isDirty() ||
       this.untersuchungImpfungenStore.loader.isLoading()
     );
   }
@@ -116,5 +143,9 @@ export class UntersuchungImpfungenComponent implements DirtyMarker {
       this.untersuchungStore.currentTabId(),
       NotizTyp.IMPFAUSWEIS,
     );
+  }
+
+  protected impfausweisVollstaendigChanged($event: boolean) {
+    this.currentValueOfImpfausweisVollstaendigNein.set($event);
   }
 }

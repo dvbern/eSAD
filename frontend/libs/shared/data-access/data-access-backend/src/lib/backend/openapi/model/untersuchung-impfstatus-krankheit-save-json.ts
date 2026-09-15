@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ImpfschutzGegeben } from './impfschutz-gegeben';
 import { ISODateString } from '@dvb/data-access-types';
 import { Krankheit } from './krankheit';
 
@@ -15,7 +16,7 @@ export interface UntersuchungImpfstatusKrankheitSaveJson {
     krankheit: Krankheit;
     anzahlImpfungen?: number;
     datumLetzteImpfung?: ISODateString;
-    impfschutzGegeben?: boolean;
+    impfschutzGegeben?: ImpfschutzGegeben;
     impfempfehlung?: boolean;
     impfentscheid?: boolean;
     version: number;

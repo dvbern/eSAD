@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
 import java.io.Serial;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -97,6 +98,12 @@ public class TenantSetting extends AbstractEntity<TenantSetting> {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String einladungStatusValues;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false)
+    private LocalDate gueltigAbWachstumskurvePch;
+
 
     public void setSupportedLanguages(@NonNull List<AppLanguages> supportedLanguages) {
         this.supportedLanguages = supportedLanguages.stream()

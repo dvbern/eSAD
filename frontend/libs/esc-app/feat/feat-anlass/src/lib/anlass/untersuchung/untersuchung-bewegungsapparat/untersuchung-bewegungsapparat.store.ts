@@ -1,11 +1,15 @@
 import {
-  UntersuchungBewegungsapparatJson, UntersuchungBewegungsapparatService,
+  UntersuchungBewegungsapparatJson,
+  UntersuchungBewegungsapparatSaveJson,
+  UntersuchungBewegungsapparatService,
+  UntersuchungBewegungsapparatServiceGetDefaultUntersuchungBewegungsapparatRequestParams,
   UntersuchungBewegungsapparatServiceGetUntersuchungBewegungsapparatRequestParams,
   UntersuchungBewegungsapparatServiceSaveUntersuchungBewegungsapparatRequestParams,
 } from '@dvb/data-access-backend';
 import {inject, Injectable} from '@angular/core';
 import {patchState, signalStore, withState} from '@ngrx/signals';
 import {AppErrorHandlerService, AppNotificationStore, Loader, rxMethod} from '@dvb/util-angular';
+import {withDefaultValues} from '../default-values.util';
 import {UntersuchungStore} from '../untersuchung.store';
 import {TranslocoService} from '@jsverse/transloco';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
@@ -23,6 +27,9 @@ const initialState: UntersuchungBewegungsapparatState = {
 export class UntersuchungBewegungsapparatStore extends signalStore(
   {protectedState: false},
   withState(initialState),
+  withDefaultValues<UntersuchungBewegungsapparatSaveJson, UntersuchungBewegungsapparatJson, UntersuchungBewegungsapparatState>({
+    getCurrentEntity: (store) => store.bewegungsapparat(),
+  }),
 ) {
   readonly #bewegungsapparatService = inject(UntersuchungBewegungsapparatService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
@@ -44,6 +51,21 @@ export class UntersuchungBewegungsapparatStore extends signalStore(
       tapResponse({
         next: bewegungsapparat => patchState(this, {bewegungsapparat}),
         error: console.error
+      }),
+    ),
+  );
+
+  loadBewegungsapparatDefaults = rxMethod<UntersuchungBewegungsapparatServiceGetDefaultUntersuchungBewegungsapparatRequestParams>(
+    pipe(
+      switchMap(params => this.loader.tapLoading$(this.#bewegungsapparatService.getDefaultUntersuchungBewegungsapparat$(
+          {
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          }),
+        error => this.#appErrorHandlerService.handleError(error))),
+      tapResponse({
+        next: data => patchState(this, {defaultInitial: data}),
+        error: console.error,
       }),
     ),
   );

@@ -147,6 +147,45 @@ class UntersuchungSchulrelevanteBeeintraechtigungResourceITest extends AbstractI
     }
 
     @Test
+    @TestAsAdminBS
+    void getDefaultUntersuchungSchulrelevanteBeeintraechtigung() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+
+        // ACT
+        UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec result =
+            api.untersuchungSchulrelevanteBeeintraechtigungResourceGetDefaultUntersuchungSchulrelevanteBeeintraechtigung()
+                .anlassIdPath(einladung.getAnlass().getId().getId())
+                .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungSchulrelevanteBeeintraechtigungSaveJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getFreiesGehen()).isNotNull();
+        assertThat(result.getFreiesGehen().getValue()).isNull();
+        assertThat(result.getAnzahlMonateFreiesGehen()).isNull();
+        assertThat(result.getOhneStuetzradVelofahren()).isNotNull();
+        assertThat(result.getOhneStuetzradVelofahren().getValue())
+            .contains(OhneStuetzradVelofahren.JA_OHNE_STUETZRAD_VELOFAHREN.name());
+        assertThat(result.getGrafomotorik()).isNotNull();
+        assertThat(result.getGrafomotorik().getValue()).contains(Grafomotorik.GUT.name());
+        assertThat(result.getFeinmotorik()).isNotNull();
+        assertThat(result.getFeinmotorik().getValue()).contains(Feinmotorik.BESTANDEN.name());
+        assertThat(result.getGrobmotorikEinbeinhuepfen()).isNotNull();
+        assertThat(result.getGrobmotorikEinbeinhuepfen().getValue())
+            .contains(GrobmotorikEinbeinhuepfen.BESTANDEN.name());
+        assertThat(result.getGleichgewichtEinbeinstand()).isNotNull();
+        assertThat(result.getGleichgewichtEinbeinstand().getValue())
+            .contains(GleichgewichtEinbeinstand.BESTANDEN.name());
+        assertThat(result.getBemerkungen()).isNull();
+    }
+
+    @Test
     @TestAsSchularztBE
     void saveUntersuchungSchulrelevanteBeeintraechtigung_anonym() {
         // ARRANGE

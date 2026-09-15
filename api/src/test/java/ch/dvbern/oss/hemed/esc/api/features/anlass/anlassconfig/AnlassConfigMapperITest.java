@@ -18,6 +18,9 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig;
 
+import java.time.LocalDate;
+import java.util.EnumSet;
+
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -31,12 +34,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassConfigBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-import java.util.EnumSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -135,9 +136,12 @@ class AnlassConfigMapperITest extends AbstractITest {
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGroesse());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGewicht());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtBmi());
-        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGroessePerzentile());
-        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGewichtPerzentile());
-        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtBmiPerzentile());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGroessePerzentileSingleValue());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGroessePerzentileMultiValue());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGewichtPerzentileSingleValue());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtGewichtPerzentileMultiValue());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtBmiPerzentileSingleValue());
+        assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtBmiPerzentileMultiValue());
         assertEquals(RequirementSetting.OPTIONAL, saveJson.getGroesseGewichtBemerkungen());
         // ASSERT Triage
         assertThat(saveJson.isShowTriageTriage()).isTrue();

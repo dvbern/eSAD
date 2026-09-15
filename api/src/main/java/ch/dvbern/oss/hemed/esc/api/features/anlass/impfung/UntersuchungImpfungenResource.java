@@ -15,6 +15,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpf
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataMinimalJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenDataMinimalSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenNurUnvollstaendigeJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenNurUnvollstaendigeSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfungenSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenJson;
@@ -57,6 +59,7 @@ public class UntersuchungImpfungenResource {
     private final UntersuchungImpfungInternMapper untersuchungImpfungInternMapper;
     private final UntersuchungImpfungenMassnahmenMapper untersuchungImpfungenMassnahmenMapper;
     private final UntersuchungImpfungenDataMinimalMapper untersuchungImpfungenDataMinimalMapper;
+    private final UntersuchungImpfungenNurUnvollstaendigeMapper untersuchungImpfungenNurUnvollstaendigeMapper;
     private final EinladungMapper einladungMapper;
     private final AuthorizerService authorizerService;
 
@@ -284,6 +287,24 @@ public class UntersuchungImpfungenResource {
     ) {
         einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
         return untersuchungImpfungenDataMinimalMapper.save(
+            wrappedId,
+            saveJson,
+            untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(
+                untersuchung,
+                List.of(Berechtigung.SU_IMPFEN_SCHREIBEN)));
+    }
+
+    @PUT
+    @Path("/nurunvollstaendige")
+    @NonNull
+    @RolesAllowed(BerechtigungName.SU_IMPFEN_SCHREIBEN)
+    public UntersuchungImpfungenNurUnvollstaendigeJson saveUntersuchungImpfungenNurUnvollstaendige(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId,
+        @NotNull @NonNull @Valid UntersuchungImpfungenNurUnvollstaendigeSaveJson saveJson
+    ) {
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungImpfungenNurUnvollstaendigeMapper.save(
             wrappedId,
             saveJson,
             untersuchung -> authorizerService.requireWriteAuthorizationUntersuchung(

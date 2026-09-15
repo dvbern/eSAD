@@ -3,11 +3,16 @@ package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
+import jakarta.ws.rs.core.Response.Status;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
@@ -21,6 +26,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.BenutzerApiSpec;
@@ -31,14 +37,15 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PrincipalJsonSpec;
+
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.ResponseBody;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -46,11 +53,13 @@ import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mockito;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @QuarkusTest
 @TestAsAdminBS
@@ -69,6 +78,7 @@ class BenutzerResourceITest {
     private final TenantProducer tenantProducer;
     private final BenutzerResourceHelper benutzerResourceHelper;
     private final FixtureService fixtureService;
+    private final AuthorizerService authorizerService;
 
 
     @Test
@@ -344,6 +354,128 @@ class BenutzerResourceITest {
     }
 
     @Test
+    @TestAsSchularztBE
+    void updateBenutzer_movingToDifferentOrganisation_requiresAuthorizationForNewOrganisation() {
+        // ARRANGE
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        Organisation ownOrganisation = Objects.requireNonNull(schularzt.getSingleOrganisation());
+
+        // a benutzer that currently belongs to the schularzt's own organisation
+        Benutzer benutzer = BenutzerBuilder.create(builder -> builder
+            .withOrganisationRollen(ownOrganisation, List.of(FachRolle.MPA)));
+        benutzerService.persist(benutzer);
+
+        // a foreign organisation the schularzt is not authorized to write to
+        Organisation foreignOrganisation = Objects.requireNonNull(
+            benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE).getSingleOrganisation());
+
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
+            .forBenutzer(benutzer)
+            .withOrganisationRollen(foreignOrganisation, List.of(FachRolle.MPA))).getData();
+
+        // ACT
+        AppFailureErrorJsonSpec error = api.
+            benutzerResourceUpdate()
+            .benutzerIDPath(benutzer.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(error)
+            .isNotNull();
+        Assertions.assertThat(error.getSummary())
+            .contains("keine Berechtigung")
+            .contains("Organisation");
+    }
+
+    @Test
+    @TestAsSupportBE
+    void updateBenutzer_settingOrganisationForFirstTime_requiresAuthorizationForNewOrganisation() {
+        // ARRANGE
+        // a benutzer that currently has no organisation at all
+        Benutzer benutzer = BenutzerBuilder.create(builder -> { });
+        benutzerService.persist(benutzer);
+
+        // a foreign organisation - the support actor would actually be authorized to write to any organisation,
+        // so we spy on AuthorizerService and force the org-write check to fail for this specific organisation,
+        // in order to isolate and verify the new organisation-change-authorization logic in BenutzerMapper.update
+        Organisation foreignOrganisation = Objects.requireNonNull(
+            benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE).getSingleOrganisation());
+
+        AuthorizerService authorizerServiceSpy = spy(authorizerService);
+        doThrow(new AppFailureException(AppFailureMessage.missingBerechtigung(
+                Organisation.class,
+                foreignOrganisation.getId(),
+                "test")))
+            .when(authorizerServiceSpy).requireWriteAuthorizationOrganisation(foreignOrganisation);
+        QuarkusMock.installMockForType(authorizerServiceSpy, AuthorizerService.class);
+
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
+            .forBenutzer(benutzer)
+            .withOrganisationRollen(foreignOrganisation, List.of(FachRolle.MPA))).getData();
+
+        // ACT
+        AppFailureErrorJsonSpec error = api.
+            benutzerResourceUpdate()
+            .benutzerIDPath(benutzer.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+            .extract().as(AppFailureErrorJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(error)
+            .isNotNull();
+        Assertions.assertThat(error.getSummary())
+            .contains("keine Berechtigung")
+            .contains("Organisation");
+    }
+
+    @Test
+    @TestAsSupportBE
+    void updateBenutzer_movingToDifferentOrganisation_worksIfAuthorizedForNewOrganisation() {
+        // ARRANGE
+        Organisation sourceOrganisation = Objects.requireNonNull(
+            benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE).getSingleOrganisation());
+        Organisation targetOrganisation = Objects.requireNonNull(
+            benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE).getSingleOrganisation());
+
+        // a benutzer that currently belongs to the source organisation
+        Benutzer benutzer = BenutzerBuilder.create(builder -> builder
+            .withOrganisationRollen(sourceOrganisation, List.of(FachRolle.MPA)));
+        benutzerService.persist(benutzer);
+
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(builder -> builder
+            .forBenutzer(benutzer)
+            .withOrganisationRollen(targetOrganisation, List.of(FachRolle.MPA))).getData();
+
+        // ACT
+        BenutzerJsonSpec result = api.
+            benutzerResourceUpdate()
+            .benutzerIDPath(benutzer.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(BenutzerJsonSpec.class);
+
+        // ASSERT
+        assertThat(result)
+            .isNotNull();
+        assertThat(result.getData().getOrganisationRollen().getFirst().getOrganisation())
+            .isNotNull()
+            .extracting(OrganisationJsonSpec::getId)
+            .isEqualTo(targetOrganisation.getId().getId());
+    }
+
+    @Test
     @TestAsSupportBS
     void createBenutzerAsSupport_works_if_tenantSetting_is_enabled() {
         // ARRANGE
@@ -357,7 +489,7 @@ class BenutzerResourceITest {
             .withBenutzerverwaltungInternFeature(FeatureEnabledSetting.ENABLED)
             .withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED)
         );
-        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
+        when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
         QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
 
 

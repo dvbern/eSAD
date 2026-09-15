@@ -1,66 +1,83 @@
 @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSprache) {
 
-  <form svuiFormLayout
-        [formType]="'kacheln'"
-        [mode]="'edit'"
-        [formGroup]="form.group"
-        (ngSubmit)="submitIfValid()">
+  @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+    <svui-card-in-card class="mb-3">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span>{{ 'untersuchung.tab.defaultwerte.info' | transloco }}</span>
+        <button
+          class="nav-link"
+          (click)="loadDefaults()"
+          data-testid="untersuchung-sprache-defaultwerte">
+          <svui-icon [useCase]="'edit'"></svui-icon>
+          {{ 'untersuchung.tab.defaultwerte' | transloco }}
+        </button>
+      </div>
+    </svui-card-in-card>
+  }
 
-    <!-- nachsprechen -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheNachsprechen !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.nachsprechenSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.sprache.nachsprechen'"
-        [valuePrefix]="'Nachsprechen'"
-        [tooltipKey]="'untersuchung.tab.sprache.nachsprechen.tooltip'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
-      </feat-value-enhanced>
-    }
+  <svui-card-in-card class="mb-3">
+    <form svuiFormLayout
+          [formType]="'kacheln'"
+          [mode]="'edit'"
+          [formGroup]="form.group"
+          (ngSubmit)="submitIfValid()">
 
-    <!-- wortschatz -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheWortschatz !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.wortschatzSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.sprache.wortschatz'"
-        [valuePrefix]="'Wortschatz'"
-        [tooltipKey]="'untersuchung.tab.sprache.wortschatz.tooltip'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
-      </feat-value-enhanced>
-    }
+      <!-- nachsprechen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheNachsprechen !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.nachsprechenSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.sprache.nachsprechen'"
+          [valuePrefix]="'Nachsprechen'"
+          [tooltipKey]="'untersuchung.tab.sprache.nachsprechen.tooltip'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          >
+        </feat-value-enhanced>
+      }
 
-    <!-- sprachverstaendnis -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheSprachverstaendnis !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.sprachverstaendnisSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.sprache.sprachverstaendnis'"
-        [valuePrefix]="'Sprachverstaendnis'"
-        [tooltipKey]="'untersuchung.tab.sprache.sprachverstaendnis.tooltip'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
-      </feat-value-enhanced>
-    }
+      <!-- wortschatz -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheWortschatz !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.wortschatzSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.sprache.wortschatz'"
+          [valuePrefix]="'Wortschatz'"
+          [tooltipKey]="'untersuchung.tab.sprache.wortschatz.tooltip'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          >
+        </feat-value-enhanced>
+      }
 
-    <!-- Bemerkung -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheBemerkungen !== RequirementSetting.NOT_VISIBLE) {
-      <svui-title [context]="'formSection'"
-                  class="mb-3">{{ 'untersuchung.tab.sprache.bemerkung' | transloco }}
-      </svui-title>
-      <svui-form-control
-        [label]="'untersuchung.tab.sprache.bemerkung' | transloco"
-        [topLabelVisibility]="'hidden'"
-        [viewValue]="form.group.controls.bemerkungen.value">
-        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
-      </svui-form-control>
-    }
+      <!-- sprachverstaendnis -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheSprachverstaendnis !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.sprachverstaendnisSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.sprache.sprachverstaendnis'"
+          [valuePrefix]="'Sprachverstaendnis'"
+          [tooltipKey]="'untersuchung.tab.sprache.sprachverstaendnis.tooltip'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          >
+        </feat-value-enhanced>
+      }
 
-    <!-- Save / Cancel Buttons -->
-    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
-      <svui-save-cancel-buttons
-        [saving]="false"
-        [canEdit]="true"
-        (cancelClicked)="abbrechen()"/>
-    }
-  </form>
+      <!-- Bemerkung -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungSpracheBemerkungen !== RequirementSetting.NOT_VISIBLE) {
+        <svui-title [context]="'formSection'"
+                    class="mb-3">{{ 'untersuchung.tab.sprache.bemerkung' | transloco }}
+        </svui-title>
+        <svui-form-control
+          [label]="'untersuchung.tab.sprache.bemerkung' | transloco"
+          [topLabelVisibility]="'hidden'"
+          [viewValue]="form.group.controls.bemerkungen.value">
+          <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+        </svui-form-control>
+      }
+
+      <!-- Save / Cancel Buttons -->
+      @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+        <svui-save-cancel-buttons
+          [saving]="false"
+          [canEdit]="true"
+          (cancelClicked)="abbrechen()"/>
+      }
+    </form>
+  </svui-card-in-card>
 }

@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -446,14 +447,25 @@ public class PupilService {
     private Set<KontaktPersonKindExternal> extractUniqueExternalKontaktPersonenKind(
         @NonNull List<PupilCsvDTO> pupilCsvDTOS
     ) {
+        // Aggregate "missing SchuelerId" warnings instead of logging one line per CSV row: with large
+        // imports per-row logging can flood the log output (see log volume incident).
+        int[] missingSchuelerIdCount = { 0 };
+        Consumer<String> missingSchuelerIdHandler = id -> missingSchuelerIdCount[0]++;
+
         // Liste aller KP erstellen (die im CSV flach als KP 1-2 vorliegen), i.e. 'unflatten'
         List<KontaktPersonKindExternal> list = pupilCsvDTOS.stream()
             // For each DTO, generate the persons in order
             .flatMap(dto -> Stream.of(
-                    PupilCSVMapperService.toExternalKontaktPersonKind1(dto),
-                    PupilCSVMapperService.toExternalKontaktPersonKind2(dto)
+                    PupilCSVMapperService.toExternalKontaktPersonKind1(dto, missingSchuelerIdHandler),
+                    PupilCSVMapperService.toExternalKontaktPersonKind2(dto, missingSchuelerIdHandler)
                 ).flatMap(Optional::stream) // Remove empty Optionals
             ).toList();
+
+        if (missingSchuelerIdCount[0] > 0) {
+            LOG.warn(
+                "PUPIL IMPORT: {} KontaktpersonKind row(s) had no SchuelerId, ignoring",
+                missingSchuelerIdCount[0]);
+        }
 
         // Map aller ElternIds mit ihren Eltern-Objekten (Duplikaten)
         Map<String, List<KontaktPersonKindExternal>> kpIdToKps =

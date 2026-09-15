@@ -1,0 +1,85 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- Impfungen nur unvollständig -->
+  <changeSet author="hefr (generated)" id="1787821129979-1">
+    <createTable tableName="untersuchungimpfungennurunvollstaendige">
+      <column name="id" type="UUID">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="untersuchungimpfungennurunvollstaendigePK"/>
+      </column>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usererstellt" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="usermutiert" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="impfausweisvollstaendig" type="VARCHAR(30)"/>
+      <column name="impfausweisgrundunvollstaendig" type="VARCHAR(40)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-2">
+    <createTable tableName="untersuchungimpfungennurunvollstaendige_aud">
+      <column name="id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rev" type="INTEGER">
+        <constraints nullable="false"/>
+      </column>
+      <column name="revtype" type="SMALLINT"/>
+      <column name="timestamperstellt" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="timestampmutiert" type="TIMESTAMP(6) WITH TIME ZONE"/>
+      <column name="usererstellt" type="VARCHAR(255)"/>
+      <column name="usermutiert" type="VARCHAR(255)"/>
+      <column name="impfausweisvollstaendig" type="VARCHAR(30)"/>
+      <column name="impfausweisgrundunvollstaendig" type="VARCHAR(40)"/>
+    </createTable>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-3">
+    <addColumn tableName="untersuchungimpfungen">
+      <column name="untersuchungimpfungennurunvollstaendige_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-4">
+    <addColumn tableName="untersuchungimpfungen_aud">
+      <column name="untersuchungimpfungennurunvollstaendige_id" type="UUID"/>
+    </addColumn>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-5">
+    <addPrimaryKey columnNames="rev, id" constraintName="untersuchungimpfungennurunvollstaendige_audPK" tableName="untersuchungimpfungennurunvollstaendige_aud"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-7">
+    <createIndex indexName="ix_untersuchungimpfungen_untersuchungimpfungennurunvollstaendige" tableName="untersuchungimpfungen">
+      <column name="untersuchungimpfungennurunvollstaendige_id"/>
+      <column name="id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-8">
+    <addForeignKeyConstraint baseColumnNames="rev" baseTableName="untersuchungimpfungennurunvollstaendige_aud" constraintName="fk_untersuchungimpfungennurunvollstaendige_aud_revinfo" deferrable="false" initiallyDeferred="false" referencedColumnNames="rev" referencedTableName="revinfo" validate="true"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-9">
+    <addForeignKeyConstraint baseColumnNames="untersuchungimpfungennurunvollstaendige_id" baseTableName="untersuchungimpfungen" constraintName="fk_untersuchungimpfungen_untersuchungimpfungennurunvollstaendige" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="untersuchungimpfungennurunvollstaendige" validate="true"/>
+  </changeSet>
+  <!-- AnlassConfig -->
+  <changeSet author="hefr (generated)" id="1787821129979-10">
+    <addColumn tableName="anlassconfig">
+      <column name="impfungennurunvollstaendige" type="VARCHAR(30)"/>
+    </addColumn>
+    <sql>
+      UPDATE anlassconfig SET impfungennurunvollstaendige = 'NOT_VISIBLE' WHERE impfungennurunvollstaendige IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="impfungennurunvollstaendige"/>
+  </changeSet>
+  <changeSet author="hefr (generated)" id="1787821129979-11">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="impfungennurunvollstaendige" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

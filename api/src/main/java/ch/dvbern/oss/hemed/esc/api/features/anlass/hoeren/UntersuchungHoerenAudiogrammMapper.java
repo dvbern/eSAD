@@ -153,12 +153,8 @@ public class UntersuchungHoerenAudiogrammMapper {
         AnlassConfig anlassConfig = anlassService.getById(anlassID).getAnlassConfig();
         return new UntersuchungHoerenAudiogrammSaveJson(
 
-            UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(
-                anlassConfig.getHoerenAudiogramm(),
-                anlassConfig.getAnlassTyp()),
-            UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(
-                anlassConfig.getHoerenAudiogramm(),
-                anlassConfig.getAnlassTyp()),
+            UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(anlassConfig),
+            UntersuchungHoerenDefaultValueUtil.getDefaultAudiogramm(anlassConfig),
             MultiValueEnhancedMapper.toJson(
                 AudiogrammBeurteilung.class,
                 UntersuchungHoerenUtil.getAudiogrammBeurteilungDefault(
@@ -174,7 +170,10 @@ public class UntersuchungHoerenAudiogrammMapper {
             ),
             null,
             null,
-            null,
+            SingleValueEnhancedMapper.toJson(
+                HoerenHoerhilfe.class,
+                UntersuchungHoerenUtil.getHoerenHoerhilfeDefault(anlassConfig, HoerenHoerhilfe.NEIN)
+            ),
             0L
         );
     }

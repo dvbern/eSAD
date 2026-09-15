@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import jakarta.transaction.Transactional;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
@@ -32,10 +33,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
+
 import io.quarkus.mailer.MockMailbox;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -317,7 +318,7 @@ class BenutzerServiceTest {
         service.persist(benutzer);
 
         // ACT
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.noneOf(FachRolle.class),
             benutzer,
             null,
@@ -353,7 +354,7 @@ class BenutzerServiceTest {
         verantwortlicherArzt.addOrganisation(organisationRollen);
 
         // ACT
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.of(FachRolle.SCHULAERZTIN),
             verantwortlicherArzt,
             organisation,
@@ -382,7 +383,7 @@ class BenutzerServiceTest {
         service.persist(delegierterBenutzer);
 
         // ACT
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.of(FachRolle.MPA),
             delegierterBenutzer,
             organisation,
@@ -435,7 +436,7 @@ class BenutzerServiceTest {
         service.persist(delegierterBenutzer);
 
         // ACT
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.of(FachRolle.MPA),
             delegierterBenutzer,
             organisation,

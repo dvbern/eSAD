@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.csv;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternal;
@@ -29,6 +30,21 @@ public final class EscadaCSVMapperService {
     public static Optional<SchuleExternal> toExternalSchule(
         @NonNull EscadaCsvDTO escadaCsvDTO
     ) {
+        // Default callback logs immediately; only used when items are mapped one-off (e.g. in tests/analysis).
+        // Bulk imports MUST use the overload below with an aggregating callback to avoid flooding the log
+        // with one line per CSV row (see ESC-... log volume incident).
+        return toExternalSchule(escadaCsvDTO, (key, value) -> LOG.warn(
+            "All Schule data SHOULD be null if no id is present.Field '{}' was set to value '{}' "
+                + "but no id was present, ignoring item",
+            key,
+            value));
+    }
+
+    @NonNull
+    public static Optional<SchuleExternal> toExternalSchule(
+        @NonNull EscadaCsvDTO escadaCsvDTO,
+        @NonNull BiConsumer<String, String> onIgnoredSchuleData
+    ) {
         if (StringUtils.isEmpty(escadaCsvDTO.schulhausId())) {
             validateAllDataIsEmpty(
                 "All Schule data MUST be null if no id is present",
@@ -36,8 +52,8 @@ public final class EscadaCSVMapperService {
                 Pair.of(SCHULANLAGE_ID_COL_NAME, escadaCsvDTO.schulanlageId()),
                 Pair.of(SCHULANLAGE_BEZEICHNUNG_COL_NAME, escadaCsvDTO.schulanlageBezeichnung()));
 
-            warnIfDataIsNotEmpty(
-                "All Schule data SHOULD be null if no id is present",
+            collectIgnoredData(
+                onIgnoredSchuleData,
                 Pair.of(SCHULKREIS_BEZEICHNUNG_COL_NAME, escadaCsvDTO.schulkreisBezeichnung()));
 
             return Optional.empty();
@@ -64,16 +80,12 @@ public final class EscadaCSVMapperService {
     }
 
     @SafeVarargs
-    public static void warnIfDataIsNotEmpty(
-        @NonNull String explain,
+    private static void collectIgnoredData(
+        @NonNull BiConsumer<String, String> onIgnoredData,
         @NonNull Pair<String, String>... fieldAndNameParis) {
         for (var fieldAndName : fieldAndNameParis) {
             if (!StringUtils.isEmpty(fieldAndName.getValue())) {
-                LOG.warn(
-                    "{}.Field '{}' was set to value '{}' but no id was present, ignoring item",
-                    explain,
-                    fieldAndName.getKey(),
-                    fieldAndName.getValue());
+                onIgnoredData.accept(fieldAndName.getKey(), fieldAndName.getValue());
             }
         }
     }

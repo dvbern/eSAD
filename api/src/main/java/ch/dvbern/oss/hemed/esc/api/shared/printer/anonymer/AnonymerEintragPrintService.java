@@ -27,6 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.AnlassUntersuchungPrintDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +47,8 @@ public class AnonymerEintragPrintService {
     private final AppLanguageProvider appLanguageProvider;
     private final TenantProducer tenantProducer;
     private final FileStoreService fileStoreService;
+    private final TenantSettingsService tenantSettingsService;
     private final TL tl;
-
 
     @NonNull
     public PrintResultDTO printAnonymerEintrag(@NonNull ID<AnonymerEintrag> anonymerEintragId) {
@@ -79,7 +80,9 @@ public class AnonymerEintragPrintService {
                 (AppLanguages) appLanguageProvider.current()
             );
 
-            AnonymerEintragPrinter.print(dto, baos, fileStoreService);
+            AnonymerEintragPrinter.print(
+                dto, baos, fileStoreService,
+                tenantSettingsService.isTenantHeaderInExportsEnabled());
 
             byte[] byteArray = baos.toByteArray();
             return new PrintResultDTO(byteArray, createFileInfo(anonymerEintrag.getHash(), byteArray.length, "pdf"));

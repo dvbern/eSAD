@@ -19,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -60,20 +61,25 @@ public class FachrollenService {
 
         // Beim Login-Flow wird das Sync direkt aus dem JWT durchgeführt, ohne expliziten "current user".
         // Daher hier die Berechtigungspruefung der Organisations-Rollen ueberspringen.
-        handleOrganisationsRollen(organisationsRollen, benutzer, organisation, null, true);
+        handleOrganisationsRollenAndSendInviteMailIfNewUser(organisationsRollen, benutzer, organisation, null, true);
         handleSystemRollen(systemRollen, benutzer);
     }
 
-    public void handleOrganisationsRollen(
+    public void handleOrganisationsRollenAndSendInviteMailIfNewUser(
         @NonNull EnumSet<FachRolle> organisationsRollenToSet,
         @NonNull Benutzer benutzer,
         @Nullable Organisation organisation,
         @NonNull Benutzer currentBenutzer
     ) {
-        handleOrganisationsRollen(organisationsRollenToSet, benutzer, organisation, currentBenutzer, false);
+        handleOrganisationsRollenAndSendInviteMailIfNewUser(
+            organisationsRollenToSet,
+            benutzer,
+            organisation,
+            currentBenutzer,
+            false);
     }
 
-    private void handleOrganisationsRollen(
+    private void handleOrganisationsRollenAndSendInviteMailIfNewUser(
         @NonNull EnumSet<FachRolle> organisationsRollenToSet,
         @NonNull Benutzer benutzer,
         @Nullable Organisation organisation,

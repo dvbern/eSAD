@@ -1,11 +1,24 @@
 
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/font';
 @use '../../../../../../../../shared/ui/ui-components/src/styles/core/spacing';
 
 :host {
   display: block;
 
+  .textcontrol,
+  feat-value-enhanced {
+    align-self: flex-start;
+  }
 
   $screen-breakpoint: 1200px;
+
+  // Source line under the Perzentil charts. Deliberately quiet -- it is a licence attribution, not
+  // content. Uses the same colour as the P-labels inside the charts so it reads as part of them.
+  .percentile-charts-quelle {
+    font-size: font.value('P2', size);
+    line-height: font.value('P2', height);
+    color: #8192b5;
+  }
 
   .percentile-charts {
     display: flex;

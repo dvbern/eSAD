@@ -3,7 +3,7 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular
 import {Krankheit} from '@dvb/data-access-backend';
 import {IconComponent, TableControlComponent, TextInputDirective} from '@dvb/ui-components';
 import {TranslocoPipe} from '@jsverse/transloco';
-import {UntersuchungImpfstatusSubFormType} from './untersuchung-impfstatus-list.form';
+import {UntersuchungImpfstatusSubFormType} from '../untersuchung-impfstatus-list.form';
 
 @Component({
     selector: 'feat-untersuchung-impfstatus-list',

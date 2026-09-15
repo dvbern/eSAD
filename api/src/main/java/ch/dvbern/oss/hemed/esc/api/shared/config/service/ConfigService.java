@@ -24,7 +24,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -35,9 +37,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ClientAccountConfig.SvcAccountClientInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -264,6 +264,16 @@ public class ConfigService {
     // Anzahl Monate nach welchen Kinder gelöscht werden nachdem sie archiviert worden sind.
     @ConfigProperty(name = "esc.archive.months.before.deletion", defaultValue = "6")
     int archiveMonthsBeforeDeletion;
+
+    /**
+     * Soft cap for the number of archive documents bundled into a single zip by the bulk download.
+     * <p>
+     * The zip is written to a temp file, so heap is not the limiting factor. However the transaction limit is 60s
+     * per document whe have to do: the id lookup, the per-document, authorization and the zip loop
+     * Suspending per S3 call does not pause that clock.
+     */
+    @ConfigProperty(name = "esc.archive.bulk-download.max-files", defaultValue = "600")
+    int archiveBulkDownloadMaxFiles;
 
     @ConfigProperty(name = "esc.tmp.dir")
     Path tmpDir;

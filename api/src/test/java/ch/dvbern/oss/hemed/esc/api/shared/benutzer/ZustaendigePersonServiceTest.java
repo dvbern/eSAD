@@ -2,9 +2,11 @@ package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
@@ -25,6 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
+import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import ch.dvbern.oss.hemed.esc.api.shared.util.VerantwortlicherSchuleChangedDTO;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
@@ -32,9 +35,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationRollenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
-import java.util.UUID;
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
-import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -124,7 +125,8 @@ class ZustaendigePersonServiceTest {
             Benutzer systemUser = BenutzerBuilder.create(b -> b.withSystemRolle(EnumSet.of(FachRolle.ADMIN)));
             when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(systemUser);
 
-            Dossier dossier = DossierBuilder.create(d -> {});
+            Dossier dossier = DossierBuilder.create(d -> {
+            });
 
             // ACT & ASSERT
             assertThatCode(() -> service.requireImmediateZustaendigkeit(dossier))
@@ -134,7 +136,8 @@ class ZustaendigePersonServiceTest {
         @Test
         void noOrganisationOnEntity_shouldNotThrow() {
             // ARRANGE
-            Benutzer normalUser = BenutzerBuilder.create(b -> {});
+            Benutzer normalUser = BenutzerBuilder.create(b -> {
+            });
             when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(normalUser);
 
             HasZustaendigkeit entity = mock(HasZustaendigkeit.class);
@@ -148,8 +151,10 @@ class ZustaendigePersonServiceTest {
         @Test
         void userHasOrganisationBerechtigung_shouldNotThrow() {
             // ARRANGE
-            Organisation org = OrganisationBuilder.create(o -> {});
-            Benutzer user = BenutzerBuilder.create(b -> {});
+            Organisation org = OrganisationBuilder.create(o -> {
+            });
+            Benutzer user = BenutzerBuilder.create(b -> {
+            });
             user.addOrganisation(OrganisationRollenBuilder.create(r -> r.withOrganisation(org).withBenutzer(user)));
 
             when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(user);
@@ -165,12 +170,15 @@ class ZustaendigePersonServiceTest {
         @Test
         void userHasNOOrganisationBerechtigung_shouldThrow() {
             // ARRANGE
-            Organisation orgEntity = OrganisationBuilder.create(o -> {});
+            Organisation orgEntity = OrganisationBuilder.create(o -> {
+            });
             orgEntity.setId(ID.of(UUID.randomUUID(), Organisation.class));
-            Organisation orgUser = OrganisationBuilder.create(o -> {});
+            Organisation orgUser = OrganisationBuilder.create(o -> {
+            });
             orgUser.setId(ID.of(UUID.randomUUID(), Organisation.class));
 
-            Benutzer user = BenutzerBuilder.create(b -> {});
+            Benutzer user = BenutzerBuilder.create(b -> {
+            });
             user.addOrganisation(OrganisationRollenBuilder.create(r -> r.withOrganisation(orgUser).withBenutzer(user)));
 
             when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(user);
@@ -194,7 +202,8 @@ class ZustaendigePersonServiceTest {
             Benutzer supportUser = BenutzerBuilder.create(b -> b
                 .withNachname("Support")
                 .withSystemRolle(EnumSet.of(FachRolle.SUPPORT)));
-            Dossier dossier = DossierBuilder.create(d -> {});
+            Dossier dossier = DossierBuilder.create(d -> {
+            });
 
             // ACT
             boolean result = dossier.isBenutzerZustaendigForDossier(supportUser);
@@ -209,7 +218,8 @@ class ZustaendigePersonServiceTest {
         void benutzerWithoutOrganisation_shouldReturnFalse() {
             // ARRANGE: Benutzer ohne Organisation und ohne Support-Rolle
             Benutzer benutzer = BenutzerBuilder.create(b -> b.withNachname("OhneOrg"));
-            Dossier dossier = DossierBuilder.create(d -> {});
+            Dossier dossier = DossierBuilder.create(d -> {
+            });
 
             // ACT
             boolean result = dossier.isBenutzerZustaendigForDossier(benutzer);
@@ -223,7 +233,8 @@ class ZustaendigePersonServiceTest {
         @Test
         void benutzerSameOrganisationAsDossierArzt_shouldReturnTrue() {
             // ARRANGE: Benutzer und der zust. Arzt des Dossiers sind in derselben Organisation
-            Organisation org = OrganisationBuilder.create(o -> {});
+            Organisation org = OrganisationBuilder.create(o -> {
+            });
             org.setId(ID.of(UUID.randomUUID(), Organisation.class));
 
             Benutzer dossierArzt = BenutzerBuilder.create(b -> b.withNachname("DossierArzt"));
@@ -255,7 +266,8 @@ class ZustaendigePersonServiceTest {
         void benutzerSameOrganisationAsSchuleArzt_shouldReturnTrue() {
             // ARRANGE: Dossier-Arzt ist null (oder andere Org), aber Benutzer ist in derselben
             // Organisation wie der zuständige Arzt der Schule
-            Organisation schulArztOrg = OrganisationBuilder.create(o -> {});
+            Organisation schulArztOrg = OrganisationBuilder.create(o -> {
+            });
             schulArztOrg.setId(ID.of(UUID.randomUUID(), Organisation.class));
 
             Benutzer schulArzt = BenutzerBuilder.create(b -> b.withNachname("SchulArzt"));
@@ -288,11 +300,14 @@ class ZustaendigePersonServiceTest {
         @Test
         void benutzerOrganisationDifferentFromDossierAndSchule_shouldReturnFalse() {
             // ARRANGE: Benutzer-Org unterscheidet sich von Dossier-Arzt-Org UND Schul-Arzt-Org
-            Organisation dossierOrg = OrganisationBuilder.create(o -> {});
+            Organisation dossierOrg = OrganisationBuilder.create(o -> {
+            });
             dossierOrg.setId(ID.of(UUID.randomUUID(), Organisation.class));
-            Organisation schulOrg = OrganisationBuilder.create(o -> {});
+            Organisation schulOrg = OrganisationBuilder.create(o -> {
+            });
             schulOrg.setId(ID.of(UUID.randomUUID(), Organisation.class));
-            Organisation otherOrg = OrganisationBuilder.create(o -> {});
+            Organisation otherOrg = OrganisationBuilder.create(o -> {
+            });
             otherOrg.setId(ID.of(UUID.randomUUID(), Organisation.class));
 
             Benutzer dossierArzt = BenutzerBuilder.create(b -> b.withNachname("DossierArzt"));
@@ -334,7 +349,8 @@ class ZustaendigePersonServiceTest {
         void schuleIsNull_shouldFallbackToDossierOrganisationOnly() {
             // ARRANGE: Das Kind hat keine Schule, also wird nur die Dossier-Arzt-Organisation geprüft.
             // Dies sichert ab, dass `dossier.getKind().getSchule()` ohne NPE behandelt wird.
-            Organisation dossierOrg = OrganisationBuilder.create(o -> {});
+            Organisation dossierOrg = OrganisationBuilder.create(o -> {
+            });
             dossierOrg.setId(ID.of(UUID.randomUUID(), Organisation.class));
 
             Benutzer dossierArzt = BenutzerBuilder.create(b -> b.withNachname("DossierArzt"));
@@ -369,7 +385,8 @@ class ZustaendigePersonServiceTest {
         @Test
         void noArztAnywhere_shouldReturnFalse() {
             // ARRANGE: Weder Dossier noch Schule haben einen zuständigen Arzt -> keine Organisation ableitbar
-            Organisation org = OrganisationBuilder.create(o -> {});
+            Organisation org = OrganisationBuilder.create(o -> {
+            });
             org.setId(ID.of(UUID.randomUUID(), Organisation.class));
 
             Benutzer benutzer = BenutzerBuilder.create(b -> b.withNachname("MitOrg"));
@@ -380,7 +397,8 @@ class ZustaendigePersonServiceTest {
                     .withFachrollen(EnumSet.of(FachRolle.SCHULAERZTIN))));
 
             // Kein zust. Arzt am Dossier, kein Arzt an der Schule
-            Schule schuleOhneArzt = SchuleBuilder.create(s -> {});
+            Schule schuleOhneArzt = SchuleBuilder.create(s -> {
+            });
             Dossier dossier = DossierBuilder.create(d -> d
                 .forKind(KindBuilder.create(k -> k.withSchule(schuleOhneArzt))));
 
@@ -389,7 +407,8 @@ class ZustaendigePersonServiceTest {
 
             // ASSERT
             assertThat(result)
-                .as("Wenn weder Dossier noch Schule einen Arzt haben, kann keine Zuständigkeit über die Organisation abgeleitet werden")
+                .as("Wenn weder Dossier noch Schule einen Arzt haben, kann keine Zuständigkeit über die Organisation "
+                    + "abgeleitet werden")
                 .isFalse();
         }
     }
@@ -400,7 +419,8 @@ class ZustaendigePersonServiceTest {
         @Test
         void sameArzt_shouldReturnFalse() {
             // ARRANGE
-            Benutzer arzt = BenutzerBuilder.create(b -> {});
+            Benutzer arzt = BenutzerBuilder.create(b -> {
+            });
             arzt.setId(ID.of(UUID.randomUUID(), Benutzer.class));
             Dossier dossier = DossierBuilder.create(d -> d.withZustaendigArzt(arzt));
 
@@ -414,7 +434,8 @@ class ZustaendigePersonServiceTest {
         @Test
         void diffArzt_sameOrganisation_shouldReturnFalse() {
             // ARRANGE
-            Organisation org = OrganisationBuilder.create(o -> {});
+            Organisation org = OrganisationBuilder.create(o -> {
+            });
             org.setId(ID.of(UUID.randomUUID(), Organisation.class));
             Benutzer arzt1 = BenutzerBuilder.create(b -> b.withID(ID.of(UUID.randomUUID(), Benutzer.class)));
             arzt1.addOrganisation(OrganisationRollenBuilder.create(r -> r.withOrganisation(org).withBenutzer(arzt1)));
@@ -436,12 +457,14 @@ class ZustaendigePersonServiceTest {
         @Test
         void diffArzt_diffOrganisation_shouldReturnTrue() {
             // ARRANGE
-            Organisation org1 = OrganisationBuilder.create(o -> {});
+            Organisation org1 = OrganisationBuilder.create(o -> {
+            });
             org1.setId(ID.of(UUID.randomUUID(), Organisation.class));
             Benutzer arzt1 = BenutzerBuilder.create(b -> b.withID(ID.of(UUID.randomUUID(), Benutzer.class)));
             arzt1.addOrganisation(OrganisationRollenBuilder.create(r -> r.withOrganisation(org1).withBenutzer(arzt1)));
 
-            Organisation org2 = OrganisationBuilder.create(o -> {});
+            Organisation org2 = OrganisationBuilder.create(o -> {
+            });
             org2.setId(ID.of(UUID.randomUUID(), Organisation.class));
             Benutzer arzt2 = BenutzerBuilder.create(b -> b.withID(ID.of(UUID.randomUUID(), Benutzer.class)));
             arzt2.addOrganisation(OrganisationRollenBuilder.create(r -> r.withOrganisation(org2).withBenutzer(arzt2)));
@@ -472,7 +495,8 @@ class ZustaendigePersonServiceTest {
         @Test
         void newArztNull_oldArztNotNull_shouldReturnTrueIfOldArztHasOrganisation() {
             // ARRANGE
-            Organisation org1 = OrganisationBuilder.create(o -> {});
+            Organisation org1 = OrganisationBuilder.create(o -> {
+            });
             org1.setId(ID.of(UUID.randomUUID(), Organisation.class));
             Benutzer arzt1 = BenutzerBuilder.create(b -> b.withID(ID.of(UUID.randomUUID(), Benutzer.class)));
             arzt1.addOrganisation(OrganisationRollenBuilder.create(r -> r.withOrganisation(org1).withBenutzer(arzt1)));
@@ -492,7 +516,8 @@ class ZustaendigePersonServiceTest {
 
         @Test
         void arztChanged_shouldResetArztOnDossier_alsoMpa() {
-            // ARRANGE: Fall 2, zentral: Arzt changes on Schule -> Dossier-Arzt should be set to null; Dossier-MPA should also be set to null
+            // ARRANGE: Fall 2, zentral: Arzt changes on Schule -> Dossier-Arzt should be set to null; Dossier-MPA
+            // should also be set to null
             setupZentraleOrganisation(true);
             Benutzer arztOld = BenutzerBuilder.create(b -> b.withNachname("ArztOld"));
             Benutzer mpaOld = BenutzerBuilder.create(b -> b.withNachname("MpaOld"));
@@ -520,7 +545,8 @@ class ZustaendigePersonServiceTest {
 
         @Test
         void mpaChanged_shouldResetMpaOnDossier_alsoArzt() {
-            // ARRANGE: Fall 2, zentral: MPA changes on Schule -> Dossier-MPA should be set to null; Dossier-Arzt should also be set to null
+            // ARRANGE: Fall 2, zentral: MPA changes on Schule -> Dossier-MPA should be set to null; Dossier-Arzt
+            // should also be set to null
             setupZentraleOrganisation(true);
             Benutzer arztOld = BenutzerBuilder.create(b -> b.withNachname("ArztOld"));
             Benutzer mpaOld = BenutzerBuilder.create(b -> b.withNachname("MpaOld"));
@@ -579,7 +605,8 @@ class ZustaendigePersonServiceTest {
         void shouldNotPersist_whenArztAndMpaAlreadyNull() {
             // ARRANGE: zentral: Dossier has no Arzt and no MPA set (already null)
             setupZentraleOrganisation(true);
-            Dossier dossier = DossierBuilder.create(d -> {});
+            Dossier dossier = DossierBuilder.create(d -> {
+            });
 
             VerantwortlicherSchuleChangedDTO args = VerantwortlicherSchuleChangedDTO.of(
                 SchuleBuilder.create(s -> s.withZustaendigArzt(BenutzerBuilder.create(b -> b.withNachname("ArztOld")))),
@@ -781,6 +808,51 @@ class ZustaendigePersonServiceTest {
                 .isEqualTo(privatArzt);
             verify(archivierungService, never()).createGesamtArchivdokument(any(), any(), any());
             verify(benutzerService, never()).getBenutzerIfCorrectRole(any(ID.class), any());
+        }
+
+        @Test
+        void arztChangedToOtherOrganisation_shouldSetNewArztAndClearMpaOnDossier() {
+            // ARRANGE: dezentral. Das Dossier hat einen Arzt und eine MPA aus derselben Organisation.
+            // Die Schule hat denselben Arzt und keine MPA. Auf der Schule wird der Arzt auf einen Arzt
+            // einer ANDEREN Organisation gewechselt (wie es der Batchjob scheduleDossierQueueProcessingJob
+            // via schuleChangedOnDossier verarbeitet).
+            setupZentraleOrganisation(false);
+            Organisation organisationAlt = OrganisationBuilder.create(o -> {
+            });
+            Organisation organisationNeu = OrganisationBuilder.create(o -> {
+            });
+
+            Benutzer arztOld = buildArztInOrganisation("ArztOld", organisationAlt);
+            Benutzer arztNew = buildArztInOrganisation("ArztNew", organisationNeu);
+            Benutzer mpaOld = BenutzerBuilder.create(b -> b
+                .withNachname("MpaOld")
+                .withOrganisationRollen(organisationAlt, List.of(FachRolle.MPA)));
+
+            Dossier dossier = DossierBuilder.create(d -> {
+                d.withZustaendigArzt(arztOld);
+                d.withZustaendigMPA(mpaOld);
+            });
+
+            VerantwortlicherSchuleChangedDTO args = VerantwortlicherSchuleChangedDTO.of(
+                SchuleBuilder.create(s -> s.withZustaendigArzt(arztOld)),
+                SchuleBuilder.create(s -> s.withZustaendigArzt(arztNew))
+            );
+
+            when(benutzerService.getBenutzerIfCorrectRole(arztNew.getId(), FachRolle.SCHULAERZTIN)).thenReturn(arztNew);
+            when(benutzerService.getById(arztOld.getId())).thenReturn(arztOld);
+            when(benutzerService.getById(arztNew.getId())).thenReturn(arztNew);
+
+            // ACT
+            service.schuleChangedOnDossier(dossier, args);
+
+            // ASSERT: der neue Arzt der Schule ist auf dem Dossier gesetzt und die MPA wurde entfernt,
+            // da der neue Arzt zu einer anderen Organisation gehört als die bisherige MPA.
+            assertThat(dossier.getZustaendigArzt())
+                .as("Dossier should have the new Arzt from Schule")
+                .isEqualTo(arztNew);
+            assertThat(dossier.getZustaendigMPA())
+                .as("MPA should be cleared because the new Arzt belongs to another organisation")
+                .isNull();
         }
 
         @Test
@@ -1039,7 +1111,8 @@ class ZustaendigePersonServiceTest {
             // Die neue Zuständigkeit ist Organisations-basiert: der alte Arzt verliert den Zugriff nur,
             // wenn er weder über die Dossier-Org noch über die Schul-Org noch zuständig ist.
             setupZentraleOrganisation(false);
-            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {});
+            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {
+            });
             Benutzer arztOld = buildArztInOrganisation("ArztOld", gemeinsameOrg);
             Benutzer arztNew = buildArztInOrganisation("ArztNew", gemeinsameOrg);
             Schule schule = SchuleBuilder.create(s -> s.withZustaendigArzt(arztOld));
@@ -1190,7 +1263,8 @@ class ZustaendigePersonServiceTest {
             // ARRANGE: dezentral, old arzt teilt sich die Organisation mit dem zust. Schul-Arzt
             // -> bleibt zuständig, keine Archivierung.
             setupZentraleOrganisation(false);
-            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {});
+            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {
+            });
             Benutzer arztOld = buildArztInOrganisation("ArztOld", gemeinsameOrg);
             Benutzer arztNew = buildArztInOrganisation("ArztNew", gemeinsameOrg);
             Schule schule = SchuleBuilder.create(s -> s.withZustaendigArzt(arztOld));
@@ -1291,7 +1365,8 @@ class ZustaendigePersonServiceTest {
             // ARRANGE: Fall 11 - The other dossier's Arzt teilt die Organisation mit dem zust. Arzt
             // des basisDossiers -> should NOT archive because the Arzt still has access via the basis dossier.
             setupZentraleOrganisation(false);
-            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {});
+            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {
+            });
             Benutzer arztBasis = buildArztInOrganisation("ArztBasis", gemeinsameOrg);
             Benutzer arztOther = buildArztInOrganisation("ArztOther", gemeinsameOrg);
 
@@ -1310,7 +1385,8 @@ class ZustaendigePersonServiceTest {
             // ARRANGE: Fall 11 - The other dossier's Arzt teilt die Organisation mit dem Schul-Arzt
             // des basisDossiers -> should NOT archive, da der Arzt über die Schul-Org weiterhin Zugriff hat.
             setupZentraleOrganisation(false);
-            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {});
+            Organisation gemeinsameOrg = OrganisationBuilder.create(o -> {
+            });
             Benutzer schulArzt = buildArztInOrganisation("SchulArzt", gemeinsameOrg);
             Benutzer arztOther = buildArztInOrganisation("ArztOther", gemeinsameOrg);
             Schule schuleWithArzt = SchuleBuilder.create(s -> s.withZustaendigArzt(schulArzt));

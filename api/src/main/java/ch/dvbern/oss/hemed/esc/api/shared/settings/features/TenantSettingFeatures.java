@@ -20,13 +20,14 @@ package ch.dvbern.oss.hemed.esc.api.shared.settings.features;
 
 import java.io.Serial;
 import java.io.Serializable;
-
-import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
+
+import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -155,4 +156,10 @@ public class TenantSettingFeatures implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     private FeatureEnabledSetting anlassTitleRequiredFeature;
+
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private FeatureEnabledSetting tenantHeaderInExportsFeature;
 }

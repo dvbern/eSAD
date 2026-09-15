@@ -1,0 +1,10 @@
+@use '../../../../../../../../../shared/ui/ui-components/src/styles/core/color/color-set-navigation-main';
+
+:host {
+  display: block;
+}
+
+.nav-link {
+  font-weight: 700;
+  color: color-set-navigation-main.$text;
+}

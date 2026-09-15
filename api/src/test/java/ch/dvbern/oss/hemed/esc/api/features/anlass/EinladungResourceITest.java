@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
@@ -57,6 +58,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGrundUnvollstaendig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisVollstaendig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenRepo;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmenRepo;
@@ -88,7 +91,10 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.EinladungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.NotizBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.EinladungenApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungJsonSpec;
@@ -101,12 +107,12 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LabelJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.NotizSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungTabInfoListJsonSpec;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.arc.ArcUndeclaredThrowableException;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -995,6 +1001,7 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @SuppressWarnings("java:S5961")
     void createEinladungNachzuegler_should_move_impfausweis_to_new_einladung() {
         // ARRANGE
         String titleAnlassNichtTeilgenommen = "Mein Anlass nicht Teilgenommen";
@@ -1023,14 +1030,25 @@ class EinladungResourceITest extends AbstractITest {
 
         // Dateien bei den Notizen hinzufuegen
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestImage(), "test-file.png");
-        Notiz notizImpfausweis = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getImpfausweisNotiz().get().getId(), fileUpload);
-        Notiz notizFragebogen = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getFragebogenNotiz().get().getId(), fileUpload);
-        Notiz notizAnmeldungBestaetigung = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz().get().getId(), fileUpload);
-        Notiz notizImpfeinverstaendnis = notizService.addUploadedFileAndFlush(einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz().get().getId(), fileUpload);
+        Notiz notizImpfausweis = notizService.addUploadedFileAndFlush(
+            einladungNichtTeilgenommen.getImpfausweisNotiz().get().getId(),
+            fileUpload);
+        Notiz notizFragebogen = notizService.addUploadedFileAndFlush(
+            einladungNichtTeilgenommen.getFragebogenNotiz().get().getId(),
+            fileUpload);
+        Notiz notizAnmeldungBestaetigung = notizService.addUploadedFileAndFlush(
+            einladungNichtTeilgenommen.getAnmeldungBestaetigungNotiz()
+                .get()
+                .getId(), fileUpload);
+        Notiz notizImpfeinverstaendnis = notizService.addUploadedFileAndFlush(
+            einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz().get().getId(),
+            fileUpload);
         String fileBucketIdImpfausweis = notizImpfausweis.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         String fileBucketIdFragebogen = notizFragebogen.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdAnmeldungBestaetigung = notizAnmeldungBestaetigung.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdImpfeinverstaendnis = notizImpfeinverstaendnis.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdAnmeldungBestaetigung =
+            notizAnmeldungBestaetigung.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdImpfeinverstaendnis =
+            notizImpfeinverstaendnis.getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
         assertThat(fileStoreService.getFileBytesSync(fileBucketIdImpfausweis)).isNotEmpty();
         assertThat(fileStoreService.getFileBytesSync(fileBucketIdFragebogen)).isNotEmpty();
         assertThat(fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigung)).isNotEmpty();
@@ -1080,18 +1098,40 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(einladungAlsNachzuegler.getImpfeinverstaendnisNotiz()).isPresent();
 
         // File ist immernoch im bucket und an der neuen Notiz angehaengt
-        String fileBucketIdImpfausweisNeu = einladungAlsNachzuegler.getImpfausweisNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdFragebogenNeu = einladungAlsNachzuegler.getFragebogenNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdAnmeldungBestaetigungNeu = einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
-        String fileBucketIdImpfeinverstaendnisNeu = einladungAlsNachzuegler.getImpfeinverstaendnisNotiz().get().getFiles().getFirst().getFileInfoBucket().getFileIdInBucket();
+        String fileBucketIdImpfausweisNeu = einladungAlsNachzuegler.getImpfausweisNotiz()
+            .get()
+            .getFiles()
+            .getFirst()
+            .getFileInfoBucket()
+            .getFileIdInBucket();
+        String fileBucketIdFragebogenNeu = einladungAlsNachzuegler.getFragebogenNotiz()
+            .get()
+            .getFiles()
+            .getFirst()
+            .getFileInfoBucket()
+            .getFileIdInBucket();
+        String fileBucketIdAnmeldungBestaetigungNeu = einladungAlsNachzuegler.getAnmeldungBestaetigungNotiz()
+            .get()
+            .getFiles()
+            .getFirst()
+            .getFileInfoBucket()
+            .getFileIdInBucket();
+        String fileBucketIdImpfeinverstaendnisNeu = einladungAlsNachzuegler.getImpfeinverstaendnisNotiz()
+            .get()
+            .getFiles()
+            .getFirst()
+            .getFileInfoBucket()
+            .getFileIdInBucket();
         assertThat(fileBucketIdImpfausweisNeu).isEqualTo(fileBucketIdImpfausweis);
         assertThat(fileBucketIdFragebogenNeu).isEqualTo(fileBucketIdFragebogen);
         assertThat(fileBucketIdAnmeldungBestaetigungNeu).isEqualTo(fileBucketIdAnmeldungBestaetigung);
         assertThat(fileBucketIdImpfeinverstaendnisNeu).isEqualTo(fileBucketIdImpfeinverstaendnis);
-        byte[]  fileDataAfterMoveImpfausweis = fileStoreService.getFileBytesSync(fileBucketIdImpfausweisNeu);
-        byte[]  fileDataAfterMoveFragebogen = fileStoreService.getFileBytesSync(fileBucketIdFragebogenNeu);
-        byte[]  fileDataAfterMoveAnmeldungBestaetigugn = fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigungNeu);
-        byte[]  fileDataAfterMoveImpfeinverstaendnis = fileStoreService.getFileBytesSync(fileBucketIdImpfeinverstaendnisNeu);
+        byte[] fileDataAfterMoveImpfausweis = fileStoreService.getFileBytesSync(fileBucketIdImpfausweisNeu);
+        byte[] fileDataAfterMoveFragebogen = fileStoreService.getFileBytesSync(fileBucketIdFragebogenNeu);
+        byte[] fileDataAfterMoveAnmeldungBestaetigugn =
+            fileStoreService.getFileBytesSync(fileBucketIdAnmeldungBestaetigungNeu);
+        byte[] fileDataAfterMoveImpfeinverstaendnis =
+            fileStoreService.getFileBytesSync(fileBucketIdImpfeinverstaendnisNeu);
         assertThat(fileDataAfterMoveImpfausweis).isNotEmpty();
         assertThat(fileDataAfterMoveFragebogen).isNotEmpty();
         assertThat(fileDataAfterMoveAnmeldungBestaetigugn).isNotEmpty();
@@ -1119,9 +1159,12 @@ class EinladungResourceITest extends AbstractITest {
         assertThat(nachzueglerEinladungAnmeldung.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
 
         Notiz nachzueglerEinladungImpfeinverstaendnis = einladungAlsNachzuegler.getImpfeinverstaendnisNotiz().get();
-        Notiz nichtTeilgenommenEinladungImpfeinverstaendnis = einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz().get();
-        assertThat(nachzueglerEinladungImpfeinverstaendnis.getDossier()).isEqualTo(nichtTeilgenommenEinladungImpfeinverstaendnis.getDossier());
-        assertThat(nachzueglerEinladungImpfeinverstaendnis.getStatus()).isEqualTo(nichtTeilgenommenEinladungImpfeinverstaendnis.getStatus());
+        Notiz nichtTeilgenommenEinladungImpfeinverstaendnis =
+            einladungNichtTeilgenommen.getImpfeinverstaendnisNotiz().get();
+        assertThat(nachzueglerEinladungImpfeinverstaendnis.getDossier()).isEqualTo(
+            nichtTeilgenommenEinladungImpfeinverstaendnis.getDossier());
+        assertThat(nachzueglerEinladungImpfeinverstaendnis.getStatus()).isEqualTo(
+            nichtTeilgenommenEinladungImpfeinverstaendnis.getStatus());
         assertThat(nachzueglerEinladungImpfeinverstaendnis.getTitel()).contains(titleAnlassAlsNachzuegler);
         assertThat(nachzueglerEinladungImpfeinverstaendnis.getBemerkungen()).contains(titleAnlassNichtTeilgenommen);
     }
@@ -1158,6 +1201,7 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    @SuppressWarnings("java:S5961")
     void removeDossierFromAnlass_withUntersuchung_should_delete_everything() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData();
@@ -1314,7 +1358,7 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void untersuchungAbschliessen_empty_untersuchung() {
+    void untersuchungAbschliessen_empty_untersuchung_BS() {
         // ARRANGE
         Benutzer mpa = fixtureService.createBenutzerFuerZentraleOrganisation();
         Anlass anlass = fixtureService.createAnlass(mpa);
@@ -1349,6 +1393,79 @@ class EinladungResourceITest extends AbstractITest {
         UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchungAbgeschlossen.getUntersuchungHoerenAudiogramm();
         assertThat(hoerenAudiogramm).isNotNull();
         assertThat(hoerenAudiogramm.getAudiogrammBeurteilung()).isNotNull();
+        assertThat(hoerenAudiogramm.getAudiogrammBeurteilung()
+            .getEnumValues(AudiogrammBeurteilung.class)).containsExactly(AudiogrammBeurteilung.NICHT_GEPRUEFT);
+        UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchungAbgeschlossen.getUntersuchungHoerenOtoskopie();
+        assertThat(hoerenOtoskopie).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieLinks()).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieLinks().getEnumValues(OtoskopieResultat.class)).containsExactly(
+            OtoskopieResultat.NICHT_GEPRUEFT);
+        // Sehen
+        UntersuchungSehenBeurteilung sehen = untersuchungAbgeschlossen.getUntersuchungSehenBeurteilung();
+        assertThat(sehen).isNotNull();
+        assertThat(sehen.getBrilleLinsen()).isNotNull();
+        assertThat(sehen.getBrilleLinsen()
+            .getEnumValue(BrilleLinsenResultat.class)).isEqualTo(BrilleLinsenResultat.NICHT_GEPRUEFT);
+        // GroesseGewicht
+        UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
+        assertThat(groesseGewicht).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue().getEnumValue(PerzentileGroesse.class)).isEqualTo(
+            PerzentileGroesse.NICHT_GEPRUEFT);
+        // Triage
+        UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
+        assertThat(triage).isNotNull();
+        // Arzt
+        UntersuchungArztBeurteilung arzt = untersuchungAbgeschlossen.getUntersuchungArztBeurteilung();
+        assertThat(arzt).isNotNull();
+        assertThat(arzt.getBewegungsapparat()).containsExactly(Bewegungsapparat.NICHT_GEPRUEFT);
+        // Massnahmen
+        UntersuchungMassnahmen massnahmen = untersuchungAbgeschlossen.getUntersuchungMassnahmen();
+        assertThat(massnahmen).isNotNull();
+        // Abschluss
+        UntersuchungAbschluss abschluss = untersuchungAbgeschlossen.getUntersuchungAbschluss();
+        assertThat(abschluss).isNotNull();
+    }
+
+    @Test
+    @TestAsAdminBE
+    void untersuchungAbschliessen_empty_untersuchung_BE() {
+        // ARRANGE
+        Benutzer benutzer = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        Anlass anlass = fixtureService.createAnlass(AnlassTyp.KINDERGARTEN, benutzer);
+        final Dossier dossier = fixtureService.createDossier(benutzer);
+        Einladung einladung = einladungService.persist(
+            EinladungBuilder.create(builder -> builder
+                .withAnlass(anlass)
+                .withDossier(dossier))
+        );
+        // ACT
+        api.einladungResourceUntersuchungAbschliessen()
+            .anlassIdPath(anlass.getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+        // ASSERT
+        Untersuchung untersuchungAbgeschlossen = fixtureService.getUntersuchungWithLoadedData(einladung.getId());
+        Einladung einladungAbgeschlossen = untersuchungAbgeschlossen.getEinladungRequired();
+        assertThat(einladungAbgeschlossen.getNaechsteStation()).isEqualTo(NaechsteStation.FERTIG);
+        assertThat(einladungAbgeschlossen.getNaechsteStationSeit()).isNotNull();
+        // Durchfuehrung
+        UntersuchungDurchfuehrung durchfuehrung = untersuchungAbgeschlossen.getUntersuchungDurchfuehrung();
+        assertThat(durchfuehrung).isNotNull();
+        assertThat(durchfuehrung.getArzt()).isNotNull().isEqualTo(einladung.getAnlass().getArzt());
+        // Impfen
+        UntersuchungImpfungen impfungen = untersuchungAbgeschlossen.getUntersuchungImpfungen();
+        assertThat(impfungen).isNotNull();
+        assertThat(impfungen.getUntersuchungImpfungenNurUnvollstaendige()).isNotNull();
+        assertThat(impfungen.getUntersuchungImpfungenNurUnvollstaendige().getImpfausweisVollstaendig())
+            .isEqualTo(ImpfausweisVollstaendig.KEINE_ANGABE);
+        // Hoeren
+        UntersuchungHoerenAudiogramm hoerenAudiogramm = untersuchungAbgeschlossen.getUntersuchungHoerenAudiogramm();
+        assertThat(hoerenAudiogramm).isNotNull();
+        assertThat(hoerenAudiogramm.getAudiogrammBeurteilung()).isNotNull();
         assertThat(hoerenAudiogramm.getAudiogrammBeurteilung().getEnumValues(AudiogrammBeurteilung.class)).containsExactly(AudiogrammBeurteilung.NICHT_GEPRUEFT);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchungAbgeschlossen.getUntersuchungHoerenOtoskopie();
         assertThat(hoerenOtoskopie).isNotNull();
@@ -1362,8 +1479,8 @@ class EinladungResourceITest extends AbstractITest {
         // GroesseGewicht
         UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
         assertThat(groesseGewicht).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile()).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile().getEnumValue(PerzentileGroesse.class)).isEqualTo(PerzentileGroesse.NICHT_GEPRUEFT);
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue().getEnumValue(PerzentileGroesse.class)).isEqualTo(PerzentileGroesse.NICHT_GEPRUEFT);
         // Triage
         UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
         assertThat(triage).isNotNull();
@@ -1381,7 +1498,7 @@ class EinladungResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void untersuchungAbschliessen_filled_untersuchung() {
+    void untersuchungAbschliessen_filled_untersuchungBS() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData();
         // ACT
@@ -1410,6 +1527,80 @@ class EinladungResourceITest extends AbstractITest {
         UntersuchungHoerenAudiogramm hoeren = untersuchungAbgeschlossen.getUntersuchungHoerenAudiogramm();
         assertThat(hoeren).isNotNull();
         assertThat(hoeren.getAudiogrammBeurteilung()).isNotNull();
+        assertThat(hoeren.getAudiogrammBeurteilung().getEnumValues(AudiogrammBeurteilung.class)).containsExactly(
+            AudiogrammBeurteilung.NORMAL);
+        UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchungAbgeschlossen.getUntersuchungHoerenOtoskopie();
+        assertThat(hoerenOtoskopie).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieLinks()).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieRechts()).isNotNull();
+        assertThat(hoerenOtoskopie.getOtoskopieLinks().getEnumValues(OtoskopieResultat.class)).containsExactly(
+            OtoskopieResultat.NICHT_EINSEHBAR);
+        assertThat(hoerenOtoskopie.getOtoskopieRechts().getEnumValues(OtoskopieResultat.class)).containsExactly(
+            OtoskopieResultat.NORMAL);
+        // Sehen
+        UntersuchungSehenBeurteilung sehen = untersuchungAbgeschlossen.getUntersuchungSehenBeurteilung();
+        assertThat(sehen).isNotNull();
+        assertThat(sehen.getBrilleLinsen()).isNotNull();
+        assertThat(sehen.getBrilleLinsen()
+            .getEnumValue(BrilleLinsenResultat.class)).isEqualTo(BrilleLinsenResultat.OHNE_KEINE);
+        // GroesseGewicht
+        UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
+        assertThat(groesseGewicht).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue().getEnumValue(PerzentileGroesse.class)).isEqualTo(
+            PerzentileGroesse.NORMAL);
+        // Triage
+        UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
+        assertThat(triage).isNotNull();
+        // Arzt
+        UntersuchungArztBeurteilung arzt = untersuchungAbgeschlossen.getUntersuchungArztBeurteilung();
+        assertThat(arzt).isNotNull();
+        assertThat(arzt.getBewegungsapparat()).containsExactlyInAnyOrder(
+            Bewegungsapparat.SKOLIOSE,
+            Bewegungsapparat.FUSSFEHLSTELLUNG);
+        // Massnahmen
+        UntersuchungMassnahmen massnahmen = untersuchungAbgeschlossen.getUntersuchungMassnahmen();
+        assertThat(massnahmen).isNotNull();
+    }
+
+    @Test
+    @TestAsSupportBE
+    @SuppressWarnings("java:S5961")
+    void untersuchungAbschliessen_filled_untersuchung_BE() {
+        // ARRANGE
+        Benutzer benutzer = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithCompleteData(benutzer);
+        // ACT
+        api.einladungResourceUntersuchungAbschliessen()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.NO_CONTENT.getStatusCode());
+        // ASSERT
+        Untersuchung untersuchungAbgeschlossen =
+            fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
+        Einladung einladungAbgeschlossen = untersuchungAbgeschlossen.getEinladungRequired();
+        assertThat(einladungAbgeschlossen.getNaechsteStation()).isEqualTo(NaechsteStation.FERTIG);
+        assertThat(einladungAbgeschlossen.getNaechsteStationSeit()).isNotNull();
+        // Durchfuehrung
+        UntersuchungDurchfuehrung durchfuehrung = untersuchungAbgeschlossen.getUntersuchungDurchfuehrung();
+        assertThat(durchfuehrung).isNotNull();
+        assertThat(durchfuehrung.getArzt()).isNotNull();
+        assertThat(durchfuehrung.getMpa()).isNotNull();
+        // Impfen
+        UntersuchungImpfungen impfungen = untersuchungAbgeschlossen.getUntersuchungImpfungen();
+        assertThat(impfungen).isNotNull();
+        assertThat(impfungen.getUntersuchungImpfungenNurUnvollstaendige()).isNotNull();
+        assertThat(impfungen.getUntersuchungImpfungenNurUnvollstaendige().getImpfausweisVollstaendig())
+            .isEqualTo(ImpfausweisVollstaendig.NEIN);
+        assertThat(impfungen.getUntersuchungImpfungenNurUnvollstaendige().getImpfausweisGrundUnvollstaendig())
+            .isEqualTo(ImpfausweisGrundUnvollstaendig.IMPFUNG_AUFGESCHOBEN);
+        // Hoeren
+        UntersuchungHoerenAudiogramm hoeren = untersuchungAbgeschlossen.getUntersuchungHoerenAudiogramm();
+        assertThat(hoeren).isNotNull();
+        assertThat(hoeren.getAudiogrammBeurteilung()).isNotNull();
         assertThat(hoeren.getAudiogrammBeurteilung().getEnumValues(AudiogrammBeurteilung.class)).containsExactly(AudiogrammBeurteilung.NORMAL);
         UntersuchungHoerenOtoskopie hoerenOtoskopie = untersuchungAbgeschlossen.getUntersuchungHoerenOtoskopie();
         assertThat(hoerenOtoskopie).isNotNull();
@@ -1425,8 +1616,8 @@ class EinladungResourceITest extends AbstractITest {
         // GroesseGewicht
         UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
         assertThat(groesseGewicht).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile()).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile().getEnumValue(PerzentileGroesse.class)).isEqualTo(PerzentileGroesse.NORMAL);
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue().getEnumValue(PerzentileGroesse.class)).isEqualTo(PerzentileGroesse.NORMAL);
         // Triage
         UntersuchungTriage triage = untersuchungAbgeschlossen.getUntersuchungTriage();
         assertThat(triage).isNotNull();

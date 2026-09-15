@@ -17,21 +17,18 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { BackendEntityId } from '@dvb/data-access-types';
+import { HelloDataResourceExportSchulen200Response } from '../model/hello-data-resource-export-schulen200-response';
+import { HelloDataSchulenEnvelopeJson } from '../model/hello-data-schulen-envelope-json';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 
 
-export interface PreviewResourceServiceGetPreviewRequestParams {
-    fileDataId: BackendEntityId;
-}
-
 
 @Injectable({
   providedIn: 'root'
 })
-export class PreviewResourceService {
+export class HelloDataService {
 
     protected basePath = '';
     public defaultHeaders = new HttpHeaders();
@@ -93,19 +90,14 @@ export class PreviewResourceService {
     }
 
     /**
-     * Get Preview
-     * @param requestParameters
+     * Export Schulen
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getPreview$(requestParameters?: PreviewResourceServiceGetPreviewRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public getPreview$(requestParameters?: PreviewResourceServiceGetPreviewRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public getPreview$(requestParameters?: PreviewResourceServiceGetPreviewRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public getPreview$(requestParameters?: PreviewResourceServiceGetPreviewRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'image/png', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const fileDataId = requestParameters?.fileDataId;
-        if (fileDataId === null || fileDataId === undefined) {
-            throw new Error('Required parameter fileDataId was null or undefined when calling getPreview.');
-        }
+    public exportSchulen$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/x-ndjson', context?: HttpContext, transferCache?: boolean}): Observable<HelloDataResourceExportSchulen200Response>;
+    public exportSchulen$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/x-ndjson', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<HelloDataResourceExportSchulen200Response>>;
+    public exportSchulen$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/x-ndjson', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<HelloDataResourceExportSchulen200Response>>;
+    public exportSchulen$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/x-ndjson', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -119,7 +111,7 @@ export class PreviewResourceService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'image/png'
+                'application/x-ndjson'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -149,8 +141,74 @@ export class PreviewResourceService {
             }
         }
 
-        let localVarPath = `/api/preview/files/${this.configuration.encodeParam({name: "fileDataId", value: fileDataId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}`;
-        return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/hellodata/v1/ndjson/schulen`;
+        return this.httpClient.request<HelloDataResourceExportSchulen200Response>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Export Schulen As Json
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public exportSchulenAsJson$(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HelloDataSchulenEnvelopeJson>;
+    public exportSchulenAsJson$(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<HelloDataSchulenEnvelopeJson>>;
+    public exportSchulenAsJson$(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<HelloDataSchulenEnvelopeJson>>;
+    public exportSchulenAsJson$(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/hellodata/v1/json/schulen`;
+        return this.httpClient.request<HelloDataSchulenEnvelopeJson>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

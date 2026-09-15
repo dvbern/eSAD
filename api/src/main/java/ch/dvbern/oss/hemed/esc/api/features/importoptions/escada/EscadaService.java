@@ -234,10 +234,24 @@ public class EscadaService {
 
     @NonNull
     private Set<SchuleExternal> extractUniqueExternalSchulen(@NonNull List<EscadaCsvDTO> escadaCsvDTOS) {
-        return escadaCsvDTOS.stream()
-            .map(EscadaCSVMapperService::toExternalSchule)
+        // Aggregate ignored-data warnings instead of logging one line per CSV row: with large imports
+        // (tens of thousands of rows) per-row logging can flood the log output (see log volume incident).
+        Map<String, Integer> ignoredSchuleDataCounts = new HashMap<>();
+        Set<SchuleExternal> result = escadaCsvDTOS.stream()
+            .map(dto -> EscadaCSVMapperService.toExternalSchule(
+                dto,
+                (key, value) -> ignoredSchuleDataCounts.merge(key + "='" + value + "'", 1, Integer::sum)))
             .flatMap(Optional::stream) // unwrap the optional and only continue with the present values
             .collect(toUniqueExternalIdSet());
+
+        for (Entry<String, Integer> ignoredData : ignoredSchuleDataCounts.entrySet()) {
+            LOG.warn(
+                "All Schule data SHOULD be null if no id is present. Field {} but no id was present "
+                    + "in {} row(s), ignoring item(s)",
+                ignoredData.getKey(),
+                ignoredData.getValue());
+        }
+        return result;
     }
 
     @NonNull

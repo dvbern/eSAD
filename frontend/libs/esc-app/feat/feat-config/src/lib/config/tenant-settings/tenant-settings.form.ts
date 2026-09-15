@@ -25,6 +25,7 @@ import {
   LandingPageOption,
   TenantSettingSaveJson
 } from '@dvb/data-access-backend';
+import {ISODateString} from '@dvb/data-access-types';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
 import {ensureProps, requireFilledIn, requireValue, trimToUndefined} from '@dvb/util-shared';
 
@@ -114,6 +115,10 @@ function makeForm(config: Config) {
       featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
       enabledForStage: fb.control<boolean>({value: false, disabled: true}),
     }),
+    tenantHeaderInExportsFeature: fb.group({
+      featureEnabled: fb.control<FeatureEnabledSetting>(FeatureEnabledSetting.DISABLED, [Validators.required]),
+      enabledForStage: fb.control<boolean>({value: false, disabled: true}),
+    }),
   });
 
   // ZentraleOrganisation kann nicht verändert werden
@@ -127,6 +132,7 @@ function makeForm(config: Config) {
     supportEmail: fb.control<string>('', [Validators.required, AppValidators.emailValidator()]),
     agbResponsability: fb.control<AgbResponsability>(AgbResponsability.AGB_MANAGED_BY_TENANT, Validators.required),
     defaultLandingPage: fb.control<LandingPageOption>(LandingPageOption.DASHBOARD, Validators.required),
+    gueltigAbWachstumskurvePch: fb.control<ISODateString | undefined>(undefined, Validators.required),
     einladungStatusValues: fb.control<EinladungStatus[]>([], Validators.required),
     features: featuresGroup,
   });
@@ -222,9 +228,14 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
         anlassTitleRequiredFeature: {
           featureEnabled: value.features.anlassTitleRequiredFeature.featureEnabled,
           enabledForStage: value.features.anlassTitleRequiredFeature.enabledForStage,
+        },
+        tenantHeaderInExportsFeature: {
+          featureEnabled: value.features.tenantHeaderInExportsFeature.featureEnabled,
+          enabledForStage: value.features.tenantHeaderInExportsFeature.enabledForStage,
         }
       },
       einladungStatusValues: value.einladungStatusValues,
+      gueltigAbWachstumskurvePch: requireValue(value.gueltigAbWachstumskurvePch),
       customerAdminEmails: this.cleanCustomerAdminEmails(requireFilledIn(trimToUndefined(value.customerAdminEmails))),
       supportEmail: requireFilledIn(trimToUndefined(value.supportEmail)),
     });

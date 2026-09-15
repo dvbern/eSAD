@@ -8,6 +8,7 @@ import {
   UntersuchungSehenBeurteilungSaveJson,
   UntersuchungSehenMassnahmenJson,
   UntersuchungSehenService,
+  UntersuchungSehenServiceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigRequestParams,
   UntersuchungSehenServiceGetUntersuchungSehenBemerkungFragebogenRequestParams,
   UntersuchungSehenServiceGetUntersuchungSehenBeurteilungRequestParams,
   UntersuchungSehenServiceSaveUntersuchungSehenBemerkungFragebogenRequestParams,
@@ -16,23 +17,20 @@ import {
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
-import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
+import {patchState, signalStore, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
+import {withDefaultValues} from '../default-values.util';
 import {UntersuchungStore} from '../untersuchung.store';
 
 type UntersuchungSehenState = {
   sehenBeurteilung: UntersuchungSehenBeurteilungJson | undefined;
-  defaultSehenBeurteilungInitial: UntersuchungSehenBeurteilungSaveJson | undefined;
-  defaultSehenBeurteilungToApply: UntersuchungSehenBeurteilungSaveJson | undefined;
   sehenMassnahmen: UntersuchungSehenMassnahmenJson | undefined;
   sehenBemerkungFragebogen: UntersuchungSehenBemerkungFragebogenJson | undefined;
 };
 
 const initialState: UntersuchungSehenState = {
   sehenBeurteilung: undefined,
-  defaultSehenBeurteilungInitial: undefined,
-  defaultSehenBeurteilungToApply: undefined,
   sehenMassnahmen: undefined,
   sehenBemerkungFragebogen: undefined,
 };
@@ -41,26 +39,9 @@ const initialState: UntersuchungSehenState = {
 export class UntersuchungSehenStore extends signalStore(
   {protectedState: false},
   withState(initialState),
-  withMethods((store) => ({
-    defaultSehenToApplyWithCorrectedVersion(): UntersuchungSehenBeurteilungSaveJson | undefined {
-      // Ensure that the version is set correctly when applying the default Sehen
-      // noinspection UnnecessaryLocalVariableJS
-      const initialDefault = store.defaultSehenBeurteilungInitial();
-      if (!initialDefault) {
-        return undefined;
-      }
-      return  {
-        ...initialDefault,
-        version: store.sehenBeurteilung()?.data?.version ?? -1
-      } as UntersuchungSehenBeurteilungSaveJson;
-    },
-    applyDefaultSehenBeurteilung(): void {
-      patchState(store, {defaultSehenBeurteilungToApply: this.defaultSehenToApplyWithCorrectedVersion()});
-    },
-    resetApplyDefaultSehenBeurteilung(): void {
-      patchState(store, {defaultSehenBeurteilungToApply: undefined});
-    },
-  })),
+  withDefaultValues<UntersuchungSehenBeurteilungSaveJson, UntersuchungSehenBeurteilungJson, UntersuchungSehenState>({
+    getCurrentEntity: (store) => store.sehenBeurteilung(),
+  }),
 ) {
   readonly #sehenService = inject(UntersuchungSehenService);
   readonly #massnahmenService = inject(UntersuchungMassnahmenService);
@@ -85,7 +66,7 @@ export class UntersuchungSehenStore extends signalStore(
     ),
   );
 
-  loadDefaultSehenBeurteilung = rxMethod<UntersuchungMassnahmenServiceGetUntersuchungMassnahmenSehenRequestParams>(
+  loadDefaultSehenBeurteilung = rxMethod<UntersuchungSehenServiceGetDefaultUntersuchungSehenBeurteilungForAnlassConfigRequestParams>(
     pipe(
       switchMap(params => this.defaultLoader.tapLoading$(this.#sehenService.getDefaultUntersuchungSehenBeurteilungForAnlassConfig$(
           {
@@ -94,7 +75,7 @@ export class UntersuchungSehenStore extends signalStore(
           }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
-        next: data => patchState(this, {defaultSehenBeurteilungInitial: data}),
+        next: data => patchState(this, {defaultInitial: data}),
         error: console.error,
       }),
     ),

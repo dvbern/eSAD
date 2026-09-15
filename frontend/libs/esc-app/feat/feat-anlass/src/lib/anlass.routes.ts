@@ -116,8 +116,6 @@ import {
 import {
   UntersuchungSignaturStore
 } from "./anlass/untersuchung/untersuchung-abschluss-page/untersuchung-signatur/untersuchung-signatur.store";
-import {toObservable} from "@angular/core/rxjs-interop";
-import {filter, take} from "rxjs";
 
 export const anlassRoutes: Route[] = [
   {
@@ -493,6 +491,7 @@ export const anlassRoutes: Route[] = [
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
                         inject(UntersuchungSpracheStore).loadUntersuchungSprache(params);
+                        inject(UntersuchungSpracheStore).loadUntersuchungSpracheDefaults(params);
                       },
                     },
                     canActivate: [
@@ -510,8 +509,8 @@ export const anlassRoutes: Route[] = [
                           einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
                           anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
                         };
-                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore)
-                          .loadUntersuchungSchulrelevanteBeeintraechtigung(params);
+                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore).loadUntersuchungSchulrelevanteBeeintraechtigung(params);
+                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore).loadUntersuchungSchulrelevanteBeeintraechtigungDefaults(params);
                       },
                     },
                     canActivate: [
@@ -525,14 +524,12 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungBewegungsapparatComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
-                        const currentAnlassId = requireValidBackendEntityId(
-                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
-                        );
-                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
+                        const params = {
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
+                        };
+                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat(params);
+                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparatDefaults(params);
                       },
                     },
                     canActivate: [
@@ -592,67 +589,24 @@ export const anlassRoutes: Route[] = [
                     component: UntersuchungMassnahmenComponent,
                     resolve: {
                       _store: (route: ActivatedRouteSnapshot) => {
-                        const currentEinladungId = toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id']));
-                        const currentAnlassId = requireValidBackendEntityId(
-                          route.parent?.parent?.parent?.paramMap.get('anlassId'),
-                        );
-                        inject(UntersuchungMassnahmenStore).loadMassnahmen({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungVorabklaerungenStore).loadUntersuchungVorabklaerungen({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungImpfungenStore).loadUntersuchungImpfungenData({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSehenStore).loadSehenBeurteilung({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSehenStore).loadSehenMassnahmen({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungHoerenAudiogrammStore).loadHoerenAudiogramm({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungHoerenOtoskopieStore).loadHoerenOtoskopie({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungGroesseGewichtStore).loadGroesseGewicht({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungArztStore).loadUntersuchungArzt({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungArztStore).loadUntersuchungArztBemerkung({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSpracheStore).loadUntersuchungSprache({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat({
-                          anlassId: currentAnlassId,
-                          einladungId: currentEinladungId,
-                        });
-                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore)
-                          .loadUntersuchungSchulrelevanteBeeintraechtigung({
-                            anlassId: currentAnlassId,
-                            einladungId: currentEinladungId,
-                          });
+                        const params = {
+                          einladungId: toEinladungBackendEntityIdWithClass(requireValidBackendEntityId(route.params['id'])),
+                          anlassId: requireValidBackendEntityId(route.parent?.parent?.parent?.paramMap.get('anlassId')),
+                        };
+                        inject(UntersuchungMassnahmenStore).loadMassnahmen(params);
+                        inject(UntersuchungVorabklaerungenStore).loadUntersuchungVorabklaerungen(params);
+                        inject(UntersuchungImpfungenStore).loadUntersuchungImpfungenData(params);
+                        inject(UntersuchungSehenStore).loadSehenBeurteilung(params);
+                        inject(UntersuchungSehenStore).loadSehenMassnahmen(params);
+                        inject(UntersuchungSehenStore).loadSehenBemerkungFragebogen(params);
+                        inject(UntersuchungHoerenAudiogrammStore).loadHoerenAudiogramm(params);
+                        inject(UntersuchungHoerenOtoskopieStore).loadHoerenOtoskopie(params);
+                        inject(UntersuchungGroesseGewichtStore).loadGroesseGewicht(params);
+                        inject(UntersuchungArztStore).loadUntersuchungArzt(params);
+                        inject(UntersuchungArztStore).loadUntersuchungArztBemerkung(params);
+                        inject(UntersuchungSpracheStore).loadUntersuchungSprache(params);
+                        inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat(params);
+                        inject(UntersuchungSchulrelevanteBeeintraechtigungStore).loadUntersuchungSchulrelevanteBeeintraechtigung(params);
                       },
                     },
                     canActivate: [

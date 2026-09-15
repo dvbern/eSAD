@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {AgbResponsability, AppLanguages, EinladungStatus, FeatureEnabledSetting, LandingPageOption} from '@dvb/data-access-backend';
@@ -40,6 +41,7 @@ import { TenantSettingsForm } from './tenant-settings.form';
     HeadingDirective,
     TranslatedEnumViewValuePipe,
     TextInputDirective,
+    DatePipe,
   ],
   templateUrl: './tenant-settings-page.component.html',
   styles: ':host { display:block;}',

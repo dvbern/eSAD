@@ -1,5 +1,13 @@
 package ch.dvbern.dvbstarter.infrastructure.fileio;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
@@ -10,19 +18,13 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import static ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst.ZONE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -174,5 +176,70 @@ class FileNameUtilTest {
             .isEqualTo("06-05-2025_--etc-passwd");
         assertThat(FileNameUtil.basicFolderName(today, "Schuluntersuchung 2024/2025", 0))
             .isEqualTo("06-05-2025_Schuluntersuchung-2024-2025");
+    }
+
+    /**
+     * Verifies {@link FileNameUtil#uniqueEntryName(Set, String)}.
+     * <p>
+     * The {@code alreadyUsed} column holds the entry names that are already present in the set
+     * (pipe-separated, empty means the set starts out empty). {@code fileName} is the name we want
+     * to add and {@code expected} is the unique name that must be returned.
+     */
+    @ParameterizedTest
+    @CsvSource(delimiter = ';', value = {
+        // empty set -> name is returned unchanged
+        "; report.pdf; report.pdf",
+        // single collision -> counter inserted before the extension
+        "report.pdf; report.pdf; report_1.pdf",
+        // two collisions -> counter keeps counting up
+        "report.pdf|report_1.pdf; report.pdf; report_2.pdf",
+        // collision on a name without extension -> counter appended at the end
+        "report; report; report_1",
+        // dotfile (leading dot, no real extension) -> counter appended at the end
+        ".gitignore; .gitignore; .gitignore_1",
+        // multiple dots -> counter inserted before the last dot
+        "archive.tar.gz; archive.tar.gz; archive.tar_1.gz",
+        // no collision even though other names exist -> returned unchanged
+        "a.pdf|b.pdf; c.pdf; c.pdf",
+        // zip path -> only the file segment gets the counter, the folder must stay untouched
+        "Anhaenge/notiz/scan.pdf; Anhaenge/notiz/scan.pdf; Anhaenge/notiz/scan_1.pdf",
+        // dot in a folder name, no extension on the file -> counter appended, folder untouched
+        "Anhaenge/v1.2/scan; Anhaenge/v1.2/scan; Anhaenge/v1.2/scan_1",
+        // same file name in two folders is not a collision at all
+        "Anhaenge/a/scan.pdf; Anhaenge/b/scan.pdf; Anhaenge/b/scan.pdf"
+    })
+    void testUniqueEntryName(String alreadyUsed, String fileName, String expected) {
+        // ARRANGE
+        Set<String> usedEntryNames = new LinkedHashSet<>();
+        if (!StringUtils.isEmpty(alreadyUsed)) {
+            for (String used : alreadyUsed.split("\\|")) {
+                usedEntryNames.add(used.trim());
+            }
+        }
+
+        // ACT
+        String result = FileNameUtil.uniqueEntryName(usedEntryNames, fileName.trim());
+
+        // ASSERT
+        assertThat(result).isEqualTo(expected.trim());
+        // the returned name must always end up registered in the set
+        assertThat(usedEntryNames).contains(expected.trim());
+    }
+
+    @Test
+    void uniqueEntryName_generatesDistinctNamesForRepeatedCalls() {
+        // ARRANGE
+        Set<String> usedEntryNames = new LinkedHashSet<>();
+
+        // ACT
+        String first = FileNameUtil.uniqueEntryName(usedEntryNames, "report.pdf");
+        String second = FileNameUtil.uniqueEntryName(usedEntryNames, "report.pdf");
+        String third = FileNameUtil.uniqueEntryName(usedEntryNames, "report.pdf");
+
+        // ASSERT
+        assertThat(first).isEqualTo("report.pdf");
+        assertThat(second).isEqualTo("report_1.pdf");
+        assertThat(third).isEqualTo("report_2.pdf");
+        assertThat(usedEntryNames).containsExactlyInAnyOrder("report.pdf", "report_1.pdf", "report_2.pdf");
     }
 }

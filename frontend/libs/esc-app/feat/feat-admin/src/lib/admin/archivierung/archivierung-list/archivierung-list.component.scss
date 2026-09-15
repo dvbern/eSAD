@@ -1,0 +1,12 @@
+@use '../../../../../../../../shared/ui/ui-components/src/styles/core/spacing';
+
+.archiv-bulk-action-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: spacing.$card-inner;
+  padding-right: spacing.$card-inner;
+
+  svui-icon-with-tooltip {
+    --svui-icon-size: 1.5rem
+  }
+}

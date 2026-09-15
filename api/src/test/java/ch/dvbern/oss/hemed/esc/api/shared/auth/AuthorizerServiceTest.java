@@ -2,10 +2,16 @@ package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.Archivdokument;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
+import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivierungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
@@ -13,6 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.ArchivdokumentBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsEmpfangBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsLausbeauftragteWIN;
@@ -21,6 +28,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsPfpWIN;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
+
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
@@ -39,6 +47,7 @@ class AuthorizerServiceTest {
     private final AuthorizerService authorizerService;
     private final FixtureService fixtureService;
     private final OrganisationService organisationService;
+    private final ArchivdokumentService archivdokumentService;
 
     private MockedStatic<FachRolleUtil> useWinBerechtigungenForBs = null;
 
@@ -282,5 +291,42 @@ class AuthorizerServiceTest {
         // ASSERT
         assertThat(allowedForMyOrg).isTrue();
         assertThat(allowedForOtherOrg).isFalse();
+    }
+
+    @Test
+    @TestAsSupportBS
+    void requireArchivBulkDownloadAuthorization_ownDokument_SUPPORT_success() {
+        // ARRANGE: current user (SUPPORT, has ARCHIVIERUNG) is the owner of the Archivdokument
+        Benutzer currentBenutzer = fixtureService.readBenutzerWithBerechtigungen(
+            ID.of(UUID.fromString(TestAsSupportBS.BENUTZER_ID), Benutzer.class));
+        Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
+            .withOwner(currentBenutzer)
+            .withStatus(ArchivierungStatus.OFFEN)
+            .withFiledata(fixtureService.createFileData()));
+        archivdokumentService.persist(archivdokument);
+
+        // ACT / ASSERT
+        assertThatCode(() -> authorizerService.requireArchivBulkDownloadAuthorization(archivdokument.getId()))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @TestAsSupportBS
+    void requireArchivBulkDownloadAuthorization_foreignDokument_SUPPORT_throws() {
+        // ARRANGE: the Archivdokument belongs to another user, even though the current user is SUPPORT.
+        // Unlike the single download (requireArchivDownloadAuthorization), SUPPORT may not bulk download
+        // Archivdokumente owned by somebody else.
+        Benutzer otherBenutzer = fixtureService.createBenutzerFuerZentraleOrganisation();
+        Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
+            .withOwner(otherBenutzer)
+            .withStatus(ArchivierungStatus.OFFEN)
+            .withFiledata(fixtureService.createFileData()));
+        archivdokumentService.persist(archivdokument);
+
+        // ACT / ASSERT
+        var id = archivdokument.getId();
+        assertThrows(
+            AppFailureException.class,
+            () -> authorizerService.requireArchivBulkDownloadAuthorization(id));
     }
 }

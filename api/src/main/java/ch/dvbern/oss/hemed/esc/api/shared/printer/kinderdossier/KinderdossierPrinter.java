@@ -29,7 +29,7 @@ public final class KinderdossierPrinter {
 
         Kind kind = dto.getKind();
         Document document = basePrinter.getDocument(outputStream);
-        basePrinter.addHeader(document);
+        basePrinter.addHeader(document, tenantSettingsService.isTenantHeaderInExportsEnabled());
         basePrinter.addH1Title(
             I18nMessage.of(
                 "printer.kinderdossier.title",
@@ -49,7 +49,13 @@ public final class KinderdossierPrinter {
                 PrintUtil.trimToPlaceholder(dto.getNow())),
             document);
 
-        KinderdossierStammdatenPrinter.addStammdaten(kind, dto.getKontaktPersonKindList(), basePrinter, document, tenantSettingsService, configService);
+        KinderdossierStammdatenPrinter.addStammdaten(
+            kind,
+            dto.getKontaktPersonKindList(),
+            basePrinter,
+            document,
+            tenantSettingsService,
+            configService);
 
         switch (dto.getVariant()) {
         case NOTIZEN -> KinderdossierNotizenPrinter.addAllNotiz(dto.getNotizenList(), basePrinter, document);

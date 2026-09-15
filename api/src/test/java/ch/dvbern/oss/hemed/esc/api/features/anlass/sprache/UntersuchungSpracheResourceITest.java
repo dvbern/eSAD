@@ -4,6 +4,8 @@ import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Nachsprechen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaendnis;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
@@ -135,6 +137,34 @@ class UntersuchungSpracheResourceITest extends AbstractITest {
         assertThat(result.getId()).isNotNull();
         assertThat(result.getData().getBemerkungen()).isNotNull().isEqualTo("Test updateUntersuchungSprache");
         assertThat(result.getData().getNachsprechen().getValue()).contains(Nachsprechen.NICHT_BESTANDEN.name());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getDefaultUntersuchungSprache() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+
+        // ACT
+        UntersuchungSpracheSaveJsonSpec result = api.untersuchungSpracheResourceGetDefaultUntersuchungSprache()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungSpracheSaveJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getNachsprechen()).isNotNull();
+        assertThat(result.getNachsprechen().getValue()).contains(Nachsprechen.BESTANDEN.name());
+        assertThat(result.getWortschatz()).isNotNull();
+        assertThat(result.getWortschatz().getValue()).contains(Wortschatz.BESTANDEN.name());
+        assertThat(result.getSprachverstaendnis()).isNotNull();
+        assertThat(result.getSprachverstaendnis().getValue()).contains(Sprachverstaendnis.BESTANDEN.name());
+        assertThat(result.getBemerkungen()).isNull();
     }
 
     @Test

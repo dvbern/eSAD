@@ -56,6 +56,18 @@ public class UntersuchungSpracheResource {
                 List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)));
     }
 
+    @GET
+    @Path("/default")
+    @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)
+    @NonNull
+    public UntersuchungSpracheSaveJson getDefaultUntersuchungSprache(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
+    ) {
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSpracheMapper.getDefaultUntersuchungSprache();
+    }
+
     @PUT
     @NonNull
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)

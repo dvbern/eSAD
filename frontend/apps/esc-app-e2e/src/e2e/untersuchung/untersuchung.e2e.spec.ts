@@ -1,14 +1,14 @@
-import { expect, Page } from '@playwright/test';
-import { test } from '../../fixtures/test.fixture';
-import { AnlassListPageObject } from '../anlass/page-objects/anlass-list.page-object';
-import { UntersuchungDatenPageObject } from './page-objects/untersuchung.page-object';
-import { format } from 'date-fns';
+import {expect, Page} from '@playwright/test';
+import {test} from '../../fixtures/test.fixture';
+import {AnlassListPageObject} from '../anlass/page-objects/anlass-list.page-object';
+import {UntersuchungDatenPageObject} from './page-objects/untersuchung.page-object';
+import {format} from 'date-fns';
 
 test.describe('SU durchführen', () => {
-  test.use({ storageState: './playwright/.auth/ESC_SUPPORT' });
-  test.describe.configure({ mode: 'serial' });
+  test.use({storageState: './playwright/.auth/ESC_SUPPORT'});
+  test.describe.configure({mode: 'serial'});
 
-  test('tab daten', async ({ page, testData }) => {
+  test('tab daten', async ({page, testData}) => {
     const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
     await openDossierTab(page, testData.anlass3.title);
@@ -50,31 +50,31 @@ test.describe('SU durchführen', () => {
   });
 
   test.describe('tab impfen', () => {
-    test.describe.configure({ mode: 'serial' });
+    test.describe.configure({mode: 'serial'});
 
-    test('Impfstatus', async ({ page, testData}) => {
+    test('Impfstatus', async ({page, testData}) => {
       const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
       await openDossierTab(page, testData.anlass3.title);
 
       await untersuchungDaten.isCurrentPage('daten');
-      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({ hasText: 'Impfungen' }).click();
+      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({hasText: 'Impfungen'}).click();
       await untersuchungDaten.isCurrentPage('impfungen');
 
-      await checkImpfRow(page, 'Diphtherie', { genuegend: true, amount: 1, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Tetanus', { genuegend: true, amount: 2, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Pertussis', { genuegend: true, amount: 3, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Poliomyelitis', { genuegend: true, amount: 4, date: new Date(2025, 11, 1) });
+      await checkImpfRow(page, 'Diphtherie', {genuegend: true, amount: 1, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Tetanus', {genuegend: true, amount: 2, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Pertussis', {genuegend: true, amount: 3, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Poliomyelitis', {genuegend: true, amount: 4, date: new Date(2025, 11, 1)});
 
-      await checkImpfRow(page, 'Hepatitis B', { empfehlung: true, amount: 5, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'HPV', { empfehlung: true, amount: 1, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Masern', { empfehlung: true, amount: 2, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Mumps', { empfehlung: true, amount: 3, date: new Date(2025, 11, 1) });
+      await checkImpfRow(page, 'Hepatitis B', {empfehlung: true, amount: 5, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'HPV', {empfehlung: true, amount: 1, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Masern', {empfehlung: true, amount: 2, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Mumps', {empfehlung: true, amount: 3, date: new Date(2025, 11, 1)});
 
-      await checkImpfRow(page, 'Röteln', { entscheid: true, amount: 4, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Varizellen', { entscheid: true, amount: 5, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Meningokokken ACWY', { entscheid: true, amount: 1, date: new Date(2025, 11, 1) });
-      await checkImpfRow(page, 'Meningokokken B', { entscheid: true, amount: 2, date: new Date(2025, 11, 1) });
+      await checkImpfRow(page, 'Röteln', {entscheid: true, amount: 4, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Varizellen', {entscheid: true, amount: 5, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Meningokokken ACWY', {entscheid: true, amount: 1, date: new Date(2025, 11, 1)});
+      await checkImpfRow(page, 'Meningokokken B', {entscheid: true, amount: 2, date: new Date(2025, 11, 1)});
 
       const [request] = await Promise.all([
         page.waitForRequest(req => req.url().includes('/untersuchung/impfungen/impfstatus') && req.method() === 'PUT'),
@@ -185,21 +185,21 @@ test.describe('SU durchführen', () => {
       );
     });
 
-    test('doppelkontrolle', async ({ page, browser, testData }) => {
+    test('doppelkontrolle', async ({page, browser, testData}) => {
       const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
       await openDossierTab(page, testData.anlass3.title);
 
       await untersuchungDaten.isCurrentPage('daten');
-      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({ hasText: 'Impfungen' }).click();
+      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({hasText: 'Impfungen'}).click();
 
       await untersuchungDaten.isCurrentPage('impfungen');
 
       await untersuchungDaten.elements.buttonVisieren().click();
       await expect(untersuchungDaten.elements.visumSelect().getFormField(page)).toBeVisible();
 
-    await untersuchungDaten.elements.visumSelect().setOption(page, 'Monika MPA');
-    await untersuchungDaten.elements.buttonVisieren().click();
+      await untersuchungDaten.elements.visumSelect().setOption(page, 'Monika MPA');
+      await untersuchungDaten.elements.buttonVisieren().click();
 
       const monikaContext = await browser.newContext({
         storageState: './playwright/.auth/ESC_MPA',
@@ -214,7 +214,7 @@ test.describe('SU durchführen', () => {
 
       await monikaUntersuchung.elements.buttonAufgabenNav().click();
 
-      const aufgabeRow = monikaPage.getByRole('row').filter({ hasNotText: 'Filter' }).filter({
+      const aufgabeRow = monikaPage.getByRole('row').filter({hasNotText: 'Filter'}).filter({
         hasText: new RegExp(`Doppelkontrolle Impfentscheid für Ammann Fridolin - 20\\d{2}/\\d{2} I IMPFTERMIN ${testData.anlass3.title}`),
       });
 
@@ -223,13 +223,13 @@ test.describe('SU durchführen', () => {
       await monikaContext.close();
     });
 
-    test('checkliste & impfliste', async ({ page, testData}) => {
+    test('checkliste & impfliste', async ({page, testData}) => {
       const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
       await openDossierTab(page, testData.anlass3.title);
 
       await untersuchungDaten.isCurrentPage('daten');
-      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({ hasText: 'Impfungen' }).click();
+      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({hasText: 'Impfungen'}).click();
 
       await untersuchungDaten.isCurrentPage('impfungen');
 
@@ -267,7 +267,7 @@ test.describe('SU durchführen', () => {
 
       expect(impfungPostData).toMatchObject({
         impfStatus: 'GEPLANT',
-        charge:  '900',
+        charge: '900',
         impfstoff: {
           data: {
             name: 'Bexsero',
@@ -285,13 +285,13 @@ test.describe('SU durchführen', () => {
       await expect(page.getByText("Die Daten zur 'Checkliste' wurden gespeichert")).toBeVisible();
     });
 
-    test('massnahmen', async ({ page, testData}) => {
+    test('massnahmen', async ({page, testData}) => {
       const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
       await openDossierTab(page, testData.anlass3.title);
 
       await untersuchungDaten.isCurrentPage('daten');
-      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({ hasText: 'Impfungen' }).click();
+      await untersuchungDaten.elements.untersuchungTabImpfungen().filter({hasText: 'Impfungen'}).click();
       await untersuchungDaten.isCurrentPage('impfungen');
 
       await untersuchungDaten.elements.informationElternSelect().setOption(page, 'Brief');
@@ -328,8 +328,8 @@ test.describe('SU durchführen', () => {
       const unsavedModal = page.locator('ngb-modal-window');
 
       // eslint-disable-next-line playwright/no-conditional-in-test
-      if (await unsavedModal.isVisible({ timeout: 1000 })) {
-        await unsavedModal.getByRole('button', { name: 'Seite verlassen' }).click();
+      if (await unsavedModal.isVisible({timeout: 1000})) {
+        await unsavedModal.getByRole('button', {name: 'Seite verlassen'}).click();
       }
 
       await untersuchungDaten.elements.buttonResetFilterAufgaben().click();
@@ -341,15 +341,14 @@ test.describe('SU durchführen', () => {
       ];
 
       for (const text of expectedRows) {
-        const row = page.getByRole('row').filter({ hasNotText: 'Filter' }).filter({ hasText: new RegExp(text) });
+        const row = page.getByRole('row').filter({hasNotText: 'Filter'}).filter({hasText: new RegExp(text)});
 
         await expect(row).toBeVisible();
       }
     });
   });
 
-
-  test('tab sehen', async ({ page, testData}) => {
+  test('tab sehen', async ({page, testData}) => {
     const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
     await openDossierTab(page, testData.anlass1.title);
@@ -357,7 +356,7 @@ test.describe('SU durchführen', () => {
     await untersuchungDaten.isCurrentPage('daten');
     await untersuchungDaten.elements.untersuchungTabSehen().click();
 
-    await untersuchungDaten.elements.untersuchungSehenDefaultWert().click({ timeout: 1000 });
+    await untersuchungDaten.elements.untersuchungSehenDefaultWert().click({timeout: 1000});
 
     await checkMultiSelect(page, 'Brille/Linsen', 'Nicht geprüft')
     await checkMultiSelect(page, 'Stereotest', 'Pathologisch')
@@ -393,17 +392,16 @@ test.describe('SU durchführen', () => {
     });
   });
 
-  test('tab hoeren', async ({ page, testData}) => {
+  test('tab hoeren', async ({page, testData}) => {
     const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
     await openDossierTab(page, testData.anlass1.title);
 
     await untersuchungDaten.isCurrentPage('daten');
-    await untersuchungDaten.elements.untersuchungTabHoeren().click({ timeout: 1000 });
+    await untersuchungDaten.elements.untersuchungTabHoeren().click({timeout: 1000});
 
     await untersuchungDaten.elements.untersuchungHoerenDefaultWert().click();
     await page.locator('label[for="audioaudiogramm.seite.rechtsdbHz6000DB30"]').click();
-
 
     await checkMultiSelect(page, 'Otoskopie rechts', 'Cerumen')
     await checkMultiSelect(page, 'Otoskopie rechts', 'Nicht einsehbar')
@@ -468,7 +466,7 @@ test.describe('SU durchführen', () => {
     });
   });
 
-  test('tab groesse & gewicht', async ({ page, testData}) => {
+  test('tab groesse & gewicht', async ({page, testData}) => {
     const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
     await openDossierTab(page, testData.anlass1.title);
@@ -476,7 +474,6 @@ test.describe('SU durchführen', () => {
     await untersuchungDaten.isCurrentPage('daten');
     await untersuchungDaten.elements.untersuchungTabGroesseGewicht().click();
     await untersuchungDaten.isCurrentPage('groessegewicht');
-
 
     await untersuchungDaten.elements.groesseInput().getInput(page).fill('120');
     await untersuchungDaten.elements.gewichtInput().getInput(page).fill('30');
@@ -500,15 +497,15 @@ test.describe('SU durchführen', () => {
     expect(postData).toMatchObject({
       groesse: '120',
       gewicht: '30',
-      groessePerzentile: 'NORMAL',
-      gewichtPerzentile: 'PERZENTILE_HOCH',
-      bmiPerzentile: 'PERZENTILE_HOCH',
+      groessePerzentileSingleValue: {value: ['NORMAL']},
+      gewichtPerzentileSingleValue: {value: ['PERZENTILE_HOCH']},
+      bmiPerzentileSingleValue: {value: ['PERZENTILE_HOCH']},
       version: expect.any(Number),
     });
 
   });
 
-  test('tab aerztliche untersuchung', async ({ page, testData}) => {
+  test('tab aerztliche untersuchung', async ({page, testData}) => {
     const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
     await openDossierTab(page, testData.anlass1.title);
@@ -609,7 +606,7 @@ test.describe('SU durchführen', () => {
     ];
 
     for (const text of expectedRows) {
-      const row = page.getByRole('row').filter({ hasNotText: 'Filter' }).filter({ hasText: new RegExp(text) });
+      const row = page.getByRole('row').filter({hasNotText: 'Filter'}).filter({hasText: new RegExp(text)});
       await expect(row).toBeVisible();
     }
 
@@ -621,7 +618,7 @@ async function openDossierTab(page: Page, anlass: string) {
 
   await anlassList.goto();
 
-  await anlassList.elements.linkAnlass().filter({ hasText: anlass }).first().click();
+  await anlassList.elements.linkAnlass().filter({hasText: anlass}).first().click();
 
   await anlassList.elements.invitedKinderCheckbox().click();
   await anlassList.elements.buttonKinderAuswaehlen().click();
@@ -630,8 +627,9 @@ async function openDossierTab(page: Page, anlass: string) {
 async function checkImpfRow(
   page: Page,
   title: string,
-  options: { genuegend?: boolean; empfehlung?: boolean; entscheid?: boolean; amount?: number; date?: Date },) {
-  const getRow = () => page.getByRole('row', { name: title });
+  options: { genuegend?: boolean; empfehlung?: boolean; entscheid?: boolean; amount?: number; date?: Date },
+) {
+  const getRow = () => page.getByRole('row', {name: title});
 
   await expect(getRow()).toBeVisible();
 
@@ -661,15 +659,15 @@ async function checkImpfRow(
 }
 
 async function checkMultiSelect(page: Page, title: string, option: string) {
-  const row = page.locator('svui-kachel-form-section', { hasText: title });
+  const row = page.locator('svui-kachel-form-section', {hasText: title});
 
-  await row.locator('svui-kachel-control', { hasText: option }).locator('label').click();
+  await row.locator('svui-kachel-control', {hasText: option}).locator('label').click();
 }
 
 async function checklistCheckbox(page: Page, option: string) {
   const untersuchungDaten = new UntersuchungDatenPageObject(page);
 
-  const checklist = page.locator('svui-standalone-control', { hasText: option });
+  const checklist = page.locator('svui-standalone-control', {hasText: option});
 
   await expect(checklist).toBeVisible();
   await untersuchungDaten.elements.checkboxChecklist().getCheckboxLabel(checklist).click();

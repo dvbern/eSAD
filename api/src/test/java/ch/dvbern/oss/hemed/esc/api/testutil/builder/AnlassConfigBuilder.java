@@ -18,6 +18,11 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.EnumSet;
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -30,6 +35,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigMapp
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfigJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
@@ -40,13 +48,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.AnlassConfigJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnlassConfigJsonSpec;
+
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.function.Consumer;
 
 public class AnlassConfigBuilder {
 
@@ -96,7 +101,8 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // checkKontraindikationenAbgeklaert
             RequirementSetting.OPTIONAL,    // checkDoppelkontrolleImpfentscheidDurchgefuehrt
             RequirementSetting.OPTIONAL,    // untersuchungImpfungEmpfehlung
-            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), // untersuchungImpfungEmpfehlungValues
+            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), //
+            // untersuchungImpfungEmpfehlungValues
             RequirementSetting.OPTIONAL,    // untersuchungImpfungAchtung
             RequirementSetting.OPTIONAL,    // untersuchungImpfungBemerkungen
             EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)), //untersuchungImpfungKrankheitLinksValues
@@ -109,11 +115,14 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // impfungenDataMinimalHpvAnzahlImpfungen
             RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfempfehlung
             RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfungDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // impfungenNurUnvollstaendige
             RequirementSetting.OPTIONAL,    // sehenBrilleLinsen
             EnumSetUtil.toString(EnumSet.noneOf(BrilleLinsenResultat.class)), //sehenBrilleLinsenValues
+            BrilleLinsenResultat.OHNE_KEINE, // sehenBrilleLinsenDefaultValue
             RequirementSetting.OPTIONAL,    // sehenFarbsehen
             RequirementSetting.OPTIONAL,    // sehenTafel
             RequirementSetting.OPTIONAL,    // sehenFernvisus
+            BigDecimal.valueOf(1.0),        // sehenFernvisusDefaultValue
             RequirementSetting.OPTIONAL,    // sehenFernvisusAugeEinzeln
             RequirementSetting.OPTIONAL,    // sehenStereoTest
             RequirementSetting.OPTIONAL,    // sehenStrabismus
@@ -129,8 +138,11 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // sehenBemerkungenFragebogen
             RequirementSetting.OPTIONAL,    // sehenMassnahmen
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm
+            Dezibel.DB20,                   // hoerenAudiogrammDefaultValue
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm250Hz
+            Dezibel.DB20,                   // hoerenAudiogramm250HzDefaultValue
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm8000Hz
+            Dezibel.DB20,                   // hoerenAudiogramm8000HzDefaultValue
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammSimpel
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammBeurteilung
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammZusaetzlicheAngaben
@@ -142,9 +154,14 @@ public class AnlassConfigBuilder {
             RequirementSetting.OPTIONAL,    // groesseGewichtGroesse
             RequirementSetting.OPTIONAL,    // groesseGewichtGewicht
             RequirementSetting.OPTIONAL,    // groesseGewichtBmi
-            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentile
-            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentile
-            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentile
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentileSingleValue
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentileMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileGroesse.class)),// groesseGewichtGroessePerzentileValues
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentileSingleValue
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentileMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileGewicht.class)),// groesseGewichtGewichtPerzentileValues
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentileSingleValue
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentileMultiValue
             EnumSetUtil.toString(EnumSet.allOf(PerzentileBmi.class)),// groesseGewichtBmiPerzentileValues
             RequirementSetting.OPTIONAL,    // groesseGewichtEmpfehlung
             RequirementSetting.OPTIONAL,    // groesseGewichtBemerkungen
@@ -269,7 +286,8 @@ public class AnlassConfigBuilder {
             requirementSetting,             // checkKontraindikationenAbgeklaert
             requirementSetting,             // checkDoppelkontrolleImpfentscheidDurchgefuehrt
             requirementSetting,             // untersuchungImpfungEmpfehlung
-            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), // untersuchungImpfungEmpfehlungValues
+            EnumSetUtil.toString(EnumSet.allOf(ImpfungenMassnahmenEmpfehlung.class)), //
+            // untersuchungImpfungEmpfehlungValues
             requirementSetting,             // untersuchungImpfungAchtung
             requirementSetting,             // untersuchungImpfungBemerkungen
             EnumSetUtil.toString(EnumSet.allOf(Krankheit.class)),   // untersuchungImpfungKrankheitenLinksValues
@@ -282,11 +300,14 @@ public class AnlassConfigBuilder {
             requirementSetting,             // impfungenDataMinimalHpvAnzahlImpfungen
             requirementSetting,             // impfungenDataMinimalImpfempfehlung
             requirementSetting,             // impfungenDataMinimalImpfungDurchgefuehrt
+            requirementSetting,             // impfungenNurUnvollstaendige
             requirementSetting,             // sehenBrilleLinsen
-            EnumSetUtil.toString(EnumSet.noneOf(BrilleLinsenResultat.class)),   // untersuchungImpfungKrankheitenRechtsValues
+            EnumSetUtil.toString(EnumSet.noneOf(BrilleLinsenResultat.class)),   // sehenBrilleLinsenValues
+            BrilleLinsenResultat.OHNE_KEINE, // sehenBrilleLinsenDefaultValue
             requirementSetting,             // sehenFarbsehen
             requirementSetting,             // sehenTafel
             requirementSetting,             // sehenFernvisus
+            BigDecimal.valueOf(1.0),        // sehenFernvisusDefaultValue
             requirementSetting,             // sehenFernvisusAugeEinzeln
             requirementSetting,             // sehenStereoTest
             requirementSetting,             // sehenStrabismus
@@ -302,8 +323,11 @@ public class AnlassConfigBuilder {
             requirementSetting,             // sehenBemerkungenFragebogen
             requirementSetting,             // sehenMassnahmen
             requirementSetting,             // hoerenAudiogramm
+            Dezibel.DB20,                   // hoerenAudiogrammDefaultValue
             requirementSetting,             // hoerenAudiogramm250Hz
+            Dezibel.DB20,                   // hoerenAudiogramm250HzDefaultValue
             requirementSetting,             // hoerenAudiogramm8000Hz
+            Dezibel.DB20,                   // hoerenAudiogramm8000HzDefaultValue
             requirementSetting,             // hoerenAudiogrammSimpel
             requirementSetting,             // hoerenAudiogrammBeurteilung
             requirementSetting,             // hoerenAudiogrammZusaetzlicheAngaben
@@ -315,9 +339,14 @@ public class AnlassConfigBuilder {
             requirementSetting,             // groesseGewichtGroesse
             requirementSetting,             // groesseGewichtGewicht
             requirementSetting,             // groesseGewichtBmi
-            requirementSetting,             // groesseGewichtGroessePerzentile
-            requirementSetting,             // groesseGewichtGewichtPerzentile
-            requirementSetting,             // groesseGewichtBmiPerzentile
+            requirementSetting,             // groesseGewichtGroessePerzentileSingleValue
+            requirementSetting,             // groesseGewichtGroessePerzentileMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileGroesse.class)),// groesseGewichtGroessePerzentileValues
+            requirementSetting,             // groesseGewichtGewichtPerzentileSingleValue
+            requirementSetting,             // groesseGewichtGewichtPerzentileMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileGewicht.class)),// groesseGewichtGewichtPerzentileValues
+            requirementSetting,             // groesseGewichtBmiPerzentileSingleValue
+            requirementSetting,             // groesseGewichtBmiPerzentileMultiValue
             EnumSetUtil.toString(EnumSet.allOf(PerzentileBmi.class)),// groesseGewichtBmiPerzentileValues
             requirementSetting,             // groesseGewichtEmpfehlung
             requirementSetting,             // groesseGewichtBemerkungen
@@ -464,6 +493,24 @@ public class AnlassConfigBuilder {
         @Nullable EnumSet<PerzentileBmi> values
     ) {
         this.anlassConfig.setGroesseGewichtBmiPerzentileValues(values);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withGroesseGewichtGroessePerzentileValues(
+        @Nullable EnumSet<PerzentileGroesse> values
+    ) {
+        this.anlassConfig.setGroesseGewichtGroessePerzentileValues(values);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withGroesseGewichtGewichtPerzentileValues(
+        @Nullable EnumSet<PerzentileGewicht> values
+    ) {
+        this.anlassConfig.setGroesseGewichtGewichtPerzentileValues(values);
         return this;
     }
 

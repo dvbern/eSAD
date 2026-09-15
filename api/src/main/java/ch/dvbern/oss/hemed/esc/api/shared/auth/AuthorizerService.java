@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import jakarta.enterprise.context.RequestScoped;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -41,10 +42,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
+
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.identity.SecurityIdentity;
-import jakarta.enterprise.context.RequestScoped;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -152,6 +153,16 @@ public class AuthorizerService {
 
     public boolean hasReadAuthorizationOrganisation(@NonNull Organisation organisation) {
         return isInOrganisationWithBerechtigung(organisation, List.of(Berechtigung.ORGANISATION_VERWALTEN_LESEN), null);
+    }
+
+    public void requireWriteAuthorizationOrganisation(@NonNull Organisation organisation) {
+        if (!hasWriteAuthorizationOrganisation(organisation)) {
+            throwViolation(organisation);
+        }
+    }
+
+    public boolean hasWriteAuthorizationOrganisation(@NonNull Organisation organisation) {
+        return isInOrganisationWithBerechtigung(organisation, List.of(Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN), null);
     }
 
     // BENUTZER
@@ -572,6 +583,19 @@ public class AuthorizerService {
             || !(archivdokument.getOwner().equals(currentBenutzer)
                 || currentBenutzer.hasFachRolleSupport()
             )
+        ) {
+            throwViolation(archivdokument);
+        }
+    }
+
+    public void requireArchivBulkDownloadAuthorization(@NonNull ID<Archivdokument> archivDokumentID) {
+        Archivdokument archivdokument = archivdokumentService.getById(archivDokumentID);
+        Organisation organisationArchivOwner = archivdokument.getOwner().getSingleOrganisation();
+
+        Benutzer currentBenutzer = currentBenutzer();
+
+        if (!isInOrganisationWithBerechtigung(organisationArchivOwner, List.of(Berechtigung.ARCHIVIERUNG), null)
+            || !archivdokument.getOwner().equals(currentBenutzer)
         ) {
             throwViolation(archivdokument);
         }

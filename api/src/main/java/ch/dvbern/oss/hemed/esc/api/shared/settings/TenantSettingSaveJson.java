@@ -18,7 +18,10 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
+import java.time.LocalDate;
 import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
@@ -26,8 +29,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStat
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeaturesJson;
 import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
 import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -83,4 +85,9 @@ public class TenantSettingSaveJson {
     @NonNull
     @Schema(required = true)
     private final LandingPageOption defaultLandingPage;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private LocalDate gueltigAbWachstumskurvePch;
 }

@@ -139,7 +139,8 @@ public final class UntersuchungImpfungenMapper {
             UntersuchungImpfungenMassnahmenMapper.toJson(impfungen.getUntersuchungImpfungenMassnahmen()),
             new UntersuchungImpfstatusListSaveJson(impfstatusJsonList),
             new UntersuchungImpfungInternListJson(impfungenInternList),
-            UntersuchungImpfungenDataMinimalMapper.toJson(impfungen.getUntersuchungImpfungenDataMinimal()));
+            UntersuchungImpfungenDataMinimalMapper.toJson(impfungen.getUntersuchungImpfungenDataMinimal()),
+            UntersuchungImpfungenNurUnvollstaendigeMapper.toJson(impfungen.getUntersuchungImpfungenNurUnvollstaendige()));
     }
 
     @NonNull

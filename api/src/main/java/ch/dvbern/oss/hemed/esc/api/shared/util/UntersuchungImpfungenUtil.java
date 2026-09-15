@@ -5,6 +5,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungKrankheitImmunitaet;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -73,12 +74,12 @@ public class UntersuchungImpfungenUtil {
     ) {
         Optional<UntersuchungImpfstatusKrankheit> oldImpfstatus = impfstatusLastAnlass.stream()
             .filter(impfstatus -> impfstatus.getKrankheit() == krankheit
-                && impfstatus.isImpfschutzGegeben())
+                && impfstatus.getImpfschutzGegeben() == ImpfschutzGegeben.JA)
             .findFirst();
 
         if (oldImpfstatus.isPresent()) {
             newImpfung.setAnzahlImpfungen(oldImpfstatus.get().getAnzahlImpfungen());
-            newImpfung.setImpfschutzGegeben(oldImpfstatus.get().isImpfschutzGegeben());
+            newImpfung.setImpfschutzGegeben(oldImpfstatus.get().getImpfschutzGegeben());
             newImpfung.setDatumLetzteImpfung(oldImpfstatus.get().getDatumLetzteImpfung());
         }
 
@@ -101,7 +102,7 @@ public class UntersuchungImpfungenUtil {
                 .map(UntersuchungImpfstatusKrankheit::getAnzahlImpfungen)
                 .orElse(0);
 
-            newImpfung.setImpfschutzGegeben(true);
+            newImpfung.setImpfschutzGegeben(ImpfschutzGegeben.JA);
             newImpfung.setAnzahlImpfungen(bisherigeAnzahlImpfungen + 1);
             newImpfung.setDatumLetzteImpfung(impfungInternLastAnlassOptional.get().getDatumImpfung());
         }

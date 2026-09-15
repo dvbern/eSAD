@@ -58,6 +58,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
@@ -94,6 +95,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtilImpl;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.MergeSourceDummyDataCreator;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -429,7 +433,9 @@ public class MergeSourceCreatorService {
             tl.translateValue(krankheit),
             PRINT_UTIL.trimToPlaceholder(impfstatus.getAnzahlImpfungen()),
             PRINT_UTIL.trimToPlaceholder(impfstatus.getDatumLetzteImpfung(), "MM/yyyy"),
-            PRINT_UTIL.trimToPlaceholder(impfstatus.isImpfschutzGegeben(), tl),
+            impfstatus.getImpfschutzGegeben() == ImpfschutzGegeben.KEINE_ANGABE ?
+                "" :
+                PRINT_UTIL.trimToPlaceholder(impfstatus.getImpfschutzGegeben() == ImpfschutzGegeben.JA, tl),
             PRINT_UTIL.trimToPlaceholder(impfstatus.isImpfempfehlung(), tl),
             PRINT_UTIL.trimToPlaceholder(impfstatus.isImpfentscheid(), tl)
         );
@@ -813,21 +819,39 @@ public class MergeSourceCreatorService {
             numberWithSuffix(
                 groesseGewicht.getGroesse() != null ? GanzZahl.valueOf(groesseGewicht.getGroesse()).getValue() : null,
                 "brief.centimeter.suffix", tl),
-            getEnumValue(
-                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
-                    groesseGewicht.getGroessePerzentile(),
-                    PerzentileGroesse.class), tl),
+            getPerzentileValue(
+                groesseGewicht.getGroessePerzentileSingleValue(),
+                groesseGewicht.getGroessePerzentileMultiValue(),
+                PerzentileGroesse.class, tl),
             numberWithSuffix(groesseGewicht.getGewicht(), "brief.kilogram.suffix", tl),
-            getEnumValue(
-                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
-                    groesseGewicht.getGewichtPerzentile(),
-                    PerzentileGewicht.class), tl),
+            getPerzentileValue(
+                groesseGewicht.getGewichtPerzentileSingleValue(),
+                groesseGewicht.getGewichtPerzentileMultiValue(),
+                PerzentileGewicht.class, tl),
             PRINT_UTIL.trimToPlaceholder(groesseGewicht.getBmi()),
-            getEnumValue(
-                BRIEF_PREFIX, ValueEnhancedUtil.getEnumValueOrNull(
-                    groesseGewicht.getBmiPerzentile(),
-                    PerzentileBmi.class), tl)
+            getPerzentileValue(
+                groesseGewicht.getBmiPerzentileSingleValue(),
+                groesseGewicht.getBmiPerzentileMultiValue(),
+                PerzentileBmi.class, tl)
         );
+    }
+
+    @NonNull
+    private static <E extends Enum<E>> String getPerzentileValue(
+        @Nullable SingleValueEnhanced<E> singleValue,
+        @Nullable MultiValueEnhanced<E> multiValue,
+        @NonNull Class<E> clazz,
+        @NonNull TL tl
+    ) {
+        E enumValue = ValueEnhancedUtil.getEnumValueOrNull(singleValue, clazz);
+        if (enumValue != null) {
+            return getEnumValue(BRIEF_PREFIX, enumValue, tl);
+        }
+
+        return ValueEnhancedUtil.getEnumSetOrEmpty(multiValue, clazz)
+            .stream()
+            .map(value -> getEnumValue(BRIEF_PREFIX, value, tl))
+            .collect(Collectors.joining(", "));
     }
 
     @NonNull

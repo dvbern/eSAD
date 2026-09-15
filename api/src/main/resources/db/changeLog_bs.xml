@@ -212,6 +212,13 @@
   <include file="db/base/0078-anlass-titel-nullable.xml"/>
   <include file="db/bs/0096-enable-anlass-titel-required-bs.xml"/>
   <include file="db/base/0079-tenant-settings-footer-enable.xml"/>
+  <include file="/db/base/0080-anlassconfig-default-values.xml"/>
+  <include file="db/bs/0097-seed-anlassconfig-default-values-bs.xml"/>
+  <include file="db/base/0080-add-impfungen-nur-unvollstaendige.xml"/>
+  <include file="db/base/0081-impfschutzGegeben-enum-cleanup.xml"/>
+  <include file="db/base/0082-tenant-setting-gueltigkeit-wachstumskurve-pch.xml"/>
+  <include file="db/base/0083-add-tenant-header-in-exports-feature.xml"/>
+  <include file="db/base/0084-groesse-gewicht-perzentile-single-multi-value.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>

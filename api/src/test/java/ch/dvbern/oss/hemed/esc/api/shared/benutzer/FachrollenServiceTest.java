@@ -25,6 +25,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.OrganisationRollenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SystemRollenBuilder;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -318,7 +319,7 @@ class FachrollenServiceTest {
         when(organisationRollenService.createForOrganisation(organisation, target, EnumSet.of(FachRolle.SCHULAERZTIN)))
             .thenReturn(newRollen);
 
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.of(FachRolle.SCHULAERZTIN),
             target,
             organisation,
@@ -344,7 +345,11 @@ class FachrollenServiceTest {
         when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(currentUser);
 
         // remove all roles -> empty set
-        fachrollenService.handleOrganisationsRollen(EnumSet.noneOf(FachRolle.class), target, organisation, currentUser);
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
+            EnumSet.noneOf(FachRolle.class),
+            target,
+            organisation,
+            currentUser);
 
         assertThat(target.getOrganisationRollen().iterator().next().getFachRollen()).isEmpty();
     }
@@ -367,7 +372,11 @@ class FachrollenServiceTest {
         when(organisationRollenService.createForOrganisation(organisation, target, EnumSet.of(FachRolle.MPA)))
             .thenReturn(newRollen);
 
-        fachrollenService.handleOrganisationsRollen(EnumSet.of(FachRolle.MPA), target, organisation, currentUser);
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
+            EnumSet.of(FachRolle.MPA),
+            target,
+            organisation,
+            currentUser);
 
         assertThat(target.getOrganisationRollen()).hasSize(1);
         assertThat(target.getOrganisationRollen().iterator().next().getFachRollen())
@@ -388,7 +397,11 @@ class FachrollenServiceTest {
 
         when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(currentUser);
 
-        fachrollenService.handleOrganisationsRollen(EnumSet.noneOf(FachRolle.class), target, organisation, currentUser);
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
+            EnumSet.noneOf(FachRolle.class),
+            target,
+            organisation,
+            currentUser);
 
         assertThat(target.getOrganisationRollen().iterator().next().getFachRollen()).isEmpty();
     }
@@ -408,7 +421,7 @@ class FachrollenServiceTest {
 
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
                     requestedRollen,
                     target,
                     organisation,
@@ -434,7 +447,7 @@ class FachrollenServiceTest {
 
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
                     requestedRollen,
                     target,
                     organisation,
@@ -459,7 +472,11 @@ class FachrollenServiceTest {
 
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(requestedRollen, target, orgTarget, currentUser));
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
+                    requestedRollen,
+                    target,
+                    orgTarget,
+                    currentUser));
 
         assertThat(ex.getLocalizedMessage()).contains("UPDATE_FACHROLLEN_NOT_ALLOWED");
     }
@@ -480,7 +497,7 @@ class FachrollenServiceTest {
 
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
                     requestedRollen,
                     target,
                     organisation,
@@ -506,7 +523,7 @@ class FachrollenServiceTest {
 
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
                     requestedRollen,
                     target,
                     organisation,
@@ -531,7 +548,7 @@ class FachrollenServiceTest {
         // SCHULAERZTIN is not delegable -> all requested roles count as added -> reject
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
                     requestedRollen, target, organisation, currentUser));
 
         assertThat(ex.getLocalizedMessage()).contains("UPDATE_FACHROLLEN_NOT_ALLOWED");
@@ -555,7 +572,7 @@ class FachrollenServiceTest {
 
         AppFailureException ex = assertThrows(
             AppFailureException.class, () ->
-                fachrollenService.handleOrganisationsRollen(
+                fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
                     requestedRollen,
                     target,
                     organisation,
@@ -579,7 +596,7 @@ class FachrollenServiceTest {
 
         when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(currentUser);
 
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.of(FachRolle.SCHULAERZTIN),
             target,
             organisation,
@@ -604,7 +621,7 @@ class FachrollenServiceTest {
         when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(currentUser);
 
         // No-op: requested set equals existing set
-        fachrollenService.handleOrganisationsRollen(
+        fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
             EnumSet.of(FachRolle.SCHULAERZTIN, FachRolle.MPA), target, organisation, currentUser);
 
         assertThat(target.getOrganisationRollen().iterator().next().getFachRollen())

@@ -13,9 +13,12 @@ import { ValueEnhancedJson } from './value-enhanced-json';
 export interface UntersuchungGroesseGewichtSaveJson { 
     groesse?: number;
     gewicht?: number;
-    groessePerzentile: ValueEnhancedJson;
-    gewichtPerzentile: ValueEnhancedJson;
-    bmiPerzentile: ValueEnhancedJson;
+    groessePerzentileSingleValue: ValueEnhancedJson;
+    groessePerzentileMultiValue: ValueEnhancedJson;
+    gewichtPerzentileSingleValue: ValueEnhancedJson;
+    gewichtPerzentileMultiValue: ValueEnhancedJson;
+    bmiPerzentileSingleValue: ValueEnhancedJson;
+    bmiPerzentileMultiValue: ValueEnhancedJson;
     bemerkungen?: string;
     version: number;
 }

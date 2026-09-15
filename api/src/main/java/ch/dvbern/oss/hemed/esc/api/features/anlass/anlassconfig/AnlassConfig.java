@@ -19,25 +19,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 import java.util.EnumSet;
-
-import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
-import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
-import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
-import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
-import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassConfigImpfungKrankheitenUniqueness;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -48,6 +31,28 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinstand;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Motorik;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
+import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateRange;
+import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassConfigImpfungKrankheitenUniqueness;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,7 +66,7 @@ import org.hibernate.envers.Audited;
 @Entity
 @Table(
     uniqueConstraints = {
-        @UniqueConstraint(name = "uc_anlassconfig_typ_bezeichnung", columnNames = {"anlasstyp", "bezeichnung"})
+        @UniqueConstraint(name = "uc_anlassconfig_typ_bezeichnung", columnNames = { "anlasstyp", "bezeichnung" })
     }
 )
 @Audited
@@ -341,6 +346,14 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting impfungenDataMinimalImpfungDurchgefuehrt;
 
+    // ImpfungenNurUnvollstaendige
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting impfungenNurUnvollstaendige;
+
     // Sehen
 
     @NotNull
@@ -349,12 +362,17 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting sehenBrilleLinsen;
 
-   @Nullable
-   @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
-   @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
-   @Getter(AccessLevel.NONE)
-   @Setter(AccessLevel.NONE)
-   private String sehenBrilleLinsenValues;
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String sehenBrilleLinsenValues;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH)
+    private BrilleLinsenResultat sehenBrilleLinsenDefaultValue;
 
     @NotNull
     @NonNull
@@ -373,6 +391,10 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting sehenFernvisus;
+
+    @Nullable
+    @Column
+    private BigDecimal sehenFernvisusDefaultValue;
 
     @NotNull
     @NonNull
@@ -467,6 +489,11 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting hoerenAudiogramm;
 
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH)
+    private Dezibel hoerenAudiogrammDefaultValue;
+
     // Required will only be checked in Validator if hoerenAudiogramm is required
     @NotNull
     @NonNull
@@ -474,12 +501,22 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Enumerated(EnumType.STRING)
     private RequirementSetting hoerenAudiogramm250Hz;
 
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH)
+    private Dezibel hoerenAudiogramm250HzDefaultValue;
+
     // Required will only be checked in Validator if hoerenAudiogramm is required
     @NotNull
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
     private RequirementSetting hoerenAudiogramm8000Hz;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    @Column(length = DbConst.DB_ENUM_LENGTH)
+    private Dezibel hoerenAudiogramm8000HzDefaultValue;
 
     @NotNull
     @NonNull
@@ -556,19 +593,51 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private RequirementSetting groesseGewichtGroessePerzentile;
+    private RequirementSetting groesseGewichtGroessePerzentileSingleValue;
 
     @NotNull
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private RequirementSetting groesseGewichtGewichtPerzentile;
+    private RequirementSetting groesseGewichtGroessePerzentileMultiValue;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String groesseGewichtGroessePerzentileValues;
 
     @NotNull
     @NonNull
     @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
     @Enumerated(EnumType.STRING)
-    private RequirementSetting groesseGewichtBmiPerzentile;
+    private RequirementSetting groesseGewichtGewichtPerzentileSingleValue;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting groesseGewichtGewichtPerzentileMultiValue;
+
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String groesseGewichtGewichtPerzentileValues;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting groesseGewichtBmiPerzentileSingleValue;
+
+    @NotNull
+    @NonNull
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    @Enumerated(EnumType.STRING)
+    private RequirementSetting groesseGewichtBmiPerzentileMultiValue;
 
     @Nullable
     @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
@@ -1048,6 +1117,28 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @NotNull
     @Column(nullable = false)
     private boolean showMassnahmenAnderes;
+
+    // groesseGewichtGroessePerzentileValues
+    public void setGroesseGewichtGroessePerzentileValues(
+        @Nullable EnumSet<PerzentileGroesse> groesseGewichtGroessePerzentileValues) {
+        this.groesseGewichtGroessePerzentileValues = EnumSetUtil.toString(groesseGewichtGroessePerzentileValues);
+    }
+
+    @NonNull
+    public EnumSet<PerzentileGroesse> getGroesseGewichtGroessePerzentileValues() {
+        return EnumSetUtil.fromString(PerzentileGroesse.class, groesseGewichtGroessePerzentileValues);
+    }
+
+    // groesseGewichtGewichtPerzentileValues
+    public void setGroesseGewichtGewichtPerzentileValues(
+        @Nullable EnumSet<PerzentileGewicht> groesseGewichtGewichtPerzentileValues) {
+        this.groesseGewichtGewichtPerzentileValues = EnumSetUtil.toString(groesseGewichtGewichtPerzentileValues);
+    }
+
+    @NonNull
+    public EnumSet<PerzentileGewicht> getGroesseGewichtGewichtPerzentileValues() {
+        return EnumSetUtil.fromString(PerzentileGewicht.class, groesseGewichtGewichtPerzentileValues);
+    }
 
     // groesseGewichtBmiPerzentileValues
     public void setGroesseGewichtBmiPerzentileValues(

@@ -1,65 +1,81 @@
 @if (anlassStore.selectedEntity()?.anlassConfig?.showTabBewegungsapparat) {
-  <form (ngSubmit)="submitIfValid()"
-        [formGroup]="form.group"
-        [formType]="'kacheln'"
-        [mode]="'edit'"
-        svuiFormLayout>
 
-    <h2 svuiHeading="formSection">{{ 'untersuchung.tab.bewegungsapparat.titel' | transloco }}</h2>
+  @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+    <svui-card-in-card class="mb-3">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span>{{ 'untersuchung.tab.defaultwerte.info' | transloco }}</span>
+        <button
+          class="nav-link"
+          (click)="loadDefaults()"
+          data-testid="untersuchung-bewegungsapparat-defaultwerte">
+          <svui-icon [useCase]="'edit'"></svui-icon>
+          {{ 'untersuchung.tab.defaultwerte' | transloco }}
+        </button>
+      </div>
+    </svui-card-in-card>
+  }
 
-    <!-- Skoliose -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatSkoliose !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.skolioseSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.bewegungsapparat.skoliose'"
-        [valuePrefix]="'Skoliose'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
-      </feat-value-enhanced>
-    }
+  <svui-card-in-card class="mb-3">
+    <form (ngSubmit)="submitIfValid()"
+          [formGroup]="form.group"
+          [formType]="'kacheln'"
+          [mode]="'edit'"
+          svuiFormLayout>
 
-    <!-- Haltungsschwaeche -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatHaltungsschwaeche !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.haltungsschwaecheSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.bewegungsapparat.haltungsschwaeche'"
-        [valuePrefix]="'Haltungsschwaeche'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
-      </feat-value-enhanced>
-    }
+      <!-- Skoliose -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatSkoliose !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.skolioseSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.bewegungsapparat.skoliose'"
+          [valuePrefix]="'Skoliose'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          >
+        </feat-value-enhanced>
+      }
 
-    <!-- Verkuerzung Hamstringmuskulatur -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatVerkuerzungHamstringmuskulatur !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.verkuerzungHamstringmuskulaturSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.bewegungsapparat.verkuerzungHamstringmuskulatur'"
-        [valuePrefix]="'VerkuerzungHamstringmuskulatur'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        >
-      </feat-value-enhanced>
-    }
+      <!-- Haltungsschwaeche -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatHaltungsschwaeche !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.haltungsschwaecheSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.bewegungsapparat.haltungsschwaeche'"
+          [valuePrefix]="'Haltungsschwaeche'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          >
+        </feat-value-enhanced>
+      }
 
-    <!-- Bemerkung -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatBemerkung !== RequirementSetting.NOT_VISIBLE) {
-      <svui-title [context]="'formSection'"
-                  class="mb-3">{{ 'untersuchung.tab.bewegungsapparat.bemerkung' | transloco }}
-      </svui-title>
-      <svui-form-control
-        [label]="'untersuchung.tab.bewegungsapparat.bemerkung' | transloco"
-        [topLabelVisibility]="'hidden'"
-        [viewValue]="form.group.controls.bemerkungen.value">
-        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
-      </svui-form-control>
-    }
+      <!-- Verkuerzung Hamstringmuskulatur -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatVerkuerzungHamstringmuskulatur !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.verkuerzungHamstringmuskulaturSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.bewegungsapparat.verkuerzungHamstringmuskulatur'"
+          [valuePrefix]="'VerkuerzungHamstringmuskulatur'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          >
+        </feat-value-enhanced>
+      }
 
-    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
-      <svui-save-cancel-buttons
-        class="mt-4"
-        [saving]="store.saveLoader.isLoading()"
-        [canEdit]="true"
-        (cancelClicked)="abbrechen()"/>
-    }
-  </form>
+      <!-- Bemerkung -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.bewegungsapparatBemerkung !== RequirementSetting.NOT_VISIBLE) {
+        <svui-title [context]="'formSection'"
+                    class="mb-3">{{ 'untersuchung.tab.bewegungsapparat.bemerkung' | transloco }}
+        </svui-title>
+        <svui-form-control
+          [label]="'untersuchung.tab.bewegungsapparat.bemerkung' | transloco"
+          [topLabelVisibility]="'hidden'"
+          [viewValue]="form.group.controls.bemerkungen.value">
+          <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+        </svui-form-control>
+      }
+
+      @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+        <svui-save-cancel-buttons
+          class="mt-4"
+          [saving]="store.saveLoader.isLoading()"
+          [canEdit]="true"
+          (cancelClicked)="abbrechen()"/>
+      }
+    </form>
+  </svui-card-in-card>
 }
 

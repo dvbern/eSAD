@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
@@ -70,8 +71,11 @@ public class UntersuchungImpfstatusKrankheit extends AbstractEntity<Untersuchung
     @Column(nullable = true)
     private LocalDate datumLetzteImpfung;
 
-    @Column(nullable = false)
-    private boolean impfschutzGegeben = false;
+    @NotNull
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = DbConst.DB_ENUM_LENGTH)
+    private ImpfschutzGegeben impfschutzGegeben = ImpfschutzGegeben.KEINE_ANGABE;
 
     @Column(nullable = false)
     private boolean impfempfehlung = false;

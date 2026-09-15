@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -62,19 +63,22 @@ public final class OrganisationRollenMapper {
                 organisation = organisationService.getById(organisationJson.getId());
             }
             EnumSet<FachRolle> enumSet = EnumSetUtil.toEnumSet(organisationRollenJson.getFachRollen(), FachRolle.class);
-            fachrollenService.handleOrganisationsRollen(enumSet, existingBenutzer, organisation, currentBenutzer);
+            fachrollenService.handleOrganisationsRollenAndSendInviteMailIfNewUser(
+                enumSet,
+                existingBenutzer,
+                organisation,
+                currentBenutzer);
         }
         // Eventuell vorher vorhandene, die neu fehlen, entfernen
         Set<OrganisationRollen> existingRollenList = existingBenutzer.getOrganisationRollen();
-        for (OrganisationRollen existingRollen : existingRollenList) {
-            if (organisationRollenToSet.stream()
+        List<OrganisationRollen> rollenToRemove = existingRollenList.stream()
+            .filter(existingRollen -> organisationRollenToSet.stream()
                 .noneMatch(organisationRollenJson -> organisationRollenJson.getOrganisation() != null
                     && organisationRollenJson.getOrganisation()
                     .getId()
-                    .equals(existingRollen.getOrganisation().getId()))) {
-                existingBenutzer.getOrganisationRollen().remove(existingRollen);
-            }
-        }
+                    .equals(existingRollen.getOrganisation().getId())))
+            .toList();
+        rollenToRemove.forEach(existingBenutzer.getOrganisationRollen()::remove);
         return existingBenutzer.getOrganisationRollen();
     }
 }

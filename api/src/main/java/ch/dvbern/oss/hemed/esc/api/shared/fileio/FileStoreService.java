@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import jakarta.transaction.Transactional;
+
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
@@ -184,6 +186,16 @@ public class FileStoreService  {
         );
     }
 
+    /**
+     * NOT_SUPPORTED is load-bearing, do not remove it. FileStoreService is a {@link Service}, so its stereotype
+     * carries @Transactional(REQUIRED): without NOT_SUPPORTED this method joins the caller's transaction and the
+     * AppFailureException below marks that transaction rollback-only. A caller that catches the exception to skip a
+     * single unreadable file - the bulk Archivdokument download does exactly this - would then still lose every write
+     * of the surrounding batch at commit time, while happily returning the zip to the user.
+     * <p>
+     * Suspending the transaction is safe here because this method only talks to S3, never to the database.
+     */
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public byte[] getFileBytesSync(@NonNull String fileIdInBucket) {
         CompletableFuture<ResponseBytes<GetObjectResponse>> futureGetBytes =
             this.getFileBytesAsync(fileIdInBucket);

@@ -1,7 +1,7 @@
 
 import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RequirementSetting } from '@dvb/data-access-backend';
+import { Dezibel, RequirementSetting } from '@dvb/data-access-backend';
 import { BenutzerStore, Path } from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
@@ -33,7 +33,7 @@ import { ActivatedRoute } from '@angular/router';
     NgSelectComponent,
     NgSelectDirective,
     TranslocoPipe
-],
+  ],
   templateUrl: './anlass-config-detail-hoeren-audiogramm.component.html',
   styleUrl: './anlass-config-detail-hoeren-audiogramm.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +45,7 @@ export class AnlassConfigDetailHoerenAudiogrammComponent implements DirtyMarker 
   readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
 
   readonly requirementSettingOptions = Object.values(RequirementSetting);
+  readonly dezibelOptions = Object.values(Dezibel);
   protected readonly Path = Path;
 
   public form = new AnlassConfigForm({

@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -41,6 +42,13 @@ public class TenantSettingsService {
         return getTenantSetting()
             .getTenantSettingFeatures()
             .getAnlassTitleRequiredFeature()
+            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+    }
+
+    public boolean isTenantHeaderInExportsEnabled() {
+        return getTenantSetting()
+            .getTenantSettingFeatures()
+            .getTenantHeaderInExportsFeature()
             .isEnabledForDeploymentEnvironment(configService.getEnvironment());
     }
 }

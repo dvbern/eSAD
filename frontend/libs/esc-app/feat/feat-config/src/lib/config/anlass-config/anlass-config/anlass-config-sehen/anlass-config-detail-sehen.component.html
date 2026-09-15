@@ -45,6 +45,25 @@
     </ng-select>
   </svui-form-control>
 
+  <!-- Sehen BrilleLinsen Default Value -->
+  <svui-form-control [label]="'anlassconfig.label.sehenBrilleLinsenDefaultValue' | transloco"
+                     [viewValue]="form.group.getRawValue().sehenBrilleLinsenDefaultValue ? ('BrilleLinsenResultat.' + form.group.getRawValue().sehenBrilleLinsenDefaultValue | transloco) : null">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.sehenBrilleLinsenDefaultValue"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (value of brilleLinsenResultat; track value) {
+        <ng-option [value]="value">
+          {{ 'BrilleLinsenResultat.' + value | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+
   <!-- Sehen Farbsehen-->
   <svui-form-control [label]="'anlassconfig.label.sehenFarbsehen' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().sehenFarbsehen | transloco">
@@ -98,6 +117,11 @@
         </ng-option>
       }
     </ng-select>
+  </svui-form-control>
+  <!-- Sehen Fernvisus Default Value -->
+  <svui-form-control [label]="'anlassconfig.label.sehenFernvisusDefaultValue' | transloco"
+                     [viewValue]="form.group.getRawValue().sehenFernvisusDefaultValue?.toString()">
+    <input svuiTextInput type="number" [formControl]="form.group.controls.sehenFernvisusDefaultValue"/>
   </svui-form-control>
   <!-- Sehen Fernvisus Auge einzeln -->
   <svui-form-control [label]="'anlassconfig.label.sehenFernvisusAugeEinzeln' | transloco"

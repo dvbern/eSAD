@@ -1,0 +1,68 @@
+<form svuiFormLayout
+      [formType]="'kacheln'"
+      [mode]="'edit'"
+      [formGroup]="form.group"
+      (ngSubmit)="submitIfValid()">
+
+  @if (anlassStore.selectedEntity()?.anlassConfig?.data?.impfungenNurUnvollstaendige !== RequirementSetting.NOT_VISIBLE) {
+
+    <!-- ImpfausweisVollstaendig -->
+    <div class="d-flex align-items-center mb-2">
+      <h3 svuiHeading="formSection" class="flex-grow-1 m-0">
+        {{ 'untersuchung.impfungen.nurUnvollstaendige.impfausweisVollstaendig' | transloco }}
+        <svui-icon
+          class="input-icon"
+          [useCase]="'information'"
+          [tooltip]="'untersuchung.impfungen.nurUnvollstaendige.impfausweisVollstaendig.tooltip' | transloco"
+        />
+      </h3>
+      <a class="nav-link" target="_blank" rel="noopener noreferrer" href="{{ 'untersuchung.impfungen.schweizer.impfplan.url' | transloco }}">
+        <svui-icon [useCase]="'link'"></svui-icon>
+        {{ 'untersuchung.impfungen.schweizer.impfplan.label' | transloco }}
+      </a>
+    </div>
+    <svui-kachel-form-section [heading]="''" [headingVisibility]="'hidden'">
+      @for (each of impfausweisVollstaendigValues; track each) {
+        <svui-kachel-control [label]="'ImpfausweisVollstaendig.' + each | transloco">
+          <input svuiRadio
+                 id="impfausweisVollstaendig-{{ each }}"
+                 type="radio"
+                 name="impfausweisVollstaendig"
+                 (click)="impfausweisVollstaendigChanged(each)"
+                 [formControl]="form.group.controls.impfausweisVollstaendig"
+                 [value]="each"/>
+        </svui-kachel-control>
+      }
+    </svui-kachel-form-section>
+
+    <!-- Impfausweis Grund unvollstaendig -->
+    @if (form.group.controls.impfausweisVollstaendig.value === ImpfausweisVollstaendig.NEIN) {
+      <svui-form-control [label]="'untersuchung.impfungen.nurUnvollstaendige.impfausweisGrundUnvollstaendig' | transloco"
+                         [viewValue]="form.group.value.impfausweisGrundUnvollstaendig"
+                         class="mt-3"
+                         data-testid="nurUnvollstaendige.impfausweisGrundUnvollstaendig-select">
+        <ng-select
+          svuiNgSelect
+          bindLabel='dummy'
+          appendTo="body"
+          [formControl]="form.group.controls.impfausweisGrundUnvollstaendig"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+        >
+          @for (each of impfausweisGrundUnvollstaendigValues; track each) {
+            <ng-option [value]="each">
+              {{ 'ImpfausweisGrundUnvollstaendig.' + each | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+    }
+  }
+
+  <!-- Save / Cancel Buttons -->
+  @if (canEdit()) {
+    <svui-save-cancel-buttons
+      [saving]="impfungenStore.saveNurUnvollstaendigeLoader.isLoading()"
+      [canEdit]="true"
+      (cancelClicked)="abbrechen()"/>
+  }
+</form>

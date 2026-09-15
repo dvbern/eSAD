@@ -28,8 +28,11 @@
       }
     }
   },
+  "untersuchung.impfungen.massnahmen.title": "Massnahmen zu den Impfungen (optional)",
+  "untersuchung.impfungen.nurUnvollstaendige.impfausweisVollstaendig.tooltip": "Damit sind alle Basisimpfungen gem. Schweizerischem Impfplan sowie Meningokokken B und ACWY gemeint",
   "untersuchung.tab.daten.untersuchung.mpa": "School Nurse/MPA",
   "untersuchung.tab.massnahmen.beratung.mpa": "Beratung School Nurse/MPA",
+  "untersuchung.tab.defaultwerte.info": "Standardwerte vom System vorausfüllen lassen (setzt Werte für unauffällige Befunde wie «Normal» oder «Bestanden»)",
   "untersuchung.tab.sprache.nachsprechen.tooltip": "Bestanden: Kind spricht flüssig mindestens 4 von 10 Zauberwörter nach",
   "untersuchung.tab.sprache.sprachverstaendnis.tooltip": "Bestanden: Kind zeigt bei allen drei Sätzen auf das korrekte Bild oder die korrekte Person. Falls nicht, die 3 weiteren Sätze einsetzen: 5 korrekt verstanden",
   "untersuchung.tab.sprache.wortschatz.tooltip": "Bestanden: Kind benennt 11 von 12 Bildern korrekt",

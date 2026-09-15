@@ -15,12 +15,12 @@ import {
   TitleComponent,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasHoerenEditBerechtigung, isNullish, requireValue} from '@dvb/util-shared';
+import {hasHoerenEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
-import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
+import {setupApplyDefaultValuesEffect} from '../../default-values.util';
 import {UntersuchungHoerenOtoskopieForm} from './untersuchung-hoeren-otoskopie.form';
 import {UntersuchungHoerenOtoskopieStore} from './untersuchung-hoeren-otoskopie.store';
 
@@ -82,21 +82,15 @@ export class UntersuchungHoerenOtoskopieComponent implements DirtyMarker {
       }
       this.form.setDisabled(!this.canEdit());
     });
-    effect(() => {
-      // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
-      const defaultHoerenOtoskopie = this.hoerenOtoskopieStore.defaultHoerenOtoskopieToApply();
-      if(isNullish(defaultHoerenOtoskopie)){
-        return;
-      }
-      const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultHoerenOtoskopie);
-      if (hasAnyValue) {
-        this.form.resetForm(defaultHoerenOtoskopie);
-        this.form.group.markAsDirty();
-        this.form.group.controls.otoskopieRechts.controls.valueArray.markAsDirty();
-        this.form.group.controls.otoskopieLinks.controls.valueArray.markAsDirty();
-      }
-      this.hoerenOtoskopieStore.resetApplyDefaultHoerenOtoskopie();
-      this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.hoerenOtoskopieStore.defaultHoerenOtoskopieToApply,
+      form: this.form,
+      resetApplyDefault: () => this.hoerenOtoskopieStore.resetApplyDefaultHoerenOtoskopie(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
+      onAfterApply: (form) => {
+        form.group.controls.otoskopieRechts.controls.valueArray.markAsDirty();
+        form.group.controls.otoskopieLinks.controls.valueArray.markAsDirty();
+      },
     });
   }
 

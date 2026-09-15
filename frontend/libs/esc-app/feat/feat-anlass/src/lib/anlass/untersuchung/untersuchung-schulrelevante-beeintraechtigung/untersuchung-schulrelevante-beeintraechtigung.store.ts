@@ -1,13 +1,15 @@
 import {
   UntersuchungSchulrelevanteBeeintraechtigungJson,
+  UntersuchungSchulrelevanteBeeintraechtigungSaveJson,
   UntersuchungSchulrelevanteBeeintraechtigungService,
+  UntersuchungSchulrelevanteBeeintraechtigungServiceGetDefaultUntersuchungSchulrelevanteBeeintraechtigungRequestParams,
   UntersuchungSchulrelevanteBeeintraechtigungServiceGetUntersuchungSchulrelevanteBeeintraechtigungRequestParams,
   UntersuchungSchulrelevanteBeeintraechtigungServiceSaveUntersuchungSchulrelevanteBeeintraechtigungRequestParams,
 } from "@dvb/data-access-backend";
-import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
 import {inject, Injectable} from "@angular/core";
 import {patchState, signalStore, withState} from "@ngrx/signals";
 import {AppErrorHandlerService, AppNotificationStore, Loader} from "@dvb/util-angular";
+import {withDefaultValues} from "../default-values.util";
 import {UntersuchungStore} from "../untersuchung.store";
 import {TranslocoService} from "@jsverse/transloco";
 import {rxMethod} from "@ngrx/signals/rxjs-interop";
@@ -23,8 +25,13 @@ const initialState: UntersuchungSchulrelevanteBeeintraechtigungState = {
 };
 
 @Injectable()
-export class UntersuchungSchulrelevanteBeeintraechtigungStore extends signalStore({ protectedState: false },
-  withState(initialState)) {
+export class UntersuchungSchulrelevanteBeeintraechtigungStore extends signalStore(
+  { protectedState: false },
+  withState(initialState),
+  withDefaultValues<UntersuchungSchulrelevanteBeeintraechtigungSaveJson, UntersuchungSchulrelevanteBeeintraechtigungJson, UntersuchungSchulrelevanteBeeintraechtigungState>({
+    getCurrentEntity: (store) => store.untersuchungSchulrelevanteBeeintraechtigung(),
+  }),
+) {
   readonly #service = inject(UntersuchungSchulrelevanteBeeintraechtigungService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
   readonly #untersuchungStore = inject(UntersuchungStore);
@@ -44,6 +51,21 @@ export class UntersuchungSchulrelevanteBeeintraechtigungStore extends signalStor
       ),
       tapResponse({
         next: untersuchungSchulrelevanteBeeintraechtigung => patchState(this, { untersuchungSchulrelevanteBeeintraechtigung }),
+        error: console.error,
+      }),
+    ),
+  );
+
+  loadUntersuchungSchulrelevanteBeeintraechtigungDefaults = rxMethod<UntersuchungSchulrelevanteBeeintraechtigungServiceGetDefaultUntersuchungSchulrelevanteBeeintraechtigungRequestParams>(
+    pipe(
+      switchMap(params => this.loader.tapLoading$(this.#service.getDefaultUntersuchungSchulrelevanteBeeintraechtigung$(
+          {
+            anlassId: params.anlassId,
+            einladungId: params.einladungId,
+          }),
+        error => this.#appErrorHandlerService.handleError(error))),
+      tapResponse({
+        next: data => patchState(this, {defaultInitial: data}),
         error: console.error,
       }),
     ),

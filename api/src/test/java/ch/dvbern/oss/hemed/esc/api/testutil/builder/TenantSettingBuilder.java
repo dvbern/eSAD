@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
@@ -13,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
 import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -55,9 +58,11 @@ public class TenantSettingBuilder {
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED,
+                FeatureEnabledSetting.ENABLED,
                 FeatureEnabledSetting.ENABLED
             ),
-            EnumSetUtil.toString(EnumSet.allOf(EinladungStatus.class))
+            EnumSetUtil.toString(EnumSet.allOf(EinladungStatus.class)),
+            LocalDate.of(2026, Month.OCTOBER, 6)
         );
     }
 

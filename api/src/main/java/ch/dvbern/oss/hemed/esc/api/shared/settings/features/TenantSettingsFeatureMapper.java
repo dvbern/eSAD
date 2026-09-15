@@ -18,10 +18,12 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.settings.features;
 
-import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -52,7 +54,8 @@ public class TenantSettingsFeatureMapper {
             toTenantSettingFeatureState(featureSettings.getAnlassSpracheSpalteFeature()),
             toTenantSettingFeatureState(featureSettings.getAnlassSpracheZusammenfassungFeature()),
             toTenantSettingFeatureState(featureSettings.getAnlassInformationenFeature()),
-            toTenantSettingFeatureState(featureSettings.getAnlassTitleRequiredFeature())
+            toTenantSettingFeatureState(featureSettings.getAnlassTitleRequiredFeature()),
+            toTenantSettingFeatureState(featureSettings.getTenantHeaderInExportsFeature())
         );
     }
 
@@ -95,5 +98,7 @@ public class TenantSettingsFeatureMapper {
             .getFeatureEnabled());
         existingFeatures.setAnlassInformationenFeature(features.getAnlassInformationenFeature().getFeatureEnabled());
         existingFeatures.setAnlassTitleRequiredFeature(features.getAnlassTitleRequiredFeature().getFeatureEnabled());
+        existingFeatures.setTenantHeaderInExportsFeature(features.getTenantHeaderInExportsFeature()
+            .getFeatureEnabled());
     }
 }

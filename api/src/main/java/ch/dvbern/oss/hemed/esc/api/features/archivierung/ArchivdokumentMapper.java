@@ -1,9 +1,8 @@
 package ch.dvbern.oss.hemed.esc.api.features.archivierung;
 
+import java.nio.file.Path;
 import java.util.List;
 
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
@@ -11,6 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -41,13 +41,14 @@ public class ArchivdokumentMapper {
         return archivdokumentService.findAll(onlyOpen).stream().map(a -> ArchivdokumentMapper.toJson(a, tenant)).toList();
     }
 
+
     @NonNull
     public FileInfo downloadArchivFile(@NonNull ID<Archivdokument> archivdokumentId) {
-        Archivdokument archivdokument = archivdokumentService.getById(archivdokumentId);
-        if (archivdokument.getFiledata() == null) {
-            throw new AppFailureException(AppFailureMessage.entityNotFound(archivdokumentId, "File not found"));
-        }
-        archivdokumentService.setArchivierungStatusAndTimestamp(archivdokument);
-        return archivdokument.getFiledata().getFileInfoBucket();
+        return archivdokumentService.downloadArchivFile(archivdokumentId);
+    }
+
+    @NonNull
+    public Path bulkDownloadArchivFilesAsZip(@NonNull List<ID<Archivdokument>> archivdokumentIds) {
+        return archivdokumentService.downloadArchivFilesAsZip(archivdokumentIds);
     }
 }

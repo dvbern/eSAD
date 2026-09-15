@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.S3ZipWriter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -30,10 +30,8 @@ public class PrintZipUtil {
         ByteArrayOutputStream zipBaos = new ByteArrayOutputStream();
 
         try (ZipOutputStream zos = new ZipOutputStream(zipBaos)) {
-            ZipEntry entry = new ZipEntry(printResult.getFileInfo().getFileName().getFileName());
-            zos.putNextEntry(entry);
-            zos.write(printResult.getContent());
-            zos.closeEntry();
+            S3ZipWriter zipWriter = new S3ZipWriter(zos, fileStoreService);
+            zipWriter.addEntry(printResult.getFileInfo().getFileName().getFileName(), printResult.getContent());
 
             Set<String> notizFolderNameList = new HashSet<>();
             for (Notiz notiz : notizList) {
@@ -41,11 +39,8 @@ public class PrintZipUtil {
                 String folderName = calculateAutomaticFolderName(notizFolderNameList, notiz);
 
                 for (FileData fileData : notiz.getFiles()) {
-                    ZipEntry zipEntry =
-                        new ZipEntry(attachmentPrefix + '/' + folderName + '/' + fileData.getCalculatedFileName());
-                    zos.putNextEntry(zipEntry);
-                    zos.write(fileStoreService.getFileBytesSync(fileData.getFileInfoBucket().getFileIdInBucket()));
-                    zos.closeEntry();
+                    String entryName = attachmentPrefix + '/' + folderName + '/' + fileData.getCalculatedFileName();
+                    zipWriter.addFromS3(entryName, fileData.getFileInfoBucket());
                 }
             }
         }

@@ -99,10 +99,21 @@ public class UntersuchungSehenUtil {
     }
 
     @Nullable
+    public static SingleValueEnhanced<DistanzSehenResultat> getFernvisusAugeEinzelnDefault(
+        @NonNull AnlassConfig config,
+        @NonNull DistanzSehenResultat defaultWert
+    ) {
+        if (config.getSehenFernvisusAugeEinzeln().isVisible()) {
+            return SingleValueEnhanced.of(defaultWert, null);
+        }
+        return null;
+    }
+
+    @Nullable
     public static BigDecimal getFernvisusRechts(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull BigDecimal defaultWert
+        @Nullable BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
             if (sehen != null && CollectionUtils.isNotEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(
@@ -120,7 +131,7 @@ public class UntersuchungSehenUtil {
     public static BigDecimal getFernvisusLinks(
         @NonNull AnlassConfig config,
         @Nullable UntersuchungSehenBeurteilung sehen,
-        @NonNull BigDecimal defaultWert
+        @Nullable BigDecimal defaultWert
     ) {
         if (config.getSehenFernvisus().isVisible()) {
             if (sehen != null && CollectionUtils.isNotEmpty(ValueEnhancedUtil.getEnumSetOrEmpty(

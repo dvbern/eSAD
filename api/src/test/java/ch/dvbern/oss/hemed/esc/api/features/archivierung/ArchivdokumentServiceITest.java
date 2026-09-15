@@ -22,6 +22,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KindBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
+
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;

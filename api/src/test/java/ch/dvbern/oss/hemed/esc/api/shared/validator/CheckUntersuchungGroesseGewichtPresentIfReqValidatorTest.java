@@ -2,12 +2,13 @@ package ch.dvbern.oss.hemed.esc.api.shared.validator;
 
 import java.math.BigDecimal;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungGroesseGewichtBuilder;
+
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -124,7 +125,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         entity.getUntersuchung()
             .getAnlass()
             .getAnlassConfig()
-            .setGroesseGewichtGroessePerzentile(requirementSetting);
+            .setGroesseGewichtGroessePerzentileSingleValue(requirementSetting);
         // ACT
         CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
             new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
@@ -154,7 +155,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         entity.getUntersuchung()
             .getAnlass()
             .getAnlassConfig()
-            .setGroesseGewichtGewichtPerzentile(requirementSetting);
+            .setGroesseGewichtGewichtPerzentileSingleValue(requirementSetting);
         // ACT
         CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
             new CheckUntersuchungGroesseGewichtPresentIfReqValidator();
@@ -184,7 +185,7 @@ class CheckUntersuchungGroesseGewichtPresentIfReqValidatorTest {
         entity.getUntersuchung()
             .getAnlass()
             .getAnlassConfig()
-            .setGroesseGewichtBmiPerzentile(requirementSetting);
+            .setGroesseGewichtBmiPerzentileSingleValue(requirementSetting);
         // ACT
         CheckUntersuchungGroesseGewichtPresentIfReqValidator validator =
             new CheckUntersuchungGroesseGewichtPresentIfReqValidator();

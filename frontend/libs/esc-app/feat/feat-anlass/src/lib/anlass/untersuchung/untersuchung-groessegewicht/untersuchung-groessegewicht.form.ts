@@ -3,26 +3,28 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NonNullableFormBuilder, Validators} from '@angular/forms';
 import {
   AnlassConfigJson,
-  PerzentileGewicht,
-  PerzentileGroesse,
   RequirementSetting,
   UntersuchungGroesseGewichtDataJson,
   UntersuchungGroesseGewichtSaveJson,
 } from '@dvb/data-access-backend';
 import {globalConstants, ValueEnhancedForm} from '@dvb/feat-shared';
 import {AppValidators, BaseForm} from '@dvb/util-angular';
-import {ensurePropsFlat, isNullish, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
+import {ensurePropsFlat, Nullish, requireValue, trimToUndefined} from '@dvb/util-shared';
 import {PercentileChartData, PercentileMainDataPoint} from '@dvb/viz';
 import {distinctUntilChanged} from 'rxjs';
+import {PercentileReference} from './config/percentile-curve-sets';
 import {PercentileDiagramConfigService} from './config/percentile-diagram-config.service';
 
 type Config = {
   fb: NonNullableFormBuilder,
   destroyRef: DestroyRef,
   diagramConfigService: PercentileDiagramConfigService,
-  groessePerzentileValueEnhancedForm: ValueEnhancedForm;
-  gewichtPerzentileValueEnhancedForm: ValueEnhancedForm;
-  bmiPerzentileValueEnhancedForm: ValueEnhancedForm;
+  groesseSingleValueForm: ValueEnhancedForm;
+  groesseMultiValueForm: ValueEnhancedForm;
+  gewichtSingleValueForm: ValueEnhancedForm;
+  gewichtMultiValueForm: ValueEnhancedForm;
+  bmiSingleValueForm: ValueEnhancedForm;
+  bmiMultiValueForm: ValueEnhancedForm;
 }
 
 export function calculateBmi(groesse: number | undefined, gewicht: number | undefined): number | undefined {
@@ -38,11 +40,14 @@ function makeForm(config: Config) {
   const fb = config.fb;
   return fb.group({
     groesse: fb.control<number | undefined>(undefined, AppValidators.zeroDecimalPlaces()),
-    groessePerzentile: config.groessePerzentileValueEnhancedForm.group,
+    groessePerzentileSingleValue: config.groesseSingleValueForm.group,
+    groessePerzentileMultiValue: config.groesseMultiValueForm.group,
     gewicht: fb.control<number | undefined>(undefined, AppValidators.oneDecimalPlace()),
-    gewichtPerzentile: config.gewichtPerzentileValueEnhancedForm.group,
+    gewichtPerzentileSingleValue: config.gewichtSingleValueForm.group,
+    gewichtPerzentileMultiValue: config.gewichtMultiValueForm.group,
     bmi: fb.control<number | undefined>(undefined),
-    bmiPerzentile: config.bmiPerzentileValueEnhancedForm.group,
+    bmiPerzentileSingleValue: config.bmiSingleValueForm.group,
+    bmiPerzentileMultiValue: config.bmiMultiValueForm.group,
     bemerkungen: fb.control<string>('', AppValidators.textareaMaxLength2000()),
     version: fb.control<number | Nullish>({value: undefined, disabled: true}),
   });
@@ -51,38 +56,45 @@ function makeForm(config: Config) {
 export class UntersuchungGroesseGewichtForm
   extends BaseForm<ReturnType<typeof makeForm>, UntersuchungGroesseGewichtSaveJson> {
 
-  readonly groessePerzentileValueEnhancedForm: ValueEnhancedForm;
-  readonly gewichtPerzentileValueEnhancedForm: ValueEnhancedForm;
-  readonly bmiPerzentileValueEnhancedForm: ValueEnhancedForm;
+  readonly groesseSingleValueForm: ValueEnhancedForm;
+  readonly groesseMultiValueForm: ValueEnhancedForm;
+  readonly gewichtSingleValueForm: ValueEnhancedForm;
+  readonly gewichtMultiValueForm: ValueEnhancedForm;
+  readonly bmiSingleValueForm: ValueEnhancedForm;
+  readonly bmiMultiValueForm: ValueEnhancedForm;
 
   private readonly dataPointsGroesse: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
   private readonly dataPointsGewicht: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
   private readonly dataPointsBmi: Map<number, PercentileMainDataPoint> = new Map<number, PercentileMainDataPoint>();
 
-  public chartGroesseMale: PercentileChartData;
-  public chartGewichtMale: PercentileChartData;
-  public chartBmiMale: PercentileChartData;
+  // Assigned by buildCharts() as the first thing the constructor does.
+  public chartGroesseMale!: PercentileChartData;
+  public chartGewichtMale!: PercentileChartData;
+  public chartBmiMale!: PercentileChartData;
 
-  public chartGroesseFemale: PercentileChartData;
-  public chartGewichtFemale: PercentileChartData;
-  public chartBmiFemale: PercentileChartData;
+  public chartGroesseFemale!: PercentileChartData;
+  public chartGewichtFemale!: PercentileChartData;
+  public chartBmiFemale!: PercentileChartData;
 
   public alter: number | undefined = undefined;
   public alterDuodezimal: string | undefined = undefined;
 
+  /**
+   * Which reference curves the charts are drawn against. Defaults to the old set, because the Anlass
+   * -- and with it its date -- may still be loading when the form is constructed.
+   */
+  private reference: PercentileReference = 'BASEL_2019';
+
   constructor(protected config: Config) {
     super(() => makeForm(config));
-    this.chartGroesseMale = this.config.diagramConfigService.getChartDataGroesse('male');
-    this.chartGewichtMale = this.config.diagramConfigService.getChartDataGewicht('male');
-    this.chartBmiMale = this.config.diagramConfigService.getChartDataBmi('male');
+    this.buildCharts(this.reference);
 
-    this.chartGroesseFemale = this.config.diagramConfigService.getChartDataGroesse('female');
-    this.chartGewichtFemale = this.config.diagramConfigService.getChartDataGewicht('female');
-    this.chartBmiFemale = this.config.diagramConfigService.getChartDataBmi('female');
-
-    this.groessePerzentileValueEnhancedForm = config.groessePerzentileValueEnhancedForm;
-    this.gewichtPerzentileValueEnhancedForm = config.gewichtPerzentileValueEnhancedForm;
-    this.bmiPerzentileValueEnhancedForm = config.bmiPerzentileValueEnhancedForm;
+    this.groesseSingleValueForm = config.groesseSingleValueForm;
+    this.groesseMultiValueForm = config.groesseMultiValueForm;
+    this.gewichtSingleValueForm = config.gewichtSingleValueForm;
+    this.gewichtMultiValueForm = config.gewichtMultiValueForm;
+    this.bmiSingleValueForm = config.bmiSingleValueForm;
+    this.bmiMultiValueForm = config.bmiMultiValueForm;
 
     this.group.controls.groesse.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
       .subscribe({
@@ -116,29 +128,25 @@ export class UntersuchungGroesseGewichtForm
         },
         error: console.error,
       });
-    this.groessePerzentileValueEnhancedForm.group.controls.value.valueChanges.pipe(distinctUntilChanged(),
-      takeUntilDestroyed(config.destroyRef))
+    this.groesseSingleValueForm.group.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
       .subscribe({
-        next: value => {
-          if (!isNullish(value) && value === PerzentileGroesse.NICHT_GEPRUEFT) {
-            this.group.controls.groesse.removeValidators([Validators.required]);
-          } else {
-            this.group.controls.groesse.addValidators([Validators.required]);
-          }
-          this.group.controls.groesse.updateValueAndValidity();
-        },
+        next: () => this.group.controls.groesse.updateValueAndValidity(),
+        error: console.error,
       });
-    this.gewichtPerzentileValueEnhancedForm.group.controls.value.valueChanges.pipe(distinctUntilChanged(),
-      takeUntilDestroyed(config.destroyRef))
+    this.groesseMultiValueForm.group.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
       .subscribe({
-        next: value => {
-          if (!isNullish(value) && value === PerzentileGewicht.NICHT_GEPRUEFT) {
-            this.group.controls.gewicht.removeValidators([Validators.required]);
-          } else {
-            this.group.controls.gewicht.addValidators([Validators.required]);
-          }
-          this.group.controls.gewicht.updateValueAndValidity();
-        },
+        next: () => this.group.controls.groesse.updateValueAndValidity(),
+        error: console.error,
+      });
+    this.gewichtSingleValueForm.group.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
+      .subscribe({
+        next: () => this.group.controls.gewicht.updateValueAndValidity(),
+        error: console.error,
+      });
+    this.gewichtMultiValueForm.group.valueChanges.pipe(distinctUntilChanged(), takeUntilDestroyed(config.destroyRef))
+      .subscribe({
+        next: () => this.group.controls.gewicht.updateValueAndValidity(),
+        error: console.error,
       });
   }
 
@@ -152,9 +160,12 @@ export class UntersuchungGroesseGewichtForm
     const currentData: UntersuchungGroesseGewichtSaveJson | undefined = value?.untersuchungGroesseGewichtJson?.data;
     super.reset(currentData);
 
-    this.groessePerzentileValueEnhancedForm.resetForm(currentData?.groessePerzentile);
-    this.gewichtPerzentileValueEnhancedForm.resetForm(currentData?.gewichtPerzentile);
-    this.bmiPerzentileValueEnhancedForm.resetForm(currentData?.bmiPerzentile);
+    this.groesseSingleValueForm.resetForm(currentData?.groessePerzentileSingleValue);
+    this.groesseMultiValueForm.resetForm(currentData?.groessePerzentileMultiValue);
+    this.gewichtSingleValueForm.resetForm(currentData?.gewichtPerzentileSingleValue);
+    this.gewichtMultiValueForm.resetForm(currentData?.gewichtPerzentileMultiValue);
+    this.bmiSingleValueForm.resetForm(currentData?.bmiPerzentileSingleValue);
+    this.bmiMultiValueForm.resetForm(currentData?.bmiPerzentileMultiValue);
 
     this.group.controls.bmi.disable();
     const bmi = calculateBmi(
@@ -174,33 +185,76 @@ export class UntersuchungGroesseGewichtForm
     const value = requireValue(this.group.getRawValue());
     return ensurePropsFlat<UntersuchungGroesseGewichtSaveJson>({
       groesse: value.groesse,
-      groessePerzentile: this.groessePerzentileValueEnhancedForm.valueOnValid(),
+      groessePerzentileSingleValue: this.groesseSingleValueForm.valueOnValid(),
+      groessePerzentileMultiValue: this.groesseMultiValueForm.valueOnValid(),
       gewicht: value.gewicht,
-      gewichtPerzentile: this.gewichtPerzentileValueEnhancedForm.valueOnValid(),
-      bmiPerzentile: this.bmiPerzentileValueEnhancedForm.valueOnValid(),
+      gewichtPerzentileSingleValue: this.gewichtSingleValueForm.valueOnValid(),
+      gewichtPerzentileMultiValue: this.gewichtMultiValueForm.valueOnValid(),
+      bmiPerzentileSingleValue: this.bmiSingleValueForm.valueOnValid(),
+      bmiPerzentileMultiValue: this.bmiMultiValueForm.valueOnValid(),
       bemerkungen: trimToUndefined(value.bemerkungen),
       version: value.version ?? globalConstants.entityPrePersistVersion,
     });
   }
 
-  setValidatorsForAnlassConfig(config: AnlassConfigJson): void {
+  /**
+   * Aktualisiert die Perzentilen-Optionslisten der Single-/Multi-Value-Forms aus der aktuellen
+   * Anlasskonfiguration. Notwendig, da diese Optionen nur ein Snapshot bei Formular-Konstruktion
+   * waeren, wenn die Config (z.B. bei einem Hard-Reload) erst nachtraeglich eintrifft.
+   */
+  updatePerzentileOptions(config: AnlassConfigJson): void {
+    this.groesseSingleValueForm.updateOptions(config.data.groesseGewichtGroessePerzentileValues ?? []);
+    this.groesseMultiValueForm.updateOptions(config.data.groesseGewichtGroessePerzentileValues ?? []);
+    this.gewichtSingleValueForm.updateOptions(config.data.groesseGewichtGewichtPerzentileValues ?? []);
+    this.gewichtMultiValueForm.updateOptions(config.data.groesseGewichtGewichtPerzentileValues ?? []);
+    this.bmiSingleValueForm.updateOptions(config.data.groesseGewichtBmiPerzentileValues ?? []);
+    this.bmiMultiValueForm.updateOptions(config.data.groesseGewichtBmiPerzentileValues ?? []);
+  }
+
+  setValidatorsForAnlassConfig(config: AnlassConfigJson, nichtGeprueftGrundEnabled: boolean): void {
     if (config.data.groesseGewichtGroesse === RequirementSetting.REQUIRED) {
-      this.group.controls.groesse.addValidators(Validators.required);
+      this.group.controls.groesse.addValidators(
+        AppValidators.requiredIfValidator(
+          () => !this.groesseSingleValueForm.isNichtGeprueftChecked() && !this.groesseMultiValueForm.isNichtGeprueftChecked(),
+        ),
+      );
+      this.group.controls.groesse.updateValueAndValidity();
     }
-    if (config.data.groesseGewichtGroessePerzentile === RequirementSetting.REQUIRED) {
-      this.group.controls.groessePerzentile.addValidators(Validators.required);
-    }
+    this.groesseSingleValueForm.setValidatorsForAnlassConfig(
+      config.data.groesseGewichtGroessePerzentileSingleValue,
+      nichtGeprueftGrundEnabled,
+    );
+    this.groesseMultiValueForm.setValidatorsForAnlassConfig(
+      config.data.groesseGewichtGroessePerzentileMultiValue,
+      nichtGeprueftGrundEnabled,
+    );
     if (config.data.groesseGewichtGewicht === RequirementSetting.REQUIRED) {
-      this.group.controls.gewicht.addValidators(Validators.required);
+      this.group.controls.gewicht.addValidators(
+        AppValidators.requiredIfValidator(
+          () => !this.gewichtSingleValueForm.isNichtGeprueftChecked() && !this.gewichtMultiValueForm.isNichtGeprueftChecked(),
+        ),
+      );
+      this.group.controls.gewicht.updateValueAndValidity();
     }
-    if (config.data.groesseGewichtGewichtPerzentile === RequirementSetting.REQUIRED) {
-      this.group.controls.gewichtPerzentile.addValidators(Validators.required);
-    }
-    if (config.data.groesseGewichtBmiPerzentile === RequirementSetting.REQUIRED) {
-      this.group.controls.bmiPerzentile.addValidators(Validators.required);
-    }
+    this.gewichtSingleValueForm.setValidatorsForAnlassConfig(
+      config.data.groesseGewichtGewichtPerzentileSingleValue,
+      nichtGeprueftGrundEnabled,
+    );
+    this.gewichtMultiValueForm.setValidatorsForAnlassConfig(
+      config.data.groesseGewichtGewichtPerzentileMultiValue,
+      nichtGeprueftGrundEnabled,
+    );
+    this.bmiSingleValueForm.setValidatorsForAnlassConfig(
+      config.data.groesseGewichtBmiPerzentileSingleValue,
+      nichtGeprueftGrundEnabled,
+    );
+    this.bmiMultiValueForm.setValidatorsForAnlassConfig(
+      config.data.groesseGewichtBmiPerzentileMultiValue,
+      nichtGeprueftGrundEnabled,
+    );
     if (config.data.groesseGewichtBemerkungen === RequirementSetting.REQUIRED) {
       this.group.controls.bemerkungen.addValidators(Validators.required);
+      this.group.controls.bemerkungen.updateValueAndValidity();
     }
   }
 
@@ -220,6 +274,41 @@ export class UntersuchungGroesseGewichtForm
         }
       }
     }
+    this.refreshCharts();
+  }
+
+  /**
+   * Switches the charts to the reference curves that were in force for the given Anlass.
+   *
+   * The charts are built in the constructor, but the Anlass may only arrive afterwards, so this has
+   * to be able to rebuild them. Rebuilding is skipped while the reference is unchanged, which is the
+   * normal case on every later change detection pass.
+   */
+  public setReference(reference: PercentileReference): void {
+    if (reference === this.reference) {
+      return;
+    }
+    this.reference = reference;
+    this.buildCharts(reference);
+    // The freshly built charts have an empty mainData, so the measurements have to be put back.
+    this.refreshCharts();
+  }
+
+  /** Creates the six charts (three measures x two genders) against the given reference. */
+  private buildCharts(reference: PercentileReference): void {
+    const service = this.config.diagramConfigService;
+
+    this.chartGroesseMale = service.getChartDataGroesse('male', reference);
+    this.chartGewichtMale = service.getChartDataGewicht('male', reference);
+    this.chartBmiMale = service.getChartDataBmi('male', reference);
+
+    this.chartGroesseFemale = service.getChartDataGroesse('female', reference);
+    this.chartGewichtFemale = service.getChartDataGewicht('female', reference);
+    this.chartBmiFemale = service.getChartDataBmi('female', reference);
+  }
+
+  /** Re-attaches the data points and hands the charts new object identities so they redraw. */
+  private refreshCharts(): void {
     this.chartGroesseMale.mainData = this.dataPointsGroesse;
     this.chartGewichtMale.mainData = this.dataPointsGewicht;
     this.chartBmiMale.mainData = this.dataPointsBmi;

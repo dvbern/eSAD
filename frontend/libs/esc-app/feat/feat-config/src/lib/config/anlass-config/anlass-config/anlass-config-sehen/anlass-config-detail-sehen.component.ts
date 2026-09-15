@@ -10,6 +10,7 @@ import {
   FormLayoutComponent,
   HeadingDirective,
   NgSelectDirective,
+  TextInputDirective,
 } from '@dvb/ui-components';
 import { DirtyMarker } from '@dvb/util-angular';
 import { isNullish } from '@dvb/util-shared';
@@ -32,9 +33,10 @@ import { ActivatedRoute } from '@angular/router';
     NgOptionComponent,
     NgSelectComponent,
     NgSelectDirective,
+    TextInputDirective,
     TranslocoPipe,
     TranslatedEnumViewValuePipe
-],
+  ],
   templateUrl: './anlass-config-detail-sehen.component.html',
   styleUrl: './anlass-config-detail-sehen.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

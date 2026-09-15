@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
 import {
+  CardInCardComponent,
   FormControlComponent,
   FormLayoutComponent,
-  HeadingDirective,
+  IconComponent,
   SaveCancelButtonsComponent,
   TextareaDirective,
   TitleComponent
@@ -22,6 +23,7 @@ import {
 import {UntersuchungBewegungsapparatForm} from './untersuchung-bewegungsapparat.form';
 import {AnlassStore} from '../../anlass.store';
 import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedComponent} from "@dvb/feat-shared";
+import {setupApplyDefaultValuesEffect} from "../default-values.util";
 
 @Component({
   selector: 'feat-untersuchung-bewegungsapparat',
@@ -33,8 +35,9 @@ import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedCompone
     FormControlComponent,
     TitleComponent,
     FormLayoutComponent,
-    HeadingDirective,
     ValueEnhancedComponent,
+    CardInCardComponent,
+    IconComponent,
   ],
   templateUrl: './untersuchung-bewegungsapparat.component.html',
   styleUrl: './untersuchung-bewegungsapparat.component.scss',
@@ -73,6 +76,12 @@ export class UntersuchungBewegungsapparatComponent implements DirtyMarker {
       }
       this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
     });
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.store.defaultToApply,
+      form: this.form,
+      resetApplyDefault: () => this.store.resetApplyDefault(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
+    });
   }
 
   isDirty(): boolean {
@@ -81,6 +90,10 @@ export class UntersuchungBewegungsapparatComponent implements DirtyMarker {
 
   abbrechen(): void {
     this.form.resetForm(this.store.bewegungsapparat()?.data ?? undefined);
+  }
+
+  loadDefaults(): void {
+    this.store.applyDefault();
   }
 
   async submitIfValid(): Promise<void> {

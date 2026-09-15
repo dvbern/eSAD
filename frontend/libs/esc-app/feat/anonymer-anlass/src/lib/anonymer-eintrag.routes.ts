@@ -309,6 +309,7 @@ export const anonymerEintragRoutes: Route[] = [
                       anlassId: requireValidBackendEntityId(route.parent?.parent?.paramMap.get('anlassId')),
                     };
                     inject(UntersuchungSpracheStore).loadUntersuchungSprache(params);
+                    inject(UntersuchungSpracheStore).loadUntersuchungSpracheDefaults(params);
                   },
                 },
                 canActivate: [
@@ -327,6 +328,7 @@ export const anonymerEintragRoutes: Route[] = [
                       anlassId: requireValidBackendEntityId(route.parent?.parent?.paramMap.get('anlassId')),
                     };
                     inject(UntersuchungBewegungsapparatStore).loadBewegungsapparat(params);
+                    inject(UntersuchungBewegungsapparatStore).loadBewegungsapparatDefaults(params);
                   },
                 },
                 canActivate: [
@@ -344,8 +346,8 @@ export const anonymerEintragRoutes: Route[] = [
                       einladungId: toAnonymerEintragBackendEntityIdWithClass(requireValidBackendEntityId(route.params['anonymerEintragId'])),
                       anlassId: requireValidBackendEntityId(route.parent?.parent?.paramMap.get('anlassId')),
                     };
-                    inject(UntersuchungSchulrelevanteBeeintraechtigungStore)
-                      .loadUntersuchungSchulrelevanteBeeintraechtigung(params);
+                    inject(UntersuchungSchulrelevanteBeeintraechtigungStore).loadUntersuchungSchulrelevanteBeeintraechtigung(params);
+                    inject(UntersuchungSchulrelevanteBeeintraechtigungStore).loadUntersuchungSchulrelevanteBeeintraechtigungDefaults(params);
                   },
                 },
                 canActivate: [

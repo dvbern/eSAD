@@ -147,6 +147,35 @@ class UntersuchungBewegungsapparatResourceITest extends AbstractITest {
     }
 
     @Test
+    @TestAsAdminBS
+    void getDefaultUntersuchungBewegungsapparat() {
+        // ARRANGE
+        Einladung einladung = fixtureService.createEinladung();
+
+        // ACT
+        UntersuchungBewegungsapparatSaveJsonSpec result = api
+            .untersuchungBewegungsapparatResourceGetDefaultUntersuchungBewegungsapparat()
+            .anlassIdPath(einladung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(einladung.getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(UntersuchungBewegungsapparatSaveJsonSpec.class);
+
+        // ASSERT
+        assertThat(result).isNotNull();
+        assertThat(result.getSkoliose()).isNotNull();
+        assertThat(result.getSkoliose().getValue()).contains(Skoliose.SKOLIOSE_NEIN.name());
+        assertThat(result.getHaltungsschwaeche()).isNotNull();
+        assertThat(result.getHaltungsschwaeche().getValue()).contains(Haltungsschwaeche.NORMAL.name());
+        assertThat(result.getVerkuerzungHamstringmuskulatur()).isNotNull();
+        assertThat(result.getVerkuerzungHamstringmuskulatur().getValue())
+            .contains(VerkuerzungHamstringmuskulatur.NORMAL.name());
+        assertThat(result.getBemerkungen()).isNull();
+    }
+
+    @Test
     @TestAsSchularztBE
     void saveUntersuchungBewegungsapparat_anonym() {
         // ARRANGE

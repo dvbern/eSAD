@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.csv;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.external.KindExternal;
@@ -155,6 +156,19 @@ public final class PupilCSVMapperService {
     public static Optional<KontaktPersonKindExternal> toExternalKontaktPersonKind1(
         @NonNull PupilCsvDTO pupilCsvDTO
     ) {
+        // Default callback logs immediately; only used for one-off mappings (e.g. tests).
+        // Bulk imports MUST use the overload below with an aggregating callback to avoid flooding the log
+        // with one line per CSV row (see ESC-... log volume incident).
+        return toExternalKontaktPersonKind1(pupilCsvDTO, id -> LOG.warn(
+            "PUPIL IMPORT: KontaktpersonKind with id '{}' has no SchuelerId, ignoring",
+            id));
+    }
+
+    @NonNull
+    public static Optional<KontaktPersonKindExternal> toExternalKontaktPersonKind1(
+        @NonNull PupilCsvDTO pupilCsvDTO,
+        @NonNull Consumer<String> missingSchuelerIdHandler
+    ) {
         if (StringUtils.isEmpty(pupilCsvDTO.kontaktperson1Id())) {
             validateAllDataIsEmpty(
                 "All KontaktPersonKind data MUST be null if no id is present",
@@ -167,9 +181,7 @@ public final class PupilCSVMapperService {
         }
 
         if (pupilCsvDTO.schuelerId() == null) {
-            LOG.warn(
-                "PUPIL IMPORT: KontaktpersonKind with id '{}' has no SchuelerId, ignoring",
-                pupilCsvDTO.kontaktperson1Id());
+            missingSchuelerIdHandler.accept(pupilCsvDTO.kontaktperson1Id());
             return Optional.empty();
         }
 
@@ -197,6 +209,19 @@ public final class PupilCSVMapperService {
     public static Optional<KontaktPersonKindExternal> toExternalKontaktPersonKind2(
         @NonNull PupilCsvDTO pupilCsvDTO
     ) {
+        // Default callback logs immediately; only used for one-off mappings (e.g. tests).
+        // Bulk imports MUST use the overload below with an aggregating callback to avoid flooding the log
+        // with one line per CSV row (see ESC-... log volume incident).
+        return toExternalKontaktPersonKind2(pupilCsvDTO, id -> LOG.warn(
+            "PUPIL IMPORT: KontaktpersonKind with id '{}' has no SchuelerId, ignoring",
+            id));
+    }
+
+    @NonNull
+    public static Optional<KontaktPersonKindExternal> toExternalKontaktPersonKind2(
+        @NonNull PupilCsvDTO pupilCsvDTO,
+        @NonNull Consumer<String> missingSchuelerIdHandler
+    ) {
         if (StringUtils.isEmpty(pupilCsvDTO.kontaktperson2Id())) {
             validateAllDataIsEmpty(
                 "All KontaktPersonKind data MUST be null if no id is present",
@@ -209,9 +234,7 @@ public final class PupilCSVMapperService {
         }
 
         if (pupilCsvDTO.schuelerId() == null) {
-            LOG.warn(
-                "PUPIL IMPORT: KontaktpersonKind with id '{}' has no SchuelerId, ignoring",
-                pupilCsvDTO.kontaktperson2Id());
+            missingSchuelerIdHandler.accept(pupilCsvDTO.kontaktperson2Id());
             return Optional.empty();
         }
 

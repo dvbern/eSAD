@@ -12,6 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaend
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -63,6 +64,17 @@ public final class UntersuchungSpracheMapper {
             saveJson.getSprachverstaendnis()));
         sprache.setBemerkungen(saveJson.getBemerkungen());
         return sprache;
+    }
+
+    @NonNull
+    public UntersuchungSpracheSaveJson getDefaultUntersuchungSprache() {
+        return new UntersuchungSpracheSaveJson(
+            SingleValueEnhancedMapper.toJson(Nachsprechen.class, SingleValueEnhanced.of(Nachsprechen.BESTANDEN, null)),
+            SingleValueEnhancedMapper.toJson(Wortschatz.class, SingleValueEnhanced.of(Wortschatz.BESTANDEN, null)),
+            SingleValueEnhancedMapper.toJson(Sprachverstaendnis.class, SingleValueEnhanced.of(Sprachverstaendnis.BESTANDEN, null)),
+            null,
+            0L
+        );
     }
 
     @Nullable

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked } from '@angular/core';
-import { FormArray, FormsModule, NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, UrlTree } from '@angular/router';
-import { AnlassArt, AnlassSaveJson, AnlassTyp, InformationEltern, RequirementSetting } from '@dvb/data-access-backend';
-import { BenutzerStore, Path } from '@dvb/feat-shared';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, untracked} from '@angular/core';
+import {FormArray, FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {Router, UrlTree} from '@angular/router';
+import {AnlassArt, AnlassSaveJson, AnlassTyp, InformationEltern, RequirementSetting} from '@dvb/data-access-backend';
+import {BenutzerStore, Path} from '@dvb/feat-shared';
 import {
   ButtonComponent,
   ButtonsRightContainerComponent,
@@ -18,16 +18,18 @@ import {
   TextareaDirective,
   TitleComponent,
 } from '@dvb/ui-components';
-import { DirtyMarker } from '@dvb/util-angular';
-import { hasImpfungenEditBerechtigung, isNotNullish, requireValue } from '@dvb/util-shared';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import { AnlassStore } from '../../../anlass.store';
-import { UntersuchungStore } from '../../untersuchung.store';
-import { UntersuchungImpfungenStore } from '../untersuchung-impfungen.store';
-import { EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm } from './untersuchung-impfungen-massnahmen.form';
-import { requireValidBackendEntityId, toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
-import { UntersuchungImpfFolgetermineComponent } from '../untersuchung-impf-folgetermine/untersuchung-impf-folgetermine.component';
+import {DirtyMarker} from '@dvb/util-angular';
+import {hasImpfungenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
+import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {AnlassStore} from '../../../anlass.store';
+import {UntersuchungStore} from '../../untersuchung.store';
+import {UntersuchungImpfungenStore} from '../untersuchung-impfungen.store';
+import {EmpfehlungSubFormType, UntersuchungImpfungenMassnahmenForm} from './untersuchung-impfungen-massnahmen.form';
+import {requireValidBackendEntityId} from '@dvb/data-access-types';
+import {
+  UntersuchungImpfFolgetermineComponent
+} from '../untersuchung-impf-folgetermine/untersuchung-impf-folgetermine.component';
 
 @Component({
   selector: 'feat-untersuchung-impfungen-massnahmen',

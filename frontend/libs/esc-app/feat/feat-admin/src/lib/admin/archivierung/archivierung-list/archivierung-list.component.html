@@ -1,3 +1,21 @@
+@if(store.isArchivModusOffen()){
+  <div class="archiv-bulk-action-bar">
+    @if (benutzerStore.hasFachrolleSupport()) {
+      <svui-icon-with-tooltip>
+        {{ 'archiv.list.bulkdownload.support.disabled' | transloco }}
+      </svui-icon-with-tooltip>
+    }
+    <button
+      svuiButton="primary"
+      type="button"
+      [working]="store.saveLoader.isLoading()"
+      [disabled]="bulkDownloadDisabled()"
+      (click)="bulkDownloadArchivdokument()"
+    >
+      {{ 'archiv.list.downloadBulk' | transloco }}
+    </button>
+  </div>
+}
 <table
   svuiTable
   [loading]="store.loader.isLoading()"

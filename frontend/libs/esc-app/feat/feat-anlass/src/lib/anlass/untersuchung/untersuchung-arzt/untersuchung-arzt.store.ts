@@ -27,28 +27,22 @@ import {
   UntersuchungArztServiceSaveUntersuchungArztBemerkungRequestParams,
   UntersuchungArztServiceSaveUntersuchungArztBeurteilungRequestParams,
 } from '@dvb/data-access-backend';
-import { toEinladungBackendEntityIdWithClass } from '@dvb/data-access-types';
-import {globalConstants} from '@dvb/feat-shared';
 import {AppErrorHandlerService, AppNotificationStore, Loader} from '@dvb/util-angular';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
-import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
+import {patchState, signalStore, withState} from '@ngrx/signals';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, map, pipe, switchMap, tap} from 'rxjs';
-import {AnlassEinladungenId} from '../anlass-einladungen-id';
+import {withDefaultValues} from '../default-values.util';
 import {UntersuchungStore} from '../untersuchung.store';
 
 type UntersuchungArztState = {
   untersuchungArztBeurteilung: UntersuchungArztBeurteilungJson | undefined;
-  defaultArztInitial: UntersuchungArztBeurteilungSaveJson | undefined;
-  defaultArztToApply: UntersuchungArztBeurteilungSaveJson | undefined;
   untersuchungArztBemerkung: UntersuchungArztBemerkungJson | undefined;
 };
 
 const initialState: UntersuchungArztState = {
   untersuchungArztBeurteilung: undefined,
-  defaultArztInitial: undefined,
-  defaultArztToApply: undefined,
   untersuchungArztBemerkung: undefined,
 };
 
@@ -56,22 +50,9 @@ const initialState: UntersuchungArztState = {
 export class UntersuchungArztStore extends signalStore(
   {protectedState: false},
   withState(initialState),
-  withMethods((store) => ({
-    defaultArztToApplyWithCorrectedVersion(): UntersuchungArztBeurteilungSaveJson {
-      // Ensure that the version is set correctly when applying the default Sehen
-      const defaultsWithCorrectedVersion = {
-        ...store.defaultArztInitial(),
-        version: store.untersuchungArztBeurteilung()?.data.version ?? globalConstants.entityPrePersistVersion,
-      };
-      return defaultsWithCorrectedVersion;
-    },
-    applyDefaultUntersuchungArzt(): void {
-      patchState(store, {defaultArztToApply: this.defaultArztToApplyWithCorrectedVersion()});
-    },
-    resetApplyDefaultUntersuchungArzt(): void {
-      patchState(store, {defaultArztToApply: undefined});
-    },
-  })),
+  withDefaultValues<UntersuchungArztBeurteilungSaveJson, UntersuchungArztBeurteilungJson, UntersuchungArztState>({
+    getCurrentEntity: (store) => store.untersuchungArztBeurteilung(),
+  }),
 ) {
   readonly #untersuchungArztService = inject(UntersuchungArztService);
   readonly #appErrorHandlerService = inject(AppErrorHandlerService);
@@ -103,7 +84,7 @@ export class UntersuchungArztStore extends signalStore(
           }),
         error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
-        next: data => patchState(this, {defaultArztInitial: data}),
+        next: data => patchState(this, {defaultInitial: data}),
         error: console.error,
       }),
     ),

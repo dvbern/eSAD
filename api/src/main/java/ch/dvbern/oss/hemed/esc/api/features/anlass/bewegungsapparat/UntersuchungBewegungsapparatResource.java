@@ -56,6 +56,18 @@ public class UntersuchungBewegungsapparatResource {
                 List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)));
     }
 
+    @GET
+    @Path("/default")
+    @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)
+    @NonNull
+    public UntersuchungBewegungsapparatSaveJson getDefaultUntersuchungBewegungsapparat(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
+    ) {
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungBewegungsapparatMapper.getDefaultUntersuchungBewegungsapparat();
+    }
+
     @PUT
     @NonNull
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)

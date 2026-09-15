@@ -1,5 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
@@ -145,10 +147,12 @@ class TenantSettingsResourceITest extends AbstractITest {
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
+                new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant),
                 new TenantSettingFeatureStateJsonSpec(FeatureEnabledSettingSpec.DISABLED, irrelevant)
             ),
             List.of(EinladungStatusSpec.TEILNAHME_BESTAETIGT, EinladungStatusSpec.PRIVATARZT_BESTAETIGT),
-            LandingPageOptionSpec.DASHBOARD);
+            LandingPageOptionSpec.DASHBOARD,
+            LocalDate.of(2026, Month.OCTOBER, 6));
 
         var result = api.tenantSettingsResourceUpdateTenantSettings()
             .body(saveJson)
@@ -209,6 +213,8 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getFeatures().getAnlassInformationenFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData().getFeatures().getAnlassTitleRequiredFeature().getFeatureEnabled())
+            .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
+        Assertions.assertThat(result.getData().getFeatures().getTenantHeaderInExportsFeature().getFeatureEnabled())
             .isEqualTo(FeatureEnabledSettingSpec.DISABLED);
         Assertions.assertThat(result.getData()
             .getEinladungStatusValues()

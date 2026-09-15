@@ -5,6 +5,7 @@ import java.util.Optional;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankheitBuilder;
@@ -45,7 +46,7 @@ class KrankheitImpfStatusImpfschutzCsvColumnTest extends AbstractBaseColumnTest 
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translate("printer.boolean.true")).thenReturn("Ja");
-        untersuchungImpfstatusKrankheit.setImpfschutzGegeben(true);
+        untersuchungImpfstatusKrankheit.setImpfschutzGegeben(ImpfschutzGegeben.JA);
         assertThat(column.extract(einladung)).isEqualTo("Ja");
 
     }

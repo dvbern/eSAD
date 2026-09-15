@@ -27,6 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitMapper;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusKrankheitSaveJson;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungImpfstatusKrankheitSaveJsonSpecMapper;
@@ -103,7 +104,7 @@ public class UntersuchungImpfstatusKrankheitBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
-    public UntersuchungImpfstatusKrankheitBuilder withImpfschutzGegeben(boolean impfschutzGegeben) {
+    public UntersuchungImpfstatusKrankheitBuilder withImpfschutzGegeben(@NonNull ImpfschutzGegeben impfschutzGegeben) {
         this.impfstatus.setImpfschutzGegeben(impfschutzGegeben);
         return this;
     }

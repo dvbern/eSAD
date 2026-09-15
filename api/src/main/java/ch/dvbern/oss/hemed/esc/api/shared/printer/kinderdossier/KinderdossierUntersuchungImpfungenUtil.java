@@ -1,27 +1,31 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungKrankheitImmunitaet;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.Immunsuppression;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatusMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGeprueft;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfempfehlungMinimal;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfungDurchgefuehrtMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
+
 import com.itextpdf.layout.Document;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil.trimToPlaceholder;
 
@@ -71,7 +75,9 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 "printer.kinderdossier.anlass.impfungenDataMinimal.impfausweisGeprueft.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
                     untersuchung,
-                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImpfausweisGeprueft(), ImpfausweisGeprueft.class))),
+                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        d.getImpfausweisGeprueft(),
+                        ImpfausweisGeprueft.class))),
                 document);
         }
         if (config.getImpfungenDataMinimalImmunsuppression().isVisible()) {
@@ -79,7 +85,9 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 "printer.kinderdossier.anlass.impfungenDataMinimal.immunsuppression.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
                     untersuchung,
-                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImmunsuppression(),Immunsuppression.class))),
+                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        d.getImmunsuppression(),
+                        Immunsuppression.class))),
                 document);
         }
         if (config.getImpfungenDataMinimalMasernImpfstatus().isVisible()) {
@@ -87,7 +95,9 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 "printer.kinderdossier.anlass.impfungenDataMinimal.masernImpfstatus.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
                     untersuchung,
-                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getMasernImpfstatus(),ImpfStatusMinimal.class))),
+                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        d.getMasernImpfstatus(),
+                        ImpfStatusMinimal.class))),
                 document);
         }
         if (config.getImpfungenDataMinimalMasernAnzahlImpfungen().isVisible()) {
@@ -103,7 +113,9 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 "printer.kinderdossier.anlass.impfungenDataMinimal.hpvImpfstatus.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
                     untersuchung,
-                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getHpvImpfstatus(), ImpfStatusMinimal.class))),
+                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        d.getHpvImpfstatus(),
+                        ImpfStatusMinimal.class))),
                 document);
         }
         if (config.getImpfungenDataMinimalHpvAnzahlImpfungen().isVisible()) {
@@ -119,7 +131,9 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 "printer.kinderdossier.anlass.impfungenDataMinimal.impfempfehlung.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
                     untersuchung,
-                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImpfempfehlung(),ImpfempfehlungMinimal.class))),
+                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        d.getImpfempfehlung(),
+                        ImpfempfehlungMinimal.class))),
                 document);
         }
         if (config.getImpfungenDataMinimalImpfungDurchgefuehrt().isVisible()) {
@@ -127,7 +141,9 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 "printer.kinderdossier.anlass.impfungenDataMinimal.impfungDurchgefuehrt.label",
                 KinderdossierPrintUtil.extractUntersuchungImpfungenDataMinimal(
                     untersuchung,
-                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(d.getImpfungDurchgefuehrt(),ImpfungDurchgefuehrtMinimal.class))),
+                    d -> basePrinter.translateValue(ValueEnhancedUtil.getEnumValueOrNull(
+                        d.getImpfungDurchgefuehrt(),
+                        ImpfungDurchgefuehrtMinimal.class))),
                 document);
         }
     }
@@ -148,11 +164,14 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.impfempfehlung.label"),
                 I18nMessage.of("printer.kinderdossier.anlass.table.impfstatus.column.impf.label")),
             untersuchungImpfstatusKrankheitList.stream()
+                .sorted(Comparator.comparing(UntersuchungImpfstatusKrankheit::getKrankheit))
                 .map(untersuchungImpfstatusKrankheit -> List.of(
                     basePrinter.translateValue(untersuchungImpfstatusKrankheit.getKrankheit()),
                     trimToPlaceholder(untersuchungImpfstatusKrankheit.getAnzahlImpfungen()),
                     trimToPlaceholder(untersuchungImpfstatusKrankheit.getDatumLetzteImpfung(), "MM/yyyy"),
-                    basePrinter.translateValue(untersuchungImpfstatusKrankheit.isImpfschutzGegeben()),
+                    untersuchungImpfstatusKrankheit.getImpfschutzGegeben() == ImpfschutzGegeben.KEINE_ANGABE ?
+                        "-" :
+                        basePrinter.translateValue(untersuchungImpfstatusKrankheit.getImpfschutzGegeben() == ImpfschutzGegeben.JA),
                     basePrinter.translateValue(untersuchungImpfstatusKrankheit.isImpfempfehlung()),
                     basePrinter.translateValue(untersuchungImpfstatusKrankheit.isImpfentscheid())))
                 .toList(),
@@ -181,6 +200,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                 .map(untersuchungImpfungIntern -> List.of(
                     untersuchungImpfungIntern.getImpfstoff().getName(),
                     untersuchungImpfungIntern.getImpfstoff().getKrankheiten().stream()
+                        .sorted()
                         .map(basePrinter::translateValue)
                         .collect(Collectors.joining(", ")),
                     trimToPlaceholder(untersuchungImpfungIntern.getDatumImpfung()),
@@ -189,6 +209,7 @@ public final class KinderdossierUntersuchungImpfungenUtil {
                     trimToPlaceholder(untersuchungImpfungIntern.getUserDurchgefuehrt()),
                     untersuchungImpfungIntern.getKrankheitenImmunitaeten()
                         .stream()
+                        .sorted(Comparator.comparing(UntersuchungImpfungKrankheitImmunitaet::getKrankheit))
                         .map(item -> String.format(
                             "%s: %s",
                             basePrinter.translateValue(item.getKrankheit()),

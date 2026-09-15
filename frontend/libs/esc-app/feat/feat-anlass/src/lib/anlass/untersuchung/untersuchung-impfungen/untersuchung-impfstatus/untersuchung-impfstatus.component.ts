@@ -12,6 +12,7 @@ import {
 import {FormsModule, NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {
   AnlassConfigJson,
+  RequirementSetting,
   UntersuchungImpfstatusListSaveJson,
   UntersuchungImpfungenImpfausweisSaveJson,
 } from '@dvb/data-access-backend';
@@ -26,10 +27,13 @@ import {hasImpfungenEditBerechtigung} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
-import {
-  UntersuchungImpfstatusListComponent,
-} from '../untersuchung-impfstatus-list/untersuchung-impfstatus-list.component';
 import {UntersuchungImpfstatusListForm} from '../untersuchung-impfstatus-list/untersuchung-impfstatus-list.form';
+import {
+  UntersuchungImpfstatusNurUnvollstaendigeListComponent
+} from "../untersuchung-impfstatus-list/untersuchung-impfstatus-nur-unvollstaendige-list/untersuchung-impfstatus-nur-unvollstaendige-list.component";
+import {
+  UntersuchungImpfstatusListComponent
+} from "../untersuchung-impfstatus-list/untersuchung-impfstatus-complete-list/untersuchung-impfstatus-list.component";
 
 @Component({
   selector: 'feat-untersuchung-impfstatus',
@@ -42,6 +46,7 @@ import {UntersuchungImpfstatusListForm} from '../untersuchung-impfstatus-list/un
     TranslocoPipe,
     FormErrorMessageComponent,
     UntersuchungImpfstatusListComponent,
+    UntersuchungImpfstatusNurUnvollstaendigeListComponent,
     HeadingDirective,
     SaveCancelButtonsComponent,
     StatusTextComponent,
@@ -60,6 +65,7 @@ export class UntersuchungImpfstatusComponent {
     fb: inject(NonNullableFormBuilder),
     destroyRef: inject(DestroyRef),
     krankheiten: [...this.krankheitenLeft(), ...this.krankheitenRight()],
+    anlassConfig: this.anlassStore.selectedEntity()?.anlassConfig
   });
 
   dossier = computed(() => this.untersuchungStore.currentDossier());
@@ -70,6 +76,8 @@ export class UntersuchungImpfstatusComponent {
   impfausweis = input<UntersuchungImpfungenImpfausweisSaveJson>();
   loading = input.required<boolean>();
   saveImpfstatusList = output<UntersuchungImpfstatusListSaveJson>();
+
+  protected readonly RequirementSetting = RequirementSetting;
 
   constructor() {
     effect(() => {

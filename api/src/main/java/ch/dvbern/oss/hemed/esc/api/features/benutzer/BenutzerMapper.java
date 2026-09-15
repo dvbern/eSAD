@@ -19,6 +19,8 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.PrincipalJson;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.TestingResponseJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenMapper;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
+import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationRollenJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
@@ -46,6 +48,7 @@ public class BenutzerMapper {
     private final TenantSettingsService tenantSettingsService;
     private final ConfigService configService;
     private final OrganisationRollenMapper organisationRollenMapper;
+    private final OrganisationService organisationService;
     private final TenantProducer tenantProducer;
 
     @Nullable
@@ -267,10 +270,23 @@ public class BenutzerMapper {
     public BenutzerJson update(
         @NonNull ID<Benutzer> benutzerID,
         @NonNull BenutzerSaveJson benutzerJson,
-        @NonNull Consumer<Benutzer> requireAuthorization
+        @NonNull Consumer<Benutzer> requireAuthorization,
+        @NonNull Consumer<Organisation> requireAuthorizationToChangeOrganisation
     ) {
         Benutzer existingBenutzer = this.benutzerService.getById(benutzerID);
         requireAuthorization.accept(existingBenutzer);
+        Organisation bisherigeOrganisation = existingBenutzer.getSingleOrganisation();
+        // if any new Berechtigung does not belong to bisherigeOrganisation -> requireAuthorizationToChangeOrganisation
+        for (OrganisationRollenJson organisationRollenJson : benutzerJson.getOrganisationRollen()) {
+            OrganisationJson neueOrganisation = organisationRollenJson.getOrganisation();
+            if (neueOrganisation == null) {
+                continue;
+            }
+            if (bisherigeOrganisation == null
+                || !neueOrganisation.getId().equals(bisherigeOrganisation.getId())) {
+                requireAuthorizationToChangeOrganisation.accept(organisationService.getById(neueOrganisation.getId()));
+            }
+        }
         Benutzer entity = toEntity(existingBenutzer, benutzerJson);
         return Objects.requireNonNull(toJson(this.benutzerService.persist(entity)));
     }

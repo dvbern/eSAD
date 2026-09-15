@@ -23,6 +23,24 @@
       }
     </ng-select>
   </svui-form-control>
+  <!-- Hoeren Audiogramm Default Value -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogrammDefaultValue' | transloco"
+                     [viewValue]="form.group.getRawValue().hoerenAudiogrammDefaultValue ? ('Dezibel.' + form.group.getRawValue().hoerenAudiogrammDefaultValue | transloco) : null">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogrammDefaultValue"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (dezibel of dezibelOptions; track dezibel) {
+        <ng-option [value]="dezibel">
+          {{ 'Dezibel.' + dezibel | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
   <!-- Hoeren Audiogramm 250Hz-->
   <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm250Hz' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogramm250Hz | transloco">
@@ -41,6 +59,24 @@
       }
     </ng-select>
   </svui-form-control>
+  <!-- Hoeren Audiogramm 250Hz Default Value -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm250HzDefaultValue' | transloco"
+                     [viewValue]="form.group.getRawValue().hoerenAudiogramm250HzDefaultValue ? ('Dezibel.' + form.group.getRawValue().hoerenAudiogramm250HzDefaultValue | transloco) : null">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogramm250HzDefaultValue"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (dezibel of dezibelOptions; track dezibel) {
+        <ng-option [value]="dezibel">
+          {{ 'Dezibel.' + dezibel | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
   <!-- Hoeren Audiogramm 8000Hz-->
   <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm8000Hz' | transloco"
                      [viewValue]="'RequirementSetting.' + form.group.getRawValue().hoerenAudiogramm8000Hz | transloco">
@@ -55,6 +91,24 @@
       @for (requirement of requirementSettingOptions; track requirement) {
         <ng-option [value]="requirement">
           {{ 'RequirementSetting.' + requirement | transloco }}
+        </ng-option>
+      }
+    </ng-select>
+  </svui-form-control>
+  <!-- Hoeren Audiogramm 8000Hz Default Value -->
+  <svui-form-control [label]="'anlassconfig.label.hoerenAudiogramm8000HzDefaultValue' | transloco"
+                     [viewValue]="form.group.getRawValue().hoerenAudiogramm8000HzDefaultValue ? ('Dezibel.' + form.group.getRawValue().hoerenAudiogramm8000HzDefaultValue | transloco) : null">
+    <ng-select
+      svuiNgSelect
+      bindLabel='dummy'
+      appendTo="body"
+      [formControl]="form.group.controls.hoerenAudiogramm8000HzDefaultValue"
+      [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+      [multiple]="false"
+    >
+      @for (dezibel of dezibelOptions; track dezibel) {
+        <ng-option [value]="dezibel">
+          {{ 'Dezibel.' + dezibel | transloco }}
         </ng-option>
       }
     </ng-select>

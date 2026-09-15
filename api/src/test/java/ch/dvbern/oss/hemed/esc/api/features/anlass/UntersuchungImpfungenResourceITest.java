@@ -16,7 +16,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.Immunsuppressio
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatusMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGeprueft;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGrundUnvollstaendig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisVollstaendig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfempfehlungMinimal;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfungDurchgefuehrtMinimal;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
@@ -41,6 +44,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBui
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenDataMinimalBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenNurUnvollstaendigeBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
@@ -48,6 +52,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.api.UntersuchungImpfungenAp
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ImpfStatusSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.ImpfschutzGegebenSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.InformationElternSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.KrankheitSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfstatusKrankheitSaveJsonSpec;
@@ -59,6 +64,7 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenDa
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenDataMinimalJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenMassnahmenJsonSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenNurUnvollstaendigeJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungImpfungenSaveJsonSpec;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
@@ -461,11 +467,12 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void saveUntersuchungImpfungenImpfstatus_create_new_item() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		// ACT
 		UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpec =
 				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-						untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(4));
+                    untersuchungImpfungen).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(4));
 		UntersuchungImpfstatusListSaveJsonSpec listSpec =
 				new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpec));
 		UntersuchungImpfstatusListSaveJsonSpec result =
@@ -504,20 +511,21 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void saveUntersuchungImpfungenImpfstatus_set_immunitaet_on_dossier_for_masern_varizellen() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 
 		// ACT
 		UntersuchungImpfstatusKrankheitSaveJsonSpec createMasernJsonSpec =
 				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
-						.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+						.forUntersuchungImpfungen(untersuchungImpfungen)
 						.forKrankheit(Krankheit.MASERN)
-						.withImpfschutzGegeben(true));
+						.withImpfschutzGegeben(ImpfschutzGegeben.JA));
 
 		UntersuchungImpfstatusKrankheitSaveJsonSpec createVarizellenJsonSpec =
 				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
-						.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+						.forUntersuchungImpfungen(untersuchungImpfungen)
 						.forKrankheit(Krankheit.VARIZELLEN)
-						.withImpfschutzGegeben(true));
+						.withImpfschutzGegeben(ImpfschutzGegeben.JA));
 
 		UntersuchungImpfstatusListSaveJsonSpec listSpec =
 				new UntersuchungImpfstatusListSaveJsonSpec(List.of(
@@ -547,12 +555,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void saveUntersuchungImpfungenImpfstatus_update_existing_item() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		// Damit werden alle Krankheiten erstellt
-		untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen());
+		untersuchungImpfstatusKrankheitMapper.getByUntersuchungImpfungen(untersuchungImpfungen);
         UntersuchungImpfstatusKrankheitSaveJsonSpec createSpec =
 				UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                    untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN));
+                    untersuchungImpfungen).forKrankheit(Krankheit.MASERN));
         UntersuchungImpfstatusListSaveJsonSpec createListSpec =
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createSpec));
         api.untersuchungImpfungenResourceSaveUntersuchungImpfungenImpfstatus()
@@ -569,7 +578,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         // ACT
         UntersuchungImpfstatusKrankheitSaveJsonSpec updateSpec =
             UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                untersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(4));
+                untersuchungImpfungen).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(4));
         UntersuchungImpfstatusListSaveJsonSpec updateListSpec =
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(updateSpec));
         UntersuchungImpfstatusListSaveJsonSpec result =
@@ -613,16 +622,20 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
 		Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
 		Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
-		Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = previousUntersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 
         UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpecMasern =
-            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(2).withImpfschutzGegeben(true)
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+                .forUntersuchungImpfungen(untersuchungImpfungen)
+                .forKrankheit(Krankheit.MASERN)
+                .withAnzahlImpfungen(2)
+                .withImpfschutzGegeben(ImpfschutzGegeben.JA)
                 .withDatumLetzteImpfung(LocalDate.of(2022, 2, 3)));
 
         UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpecPolio =
             UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.POLIO).withAnzahlImpfungen(2));
+                untersuchungImpfungen).forKrankheit(Krankheit.POLIO).withAnzahlImpfungen(2));
 
         UntersuchungImpfstatusListSaveJsonSpec listSpec =
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern, createJsonSpecPolio));
@@ -638,7 +651,10 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .extract()
                 .as(UntersuchungImpfstatusListSaveJsonSpec.class);
 
-        Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.MASERN).findFirst().get().getImpfschutzGegeben()).isTrue();
+        Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream()
+            .filter(k -> k.getKrankheit() == KrankheitSpec.MASERN)
+            .findFirst().orElseThrow()
+            .getImpfschutzGegeben()).isEqualTo(ImpfschutzGegebenSpec.JA);
 
         Anlass newAnlass = fixtureService.createAnlass(LocalDate.of(2024, 1, 1));
 		Einladung newEinladung = fixtureService.createEinladung(newAnlass, dossier);
@@ -663,14 +679,15 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(result.getImpfstatusList()
 				.stream()
 				.anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
-						&& Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+						&& impfstatus.getImpfschutzGegeben() == ImpfschutzGegebenSpec.JA
 						&& Integer.valueOf(2).equals(impfstatus.getAnzahlImpfungen())
 						&& Objects.equals(impfstatus.getDatumLetzteImpfung(), LocalDate.of(2022, 2, 3)))).isTrue();
 
 		Assertions.assertThat(result.getImpfstatusList()
 				.stream()
-				.noneMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.POLIO && Boolean.TRUE.equals(
-						impfstatus.getImpfschutzGegeben()))).isTrue();
+				.noneMatch(impfstatus ->
+                    impfstatus.getKrankheit() == KrankheitSpec.POLIO
+                        && impfstatus.getImpfschutzGegeben() == ImpfschutzGegebenSpec.JA)).isTrue();
 	}
 
 	@Test
@@ -683,11 +700,12 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
 		Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
-		Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = previousUntersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 
         UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpecMasern =
             UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                    previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(2));
+                untersuchungImpfungen).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(2));
 
         UntersuchungImpfstatusListSaveJsonSpec listSpec =
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern));
@@ -706,14 +724,14 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.MASERN).findFirst().get().getAnzahlImpfungen()).isEqualTo(2);
 
 		untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-						previousUntersuchung.getUntersuchungImpfungen())
+                untersuchungImpfungen)
 				.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 				.withImpfstoff(impfstoff)
 				.withImmunitaetForKrankheit(Krankheit.MASERN, true)
 				.withDatumImpfung(LocalDate.of(2023, 1, 27))));
 
 		untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-						previousUntersuchung.getUntersuchungImpfungen())
+                untersuchungImpfungen)
 				.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 				.withImpfstoff(impfstoff)
 				.withImmunitaetForKrankheit(Krankheit.ROETELN, false)
@@ -742,14 +760,15 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(result.getImpfstatusList()
 				.stream()
 				.anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
-						&& Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+						&& impfstatus.getImpfschutzGegeben() == ImpfschutzGegebenSpec.JA
 						&& Integer.valueOf(3).equals(impfstatus.getAnzahlImpfungen())
 						&& Objects.equals(impfstatus.getDatumLetzteImpfung(), LocalDate.of(2023, 1, 27)))).isTrue();
 
 		Assertions.assertThat(result.getImpfstatusList()
 				.stream()
-				.noneMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.ROETELN && Boolean.TRUE.equals(
-						impfstatus.getImpfschutzGegeben()))).isTrue();
+				.noneMatch(impfstatus ->
+                    impfstatus.getKrankheit() == KrankheitSpec.ROETELN
+                        && impfstatus.getImpfschutzGegeben() == ImpfschutzGegebenSpec.JA)).isTrue();
 
 	}
 
@@ -763,13 +782,16 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
         Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
         Impfstoff impfstoff = fixtureService.createImpfstoff();
-        Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = previousUntersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 
         Anlass differentAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
 
         UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpecMasern =
-            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withImpfschutzGegeben(true)
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+                .forUntersuchungImpfungen(untersuchungImpfungen)
+                .forKrankheit(Krankheit.MASERN)
+                .withImpfschutzGegeben(ImpfschutzGegeben.JA)
                 .withDatumLetzteImpfung(LocalDate.of(2022, 2, 3))
                 .withAnzahlImpfungen(2));
 
@@ -790,7 +812,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.MASERN).findFirst().get().getAnzahlImpfungen()).isEqualTo(2);
 
         untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-                previousUntersuchung.getUntersuchungImpfungen())
+                untersuchungImpfungen)
             .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
             .withImpfstoff(impfstoff)
             .withImmunitaetForKrankheit(Krankheit.MASERN, true)
@@ -820,7 +842,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(result.getImpfstatusList()
             .stream()
             .anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
-                && Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+                && impfstatus.getImpfschutzGegeben() == ImpfschutzGegebenSpec.JA
                 && Integer.valueOf(2).equals(impfstatus.getAnzahlImpfungen())
             )).isTrue();
     }
@@ -834,16 +856,23 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Anlass previousAnlass = fixtureService.createAnlass(LocalDate.of(2021, 1, 1));
         Einladung previousEinladung = fixtureService.createEinladung(previousAnlass, dossier);
         Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
-        Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = previousUntersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 
         UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpecMasern =
-            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                    previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.MASERN).withAnzahlImpfungen(2).withImpfschutzGegeben(true)
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+                .forUntersuchungImpfungen(untersuchungImpfungen)
+                .forKrankheit(Krankheit.MASERN)
+                .withAnzahlImpfungen(2)
+                .withImpfschutzGegeben(ImpfschutzGegeben.JA)
                 .withDatumLetzteImpfung(LocalDate.of(2022, 2, 3)));
 
         UntersuchungImpfstatusKrankheitSaveJsonSpec createJsonSpecPolio =
-            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                previousUntersuchung.getUntersuchungImpfungen()).forKrankheit(Krankheit.POLIO).withAnzahlImpfungen(2).withImpfschutzGegeben(true));
+            UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
+                .forUntersuchungImpfungen(untersuchungImpfungen)
+                .forKrankheit(Krankheit.POLIO)
+                .withAnzahlImpfungen(2)
+                .withImpfschutzGegeben(ImpfschutzGegeben.JA));
 
         UntersuchungImpfstatusListSaveJsonSpec listSpec =
             new UntersuchungImpfstatusListSaveJsonSpec(List.of(createJsonSpecMasern, createJsonSpecPolio));
@@ -859,8 +888,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
                 .extract()
                 .as(UntersuchungImpfstatusListSaveJsonSpec.class);
 
-        Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.MASERN).findFirst().get().getImpfschutzGegeben()).isTrue();
-        Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.POLIO).findFirst().get().getImpfschutzGegeben()).isTrue();
+        Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.MASERN).findFirst().orElseThrow().getImpfschutzGegeben()).isEqualTo(ImpfschutzGegebenSpec.JA);
+        Assertions.assertThat(resultKrankheiten.getImpfstatusList().stream().filter(k -> k.getKrankheit() == KrankheitSpec.POLIO).findFirst().orElseThrow().getImpfschutzGegeben()).isEqualTo(ImpfschutzGegebenSpec.JA);
 
         AnlassConfig anlassConfig =  AnlassConfigBuilder.create(builder -> builder
             .withGueltigkeitsZeitraum(LocalDate.of(1999, 1, 1), LocalDate.of(1999, 12, 31))
@@ -892,7 +921,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(result.getImpfstatusList()
             .stream()
             .anyMatch(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN
-                && Boolean.TRUE.equals(impfstatus.getImpfschutzGegeben())
+                && impfstatus.getImpfschutzGegeben() == ImpfschutzGegebenSpec.JA
                 && Integer.valueOf(2).equals(impfstatus.getAnzahlImpfungen())
                 && Objects.equals(impfstatus.getDatumLetzteImpfung(), LocalDate.of(2022, 2, 3)))).isTrue();
 
@@ -928,12 +957,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void getUntersuchungImpfungenDataIntern_returnExisting() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
 
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-								untersuchung.getUntersuchungImpfungen())
+                        untersuchungImpfungen)
 						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withImpfstoff(impfstoff)));
 
@@ -967,10 +997,11 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
 
-		Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = previousUntersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
-                    .forUntersuchungImpfungen(previousUntersuchung.getUntersuchungImpfungen())
+                    .forUntersuchungImpfungen(untersuchungImpfungen)
                     .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 					.withImpfstoff(impfstoff)
 					.withImmunitaetForKrankheit(Krankheit.MASERN, true)));
@@ -1035,11 +1066,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void createUntersuchungImpfungIntern() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
 		// ACT
 		UntersuchungImpfungInternSaveJsonSpec payload =
-				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
+                        untersuchungImpfungen)
 						.withImpfstoff(impfstoff)).getData();
 		UntersuchungImpfungInternJsonSpec result = api.untersuchungImpfungenResourceCreateUntersuchungImpfungIntern()
 				.anlassIdPath(untersuchung.getAnlass().getId().getId())
@@ -1063,12 +1096,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void updateUntersuchungImpfungenIntern_should_set_immunitaet_on_dossier_for_masern_varizellen() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Impfstoff impfstoff = fixtureService.createImpfstoff(Krankheit.MASERN, Krankheit.VARIZELLEN);
 		// ACT
 		UntersuchungImpfungInternSaveJsonSpec payload =
 				UntersuchungImpfungInternBuilder.createJaxSpec(builder -> builder
-                    .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                    .forUntersuchungImpfungen(untersuchungImpfungen)
                     .withImpfstoff(impfstoff)
 					.withImmunitaetForKrankheit(Krankheit.MASERN, true)
 					.withImmunitaetForKrankheit(Krankheit.VARIZELLEN, true)).getData();
@@ -1094,12 +1128,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void updateUntersuchungImpfungenIntern() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
 
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-								untersuchung.getUntersuchungImpfungen())
+                        untersuchungImpfungen)
 						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withDatumImpfung(null)
 						.withImpfstoff(impfstoff)));
@@ -1135,12 +1170,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     void updateUntersuchungImpfungenIntern_durchfuehren_setzt_anlass_durchgefuehrt() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
         Impfstoff impfstoff = fixtureService.createImpfstoff();
 
         UntersuchungImpfungIntern existingImpfung =
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-                    untersuchung.getUntersuchungImpfungen())
+                    untersuchungImpfungen)
                 .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withDatumImpfung(null)
                 .withImpfstoff(impfstoff)));
@@ -1184,10 +1220,11 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Untersuchung previousUntersuchung = fixtureService.createUntersuchungWithImpfungen(previousEinladung);
         Impfstoff impfstoff = fixtureService.createImpfstoff();
 
-        Assertions.assertThat(previousUntersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = previousUntersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
         UntersuchungImpfungIntern existingImpfung =
             untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder
-                .forUntersuchungImpfungen(previousUntersuchung.getUntersuchungImpfungen())
+                .forUntersuchungImpfungen(untersuchungImpfungen)
                 .withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
                 .withImpfstoff(impfstoff)
                 .withImmunitaetForKrankheit(Krankheit.MASERN, true)));
@@ -1231,12 +1268,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void removeUntersuchungImpfungenIntern() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
 
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-								untersuchung.getUntersuchungImpfungen())
+                        untersuchungImpfungen)
 						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withDatumImpfung(null)
 						.withImpfstoff(impfstoff)));
@@ -1264,12 +1302,13 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		// ARRANGE
 		Anlass anotherAnlass = fixtureService.createAnlass();
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Impfstoff impfstoff = fixtureService.createImpfstoff();
 
 		UntersuchungImpfungIntern existingImpfung =
 				untersuchungImpfungInternService.persist(UntersuchungImpfungInternBuilder.create(builder -> builder.forUntersuchungImpfungen(
-								untersuchung.getUntersuchungImpfungen())
+                        untersuchungImpfungen)
 						.withAnlassImpfungErfasst(anotherAnlass)
 						.withUserErfasst(fixtureService.createBenutzerFuerZentraleOrganisation())
 						.withImpfstoff(impfstoff)));
@@ -1393,7 +1432,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             .filter(impfstatus -> impfstatus.getKrankheit() == KrankheitSpec.MASERN)
             .findFirst()
             .orElseThrow();
-        Assertions.assertThat(masernImpfstatus.getImpfschutzGegeben()).isTrue();
+        Assertions.assertThat(masernImpfstatus.getImpfschutzGegeben()).isEqualTo(ImpfschutzGegebenSpec.JA);
         Assertions.assertThat(masernImpfstatus.getDatumLetzteImpfung()).isNull();
     }
 
@@ -1416,13 +1455,14 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Einladung einladung = fixtureService.createEinladung(anlass, dossier);
 
         Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen(einladung);
-        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 
         // Den Impfausweis mutieren (Modified-Flag setzen). Der Impfausweis ist vollstaendig vorhanden
         // (weder nichtVorhanden noch unvollstaendig), damit der Validator das Datum verlangt.
         UntersuchungImpfungenSaveJsonSpec impfausweisSaveJsonSpec =
             UntersuchungImpfungenBuilder.createJaxSpec(builder -> builder
-                .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                .forUntersuchungImpfungen(untersuchungImpfungen)
                 .withImpfausweisNichtVorhanden(false)
                 .withImpfausweisUnvollstaendig(false)
                 .withImpfausweisStatusMutiert(true)).getData();
@@ -1441,7 +1481,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         // verlangt wird, muss die Validierung fehlschlagen.
         UntersuchungImpfstatusKrankheitSaveJsonSpec updateSpec =
             UntersuchungImpfstatusKrankheitBuilder.createSaveJaxSpec(builder -> builder
-                .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                .forUntersuchungImpfungen(untersuchungImpfungen)
                 .forKrankheit(Krankheit.MASERN)
                 .withAnzahlImpfungen(2)
                 .withDatumLetzteImpfung(null));
@@ -1464,10 +1504,11 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void saveUntersuchungMassnahmen_creates_aufgaben() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		UntersuchungImpfungenMassnahmenJsonSpec massnahmen =
 				UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
-								untersuchung.getUntersuchungImpfungen())
+                        untersuchungImpfungen)
 						.withInformationEltern(InformationEltern.BRIEF)
 						.withInformationHausarzt(true)
 						.withRueckfrageHausarzt(true)
@@ -1504,7 +1545,8 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	void saveUntersuchungMassnahmen_updates_aufgaben() {
 		// ARRANGE
 		Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungenMassnahmen();
-		Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
 		Untersuchung untersuchungBefore =
 				fixtureService.getUntersuchungWithLoadedData(untersuchung.getEinladungRequired().getId());
 		Assertions.assertThat(untersuchungBefore.getUntersuchungImpfungen()).isNotNull();
@@ -1513,21 +1555,21 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(massnahmenBefore).isNotNull();
 		Assertions.assertThat(massnahmenBefore.getAufgabeInformationEltern())
 				.isNotNull()
-				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+				.extracting(Aufgabe::getAufgabeStatus)
 				.isEqualTo(AufgabeStatus.OFFEN);
 		Assertions.assertThat(massnahmenBefore.getAufgabeInformationHausarzt())
 				.isNotNull()
-				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+				.extracting(Aufgabe::getAufgabeStatus)
 				.isEqualTo(AufgabeStatus.OFFEN);
 		Assertions.assertThat(massnahmenBefore.getAufgabeRueckfrageHausarzt())
 				.isNotNull()
-				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+				.extracting(Aufgabe::getAufgabeStatus)
 				.isEqualTo(AufgabeStatus.OFFEN);
 
 		// ACT
 		UntersuchungImpfungenMassnahmenJsonSpec payload =
 				UntersuchungImpfungenMassnahmenBuilder.createJaxSpec(builder -> builder
-                    .forUntersuchungImpfungen(untersuchung.getUntersuchungImpfungen())
+                    .forUntersuchungImpfungen(untersuchungImpfungen)
                     .withInformationEltern(InformationEltern.KEINE)
                     .withInformationHausarzt(false)
                     .withRueckfrageHausarzt(false));
@@ -1554,15 +1596,15 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 		Assertions.assertThat(massnahmenAfter).isNotNull();
 		Assertions.assertThat(massnahmenAfter.getAufgabeInformationEltern())
 				.isNotNull()
-				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+				.extracting(Aufgabe::getAufgabeStatus)
 				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 		Assertions.assertThat(massnahmenAfter.getAufgabeInformationHausarzt())
 				.isNotNull()
-				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+				.extracting(Aufgabe::getAufgabeStatus)
 				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 		Assertions.assertThat(massnahmenAfter.getAufgabeRueckfrageHausarzt())
 				.isNotNull()
-				.extracting(aufgabe -> aufgabe != null ? aufgabe.getAufgabeStatus() : null)
+				.extracting(Aufgabe::getAufgabeStatus)
 				.isEqualTo(AufgabeStatus.ABGESCHLOSSEN);
 	}
 
@@ -1615,10 +1657,11 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     void saveUntersuchungDataMinimal() {
         // ARRANGE
         Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
-        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
         UntersuchungImpfungenDataMinimalJsonSpec saveJson =
             UntersuchungImpfungenDataMinimalBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
-                    untersuchung.getUntersuchungImpfungen())
+                    untersuchungImpfungen)
                 .withImpfausweisGeprueft(ImpfausweisGeprueft.JA, null)
                 .withMasernImpfstatus(ImpfStatusMinimal.VOLLSTAENDIG, null)
                 .withMasernAnzahlImpfungen(4));
@@ -1654,6 +1697,76 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
         Assertions.assertThat(resultRead.getDataMinimal().getData().getImpfausweisGeprueft().getValue()).contains(ImpfausweisGeprueft.JA.name());
         Assertions.assertThat(resultRead.getDataMinimal().getData().getMasernImpfstatus().getValue()).contains(ImpfStatusMinimal.VOLLSTAENDIG.name());
         Assertions.assertThat(resultRead.getDataMinimal().getData().getMasernAnzahlImpfungen()).isEqualTo(4);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void getUntersuchungNurUnvollstaendige_is_null_if_not_saved() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen()).isNotNull();
+        Assertions.assertThat(untersuchung.getUntersuchungImpfungen().getUntersuchungImpfungenNurUnvollstaendige()).isNull();
+        // ACT
+        UntersuchungImpfungenDataJsonSpec data = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+        // ASSERT
+        Assertions.assertThat(data).isNotNull();
+        Assertions.assertThat(data.getNurUnvollstaendige()).isNull();
+    }
+
+    @Test
+    @TestAsAdminBS
+    void saveUntersuchungNurUnvollstaendige() {
+        // ARRANGE
+        Untersuchung untersuchung = fixtureService.createUntersuchungWithImpfungen();
+        UntersuchungImpfungen untersuchungImpfungen = untersuchung.getUntersuchungImpfungen();
+        Assertions.assertThat(untersuchungImpfungen).isNotNull();
+        UntersuchungImpfungenNurUnvollstaendigeJsonSpec saveJson =
+            UntersuchungImpfungenNurUnvollstaendigeBuilder.createJaxSpec(builder -> builder.forUntersuchungImpfungen(
+                    untersuchungImpfungen)
+                .withImpfausweisVollstaendig(ImpfausweisVollstaendig.KEINE_ANGABE)
+                .withImpfausweisGrundUnvollstaendig(ImpfausweisGrundUnvollstaendig.MEDIZINISCHE_KONTRAINDIKATION));
+        // ACT: Save
+        UntersuchungImpfungenNurUnvollstaendigeJsonSpec saveResult = api.untersuchungImpfungenResourceSaveUntersuchungImpfungenNurUnvollstaendige()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .body(saveJson.getData())
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenNurUnvollstaendigeJsonSpec.class);
+        // ASSERT: Save
+        Assertions.assertThat(saveResult).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisVollstaendig()).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisGrundUnvollstaendig()).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisVollstaendig().getValue()).contains(ImpfausweisVollstaendig.KEINE_ANGABE.name());
+        Assertions.assertThat(saveResult.getData().getImpfausweisGrundUnvollstaendig().getValue()).contains(ImpfausweisGrundUnvollstaendig.MEDIZINISCHE_KONTRAINDIKATION.name());
+        // ACT: Read
+        UntersuchungImpfungenDataJsonSpec resultRead = api.untersuchungImpfungenResourceGetUntersuchungImpfungenData()
+            .anlassIdPath(untersuchung.getAnlass().getId().getId())
+            .einladungIdPath(toHasUntersuchungIdWrapper(untersuchung.getEinladungRequired().getId()))
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(UntersuchungImpfungenDataJsonSpec.class);
+        // ASSERT: Read
+        Assertions.assertThat(resultRead).isNotNull();
+        Assertions.assertThat(resultRead.getNurUnvollstaendige()).isNotNull();
+        Assertions.assertThat(resultRead.getNurUnvollstaendige().getData().getImpfausweisVollstaendig()).isNotNull();
+        Assertions.assertThat(resultRead.getNurUnvollstaendige().getData().getImpfausweisGrundUnvollstaendig()).isNotNull();
+        Assertions.assertThat(resultRead.getNurUnvollstaendige().getData().getImpfausweisVollstaendig().getValue()).contains(ImpfausweisVollstaendig.KEINE_ANGABE.name());
+        Assertions.assertThat(resultRead.getNurUnvollstaendige().getData().getImpfausweisGrundUnvollstaendig().getValue()).contains(ImpfausweisGrundUnvollstaendig.MEDIZINISCHE_KONTRAINDIKATION.name());
     }
 
     @Test
@@ -1833,6 +1946,50 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
             untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true);
         Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen()).isNotNull();
         Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen().getUntersuchungImpfungenDataMinimal()).isNotNull();
+    }
+
+    @Test
+    @TestAsSchularztBE
+    void saveUntersuchungImpfungenNurUnvollstaendige_anonym() {
+        // ARRANGE
+        tenantProducer.setCurrentTenant(TenantEnum.BE);
+
+        Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
+        untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
+
+        // ACT
+        UntersuchungImpfungenNurUnvollstaendigeJsonSpec saveJson =
+            UntersuchungImpfungenNurUnvollstaendigeBuilder.createJaxSpec(builder -> builder
+                .withImpfausweisVollstaendig(ImpfausweisVollstaendig.NEIN)
+                .withImpfausweisGrundUnvollstaendig(ImpfausweisGrundUnvollstaendig.IMPFENTSCHEIDUNG_ERZIEHUNGSBERECHTIGTE));
+        // Neue NurUnvollstaendige, daher Version 0
+        saveJson.getData().setVersion(0L);
+
+        UntersuchungImpfungenNurUnvollstaendigeJsonSpec saveResult =
+            api.untersuchungImpfungenResourceSaveUntersuchungImpfungenNurUnvollstaendige()
+                .anlassIdPath(anonymerEintrag.getAnlass().getId().getId())
+                .einladungIdPath(toHasAnonymerEintragIdWrapper(anonymerEintrag.getId()))
+                .body(saveJson.getData())
+                .execute(ResponseBody::prettyPeek)
+                .then()
+                .assertThat()
+                .statusCode(Status.OK.getStatusCode())
+                .extract()
+                .as(UntersuchungImpfungenNurUnvollstaendigeJsonSpec.class);
+
+        // ASSERT
+        Assertions.assertThat(saveResult).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisVollstaendig()).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisGrundUnvollstaendig()).isNotNull();
+        Assertions.assertThat(saveResult.getData().getImpfausweisVollstaendig().getValue()).contains(ImpfausweisVollstaendig.NEIN.name());
+        Assertions.assertThat(saveResult.getData().getImpfausweisGrundUnvollstaendig().getValue()).contains(ImpfausweisGrundUnvollstaendig.IMPFENTSCHEIDUNG_ERZIEHUNGSBERECHTIGTE.name());
+
+        // UntersuchungImpfungenNurUnvollstaendige wurde auf der anonymen Untersuchung persistiert
+        Untersuchung untersuchungAfter =
+            untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), true);
+        Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen()).isNotNull();
+        Assertions.assertThat(untersuchungAfter.getUntersuchungImpfungen().getUntersuchungImpfungenNurUnvollstaendige()).isNotNull();
     }
 
     @Test

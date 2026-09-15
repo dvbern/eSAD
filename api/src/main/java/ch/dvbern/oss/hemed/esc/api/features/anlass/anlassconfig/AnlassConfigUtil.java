@@ -21,6 +21,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig;
 import java.util.Arrays;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
+
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -60,9 +61,9 @@ public final class AnlassConfigUtil {
 
     public static boolean isImpfungenMassnahmenVisible(@NonNull AnlassConfig config) {
         return isAnyVisible(
-                config.getUntersuchungImpfungEmpfehlung(),
-                config.getUntersuchungImpfungAchtung()
-            )
+            config.getUntersuchungImpfungEmpfehlung(),
+            config.getUntersuchungImpfungAchtung()
+        )
             || config.isImpfungenMassnahmeKeineMassnahmen()
             || config.isImpfungenMassnahmeGruppenFolgetermin()
             || config.isImpfungenMassnahmeImpfenFolgetermin()
@@ -251,9 +252,12 @@ public final class AnlassConfigUtil {
             config.getGroesseGewichtGroesse(),
             config.getGroesseGewichtGewicht(),
             config.getGroesseGewichtBmi(),
-            config.getGroesseGewichtGroessePerzentile(),
-            config.getGroesseGewichtGewichtPerzentile(),
-            config.getGroesseGewichtBmiPerzentile(),
+            config.getGroesseGewichtGroessePerzentileSingleValue(),
+            config.getGroesseGewichtGroessePerzentileMultiValue(),
+            config.getGroesseGewichtGewichtPerzentileSingleValue(),
+            config.getGroesseGewichtGewichtPerzentileMultiValue(),
+            config.getGroesseGewichtBmiPerzentileSingleValue(),
+            config.getGroesseGewichtBmiPerzentileMultiValue(),
             config.getGroesseGewichtEmpfehlung(),
             config.getGroesseGewichtBemerkungen());
     }

@@ -116,4 +116,23 @@ export class ValueEnhancedForm extends BaseForm<ReturnType<typeof makeForm>, Val
   public getOptions(): string[] {
     return this.config.options;
   }
+
+  /**
+   * Aktualisiert die zur Auswahl stehenden Optionen (z.B. wenn die Anlasskonfiguration erst
+   * nach der Formular-Konstruktion vom Server eintrifft, etwa bei einem Hard-Reload). Fuer
+   * Multi-Value wird das valueArray dabei analog zu resetMultiValueForm neu aufgebaut, damit
+   * die Checkboxen zu den aktuellen Optionen passen.
+   */
+  public updateOptions(options: string[]): void {
+    this.config.options = options;
+    if (this.config.selectionType === 'multi') {
+      this.resetMultiValueForm({value: this.getCurrentMultiValues()});
+    }
+  }
+
+  private getCurrentMultiValues(): string[] {
+    return this.group.controls.valueArray.controls
+      .filter(control => control.controls.isChecked.value)
+      .map(control => control.controls.resultat.getRawValue());
+  }
 }

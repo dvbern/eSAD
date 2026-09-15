@@ -337,8 +337,8 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result.getVerwendeteTafel()).isNotNull();
         assertThat(result.getVerwendeteTafel().getValue()).contains(VerwendetTafelResultatSpec.C_TAFEL.name());
         assertThat(result.getFernvisus().getValue()).isEqualTo(List.of(DistanzSehenResultatSpec.NORMAL.name()));
-        assertThat(result.getFernvisusRechts()).isEqualTo(BigDecimal.valueOf(1.0));
-        assertThat(result.getFernvisusLinks()).isEqualTo(BigDecimal.valueOf(1.0));
+        assertThat(result.getFernvisusRechts()).isEqualByComparingTo(BigDecimal.valueOf(1.00));
+        assertThat(result.getFernvisusLinks()).isEqualByComparingTo(BigDecimal.valueOf(1.00));
         assertThat(result.getNahvisus().getValue()).isEqualTo(List.of(DistanzSehenResultatSpec.NICHT_GEPRUEFT.name()));
         assertThat(result.getNahvisusRechts()).isNull();
         assertThat(result.getNahvisusLinks()).isNull();
@@ -445,8 +445,8 @@ class UntersuchungSehenResourceITest extends AbstractITest {
         assertThat(result.getVerwendeteTafel()).isNotNull();
         assertThat(result.getVerwendeteTafel().getValue()).contains(VerwendetTafelResultatSpec.C_TAFEL.name());
         assertThat(result.getFernvisus().getValue()).isEqualTo(List.of(DistanzSehenResultatSpec.NORMAL.name()));
-        assertThat(result.getFernvisusRechts()).isEqualTo(BigDecimal.valueOf(1.0));
-        assertThat(result.getFernvisusLinks()).isEqualTo(BigDecimal.valueOf(1.0));
+        assertThat(result.getFernvisusRechts()).isEqualByComparingTo(BigDecimal.valueOf(1.00));
+        assertThat(result.getFernvisusLinks()).isEqualByComparingTo(BigDecimal.valueOf(1.00));
         assertThat(result.getNahvisus().getValue()).isEqualTo(List.of(DistanzSehenResultatSpec.NICHT_GEPRUEFT.name()));
         assertThat(result.getNahvisusRechts()).isNull();
         assertThat(result.getNahvisusLinks()).isNull();

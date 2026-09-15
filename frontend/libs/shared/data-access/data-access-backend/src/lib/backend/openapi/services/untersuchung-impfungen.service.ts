@@ -27,6 +27,8 @@ import { UntersuchungImpfungenDataMinimalSaveJson } from '../model/untersuchung-
 import { UntersuchungImpfungenJson } from '../model/untersuchung-impfungen-json';
 import { UntersuchungImpfungenMassnahmenJson } from '../model/untersuchung-impfungen-massnahmen-json';
 import { UntersuchungImpfungenMassnahmenSaveJson } from '../model/untersuchung-impfungen-massnahmen-save-json';
+import { UntersuchungImpfungenNurUnvollstaendigeJson } from '../model/untersuchung-impfungen-nur-unvollstaendige-json';
+import { UntersuchungImpfungenNurUnvollstaendigeSaveJson } from '../model/untersuchung-impfungen-nur-unvollstaendige-save-json';
 import { UntersuchungImpfungenSaveJson } from '../model/untersuchung-impfungen-save-json';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -83,6 +85,12 @@ export interface UntersuchungImpfungenServiceSaveUntersuchungImpfungenImpfstatus
     anlassId: BackendEntityId;
     einladungId: BackendEntityIdWithClass;
     untersuchungImpfstatusListSaveJson: UntersuchungImpfstatusListSaveJson;
+}
+
+export interface UntersuchungImpfungenServiceSaveUntersuchungImpfungenNurUnvollstaendigeRequestParams {
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
+    untersuchungImpfungenNurUnvollstaendigeSaveJson: UntersuchungImpfungenNurUnvollstaendigeSaveJson;
 }
 
 export interface UntersuchungImpfungenServiceSaveUntersuchungMassnahmenRequestParams {
@@ -926,6 +934,95 @@ export class UntersuchungImpfungenService {
             {
                 context: localVarHttpContext,
                 body: untersuchungImpfstatusListSaveJson,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Save Untersuchung Impfungen Nur Unvollstaendige
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public saveUntersuchungImpfungenNurUnvollstaendige$(requestParameters?: UntersuchungImpfungenServiceSaveUntersuchungImpfungenNurUnvollstaendigeRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungImpfungenNurUnvollstaendigeJson>;
+    public saveUntersuchungImpfungenNurUnvollstaendige$(requestParameters?: UntersuchungImpfungenServiceSaveUntersuchungImpfungenNurUnvollstaendigeRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungImpfungenNurUnvollstaendigeJson>>;
+    public saveUntersuchungImpfungenNurUnvollstaendige$(requestParameters?: UntersuchungImpfungenServiceSaveUntersuchungImpfungenNurUnvollstaendigeRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungImpfungenNurUnvollstaendigeJson>>;
+    public saveUntersuchungImpfungenNurUnvollstaendige$(requestParameters?: UntersuchungImpfungenServiceSaveUntersuchungImpfungenNurUnvollstaendigeRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling saveUntersuchungImpfungenNurUnvollstaendige.');
+        }
+        const einladungId = requestParameters?.einladungId;
+        if (einladungId === null || einladungId === undefined) {
+            throw new Error('Required parameter einladungId was null or undefined when calling saveUntersuchungImpfungenNurUnvollstaendige.');
+        }
+        const untersuchungImpfungenNurUnvollstaendigeSaveJson = requestParameters?.untersuchungImpfungenNurUnvollstaendigeSaveJson;
+        if (untersuchungImpfungenNurUnvollstaendigeSaveJson === null || untersuchungImpfungenNurUnvollstaendigeSaveJson === undefined) {
+            throw new Error('Required parameter untersuchungImpfungenNurUnvollstaendigeSaveJson was null or undefined when calling saveUntersuchungImpfungenNurUnvollstaendige.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/impfungen/nurunvollstaendige`;
+        return this.httpClient.request<UntersuchungImpfungenNurUnvollstaendigeJson>('put', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: untersuchungImpfungenNurUnvollstaendigeSaveJson,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

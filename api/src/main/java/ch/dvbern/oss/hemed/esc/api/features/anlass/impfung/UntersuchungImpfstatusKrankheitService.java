@@ -1,17 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
+import java.util.List;
+import java.util.Optional;
+
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,11 +57,11 @@ public class UntersuchungImpfstatusKrankheitService {
             .getDossier()
             .getId());
         dossier.disableOptimisticLockingCheck();
-		if (impfstatusKrankheit.getKrankheit() == Krankheit.MASERN && impfstatusKrankheit.isImpfschutzGegeben()) {
+		if (impfstatusKrankheit.getKrankheit() == Krankheit.MASERN && impfstatusKrankheit.getImpfschutzGegeben() == ImpfschutzGegeben.JA) {
 			dossier.setImmunitaetMasern(true);
 			dossierService.persist(dossier);
 		}
-		if (impfstatusKrankheit.getKrankheit() == Krankheit.VARIZELLEN && impfstatusKrankheit.isImpfschutzGegeben()) {
+		if (impfstatusKrankheit.getKrankheit() == Krankheit.VARIZELLEN && impfstatusKrankheit.getImpfschutzGegeben() == ImpfschutzGegeben.JA) {
 			dossier.setImmunitaetVarizellen(true);
 			dossierService.persist(dossier);
 		}
@@ -81,5 +83,13 @@ public class UntersuchungImpfstatusKrankheitService {
     @NonNull
     public Optional<UntersuchungImpfstatusKrankheit> findMostRecentlyChangedByDossier(@NonNull ID<Kind> kindId) {
         return impfstatusKrankheitRepo.findMostRecentlyChangedByDossier(kindId);
+    }
+
+    public void setAllTo(@NonNull ID<Untersuchung> untersuchungID, @NonNull ImpfschutzGegeben impfschutzGegeben) {
+        findByUntersuchung(untersuchungID)
+            .forEach(impfstatusKrankheit -> {
+                impfstatusKrankheit.disableOptimisticLockingCheck();
+                impfstatusKrankheit.setImpfschutzGegeben(impfschutzGegeben);
+            });
     }
 }

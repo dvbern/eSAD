@@ -5,6 +5,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGr
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -32,7 +33,7 @@ class GewichtBeurteilungCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungGroesseGewicht.setGewichtPerzentile(SingleValueEnhanced.of(perzentileGewicht, null));
+        untersuchungGroesseGewicht.setGewichtPerzentileSingleValue(SingleValueEnhanced.of(perzentileGewicht, null));
 
         assertThat(column.extract(einladung)).isEqualTo(expected);
     }

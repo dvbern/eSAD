@@ -93,4 +93,27 @@ export class ArchivierungStore extends signalStore(
       ),
     ),
   );
+
+  bulkDownloadArchivdokument = rxMethod<{
+    onSettled: () => void,
+  }>(
+    pipe(
+      exhaustMap(
+        ({onSettled}) => this.saveLoader.tapLoading$(
+          this.#archivService.bulkDownloadArchivFiles$( 'response'),
+          error => this.#appErrorHandlerService.handleError(error),
+        ).pipe(
+          tapResponse({
+            next: (result) => {
+              handleBlobResponseDownload(result, true);
+              this.loadArchivDokumente(true);
+            },
+            error: console.error,
+            // runs on success and on failure, so the "wird generiert" notification is always cleared again
+            finalize: onSettled,
+          }),
+        ),
+      ),
+    ),
+  );
 }

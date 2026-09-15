@@ -257,6 +257,7 @@ components:
       - impfungenDataMinimalHpvAnzahlImpfungen
       - impfungenDataMinimalImpfempfehlung
       - impfungenDataMinimalImpfungDurchgefuehrt
+      - impfungenNurUnvollstaendige
       - sehenBrilleLinsen
       - sehenBrilleLinsenValues
       - sehenFarbsehen
@@ -290,9 +291,14 @@ components:
       - groesseGewichtGroesse
       - groesseGewichtGewicht
       - groesseGewichtBmi
-      - groesseGewichtGroessePerzentile
-      - groesseGewichtGewichtPerzentile
-      - groesseGewichtBmiPerzentile
+      - groesseGewichtGroessePerzentileSingleValue
+      - groesseGewichtGroessePerzentileMultiValue
+      - groesseGewichtGroessePerzentileValues
+      - groesseGewichtGewichtPerzentileSingleValue
+      - groesseGewichtGewichtPerzentileMultiValue
+      - groesseGewichtGewichtPerzentileValues
+      - groesseGewichtBmiPerzentileSingleValue
+      - groesseGewichtBmiPerzentileMultiValue
       - groesseGewichtBmiPerzentileValues
       - groesseGewichtEmpfehlung
       - groesseGewichtBemerkungen
@@ -483,18 +489,24 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         impfungenDataMinimalImpfungDurchgefuehrt:
           $ref: "#/components/schemas/RequirementSetting"
+        impfungenNurUnvollstaendige:
+          $ref: "#/components/schemas/RequirementSetting"
         sehenBrilleLinsen:
           $ref: "#/components/schemas/RequirementSetting"
         sehenBrilleLinsenValues:
           type: array
           items:
             $ref: "#/components/schemas/BrilleLinsenResultat"
+        sehenBrilleLinsenDefaultValue:
+          $ref: "#/components/schemas/BrilleLinsenResultat"
         sehenFarbsehen:
           $ref: "#/components/schemas/RequirementSetting"
         sehenTafel:
           $ref: "#/components/schemas/RequirementSetting"
         sehenFernvisus:
           $ref: "#/components/schemas/RequirementSetting"
+        sehenFernvisusDefaultValue:
+          type: number
         sehenFernvisusAugeEinzeln:
           $ref: "#/components/schemas/RequirementSetting"
         sehenStereoTest:
@@ -527,10 +539,16 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogramm:
           $ref: "#/components/schemas/RequirementSetting"
+        hoerenAudiogrammDefaultValue:
+          $ref: "#/components/schemas/Dezibel"
         hoerenAudiogramm250Hz:
           $ref: "#/components/schemas/RequirementSetting"
+        hoerenAudiogramm250HzDefaultValue:
+          $ref: "#/components/schemas/Dezibel"
         hoerenAudiogramm8000Hz:
           $ref: "#/components/schemas/RequirementSetting"
+        hoerenAudiogramm8000HzDefaultValue:
+          $ref: "#/components/schemas/Dezibel"
         hoerenAudiogrammSimpel:
           $ref: "#/components/schemas/RequirementSetting"
         hoerenAudiogrammBeurteilung:
@@ -553,11 +571,25 @@ components:
           $ref: "#/components/schemas/RequirementSetting"
         groesseGewichtBmi:
           $ref: "#/components/schemas/RequirementSetting"
-        groesseGewichtGroessePerzentile:
+        groesseGewichtGroessePerzentileSingleValue:
           $ref: "#/components/schemas/RequirementSetting"
-        groesseGewichtGewichtPerzentile:
+        groesseGewichtGroessePerzentileMultiValue:
           $ref: "#/components/schemas/RequirementSetting"
-        groesseGewichtBmiPerzentile:
+        groesseGewichtGroessePerzentileValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerzentileGroesse"
+        groesseGewichtGewichtPerzentileSingleValue:
+          $ref: "#/components/schemas/RequirementSetting"
+        groesseGewichtGewichtPerzentileMultiValue:
+          $ref: "#/components/schemas/RequirementSetting"
+        groesseGewichtGewichtPerzentileValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerzentileGewicht"
+        groesseGewichtBmiPerzentileSingleValue:
+          $ref: "#/components/schemas/RequirementSetting"
+        groesseGewichtBmiPerzentileMultiValue:
           $ref: "#/components/schemas/RequirementSetting"
         groesseGewichtBmiPerzentileValues:
           type: array
@@ -1576,9 +1608,15 @@ components:
       type: object
       required:
       - timetravelEnabled
+      - archiveBulkDownloadMaxFiles
       properties:
         timetravelEnabled:
           type: boolean
+        archiveBulkDownloadMaxFiles:
+          type: integer
+          format: int32
+          description: Maximum number of files that are included in a single bulk
+            archive download zip.
     ConfigJson:
       type: object
       required:
@@ -2896,6 +2934,12 @@ components:
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
       examples:
       - 11111111-1111-1111-1111-111111111111
+    IDUntersuchungImpfungenNurUnvollstaendige:
+      type: string
+      format: entity-id
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+      examples:
+      - 11111111-1111-1111-1111-111111111111
     IDUntersuchungKindDaten:
       type: string
       format: entity-id
@@ -2979,12 +3023,32 @@ components:
       enum:
       - JA
       - NEIN
+    ImpfausweisGrundUnvollstaendig:
+      type: string
+      enum:
+      - MEDIZINISCHE_KONTRAINDIKATION
+      - IMPFUNG_AUFGESCHOBEN
+      - IMPFENTSCHEIDUNG_ERZIEHUNGSBERECHTIGTE
+      - IMPFUNG_ORGANISATORISCH_NICHT_ERFOLGT
+      - UNKLAR
+    ImpfausweisVollstaendig:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - KEINE_ANGABE
     ImpfempfehlungMinimal:
       type: string
       enum:
       - JA
       - NEIN
       - UNBEKANNT
+    ImpfschutzGegeben:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - KEINE_ANGABE
     ImpfstoffChargeJson:
       type: object
       required:
@@ -5025,6 +5089,7 @@ components:
       - anlassSpracheZusammenfassungFeature
       - anlassInformationenFeature
       - anlassTitleRequiredFeature
+      - tenantHeaderInExportsFeature
       properties:
         esadIdFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
@@ -5064,6 +5129,8 @@ components:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
         anlassTitleRequiredFeature:
           $ref: "#/components/schemas/TenantSettingFeatureStateJson"
+        tenantHeaderInExportsFeature:
+          $ref: "#/components/schemas/TenantSettingFeatureStateJson"
     TenantSettingSaveJson:
       type: object
       required:
@@ -5076,6 +5143,7 @@ components:
       - features
       - einladungStatusValues
       - defaultLandingPage
+      - gueltigAbWachstumskurvePch
       properties:
         defaultLanguage:
           $ref: "#/components/schemas/AppLanguages"
@@ -5100,6 +5168,9 @@ components:
             $ref: "#/components/schemas/EinladungStatus"
         defaultLandingPage:
           $ref: "#/components/schemas/LandingPageOption"
+        gueltigAbWachstumskurvePch:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
     TenantSettingsJson:
       type: object
       required:
@@ -5479,11 +5550,17 @@ components:
           format: int32
         gewicht:
           type: number
-        groessePerzentile:
+        groessePerzentileSingleValue:
           $ref: "#/components/schemas/ValueEnhancedJson"
-        gewichtPerzentile:
+        groessePerzentileMultiValue:
           $ref: "#/components/schemas/ValueEnhancedJson"
-        bmiPerzentile:
+        gewichtPerzentileSingleValue:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        gewichtPerzentileMultiValue:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        bmiPerzentileSingleValue:
+          $ref: "#/components/schemas/ValueEnhancedJson"
+        bmiPerzentileMultiValue:
           $ref: "#/components/schemas/ValueEnhancedJson"
         bemerkungen:
           type: string
@@ -5491,9 +5568,12 @@ components:
           type: integer
           format: int64
       required:
-      - groessePerzentile
-      - gewichtPerzentile
-      - bmiPerzentile
+      - groessePerzentileSingleValue
+      - groessePerzentileMultiValue
+      - gewichtPerzentileSingleValue
+      - gewichtPerzentileMultiValue
+      - bmiPerzentileSingleValue
+      - bmiPerzentileMultiValue
       - version
     UntersuchungHoerenAudiogrammJson:
       type: object
@@ -5583,7 +5663,7 @@ components:
           type: string
           $ref: "#/components/schemas/LocalDate"
         impfschutzGegeben:
-          type: boolean
+          $ref: "#/components/schemas/ImpfschutzGegeben"
         impfempfehlung:
           type: boolean
         impfentscheid:
@@ -5697,6 +5777,8 @@ components:
           $ref: "#/components/schemas/UntersuchungImpfungInternListJson"
         dataMinimal:
           $ref: "#/components/schemas/UntersuchungImpfungenDataMinimalJson"
+        nurUnvollstaendige:
+          $ref: "#/components/schemas/UntersuchungImpfungenNurUnvollstaendigeJson"
     UntersuchungImpfungenDataMinimalJson:
       type: object
       required:
@@ -5835,6 +5917,31 @@ components:
         version:
           type: integer
           format: int64
+    UntersuchungImpfungenNurUnvollstaendigeJson:
+      type: object
+      required:
+      - id
+      - entityInfo
+      - data
+      properties:
+        id:
+          $ref: "#/components/schemas/IDUntersuchungImpfungenNurUnvollstaendige"
+        entityInfo:
+          $ref: "#/components/schemas/EntityInfoJson"
+        data:
+          $ref: "#/components/schemas/UntersuchungImpfungenNurUnvollstaendigeSaveJson"
+    UntersuchungImpfungenNurUnvollstaendigeSaveJson:
+      type: object
+      properties:
+        impfausweisVollstaendig:
+          $ref: "#/components/schemas/ImpfausweisVollstaendig"
+        impfausweisGrundUnvollstaendig:
+          $ref: "#/components/schemas/ImpfausweisGrundUnvollstaendig"
+        version:
+          type: integer
+          format: int64
+      required:
+      - version
     UntersuchungImpfungenSaveJson:
       type: object
       required:
@@ -7658,6 +7765,37 @@ paths:
       security:
       - SecurityScheme:
         - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/bewegungsapparat/default:
+    get:
+      operationId: UntersuchungBewegungsapparatResource_getDefaultUntersuchungBewegungsapparat
+      tags:
+      - UntersuchungBewegungsapparat
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungBewegungsapparatSaveJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Default Untersuchung Bewegungsapparat
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/durchfuehrung:
     put:
       operationId: UntersuchungDurchfuehrungResource_saveUntersuchungDurchfuehrung
@@ -8401,6 +8539,45 @@ paths:
       security:
       - SecurityScheme:
         - SU_IMPFEN_SCHREIBEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/impfungen/nurunvollstaendige:
+    put:
+      operationId: UntersuchungImpfungenResource_saveUntersuchungImpfungenNurUnvollstaendige
+      tags:
+      - UntersuchungImpfungen
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UntersuchungImpfungenNurUnvollstaendigeSaveJson"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungImpfungenNurUnvollstaendigeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        "400":
+          description: Bad Request
+      summary: Save Untersuchung Impfungen Nur Unvollstaendige
+      security:
+      - SecurityScheme:
+        - SU_IMPFEN_SCHREIBEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/impfungen/visieren/visum1:
     post:
       operationId: UntersuchungImpfungenResource_visierenDoppelkontrolleVisum1
@@ -8823,6 +9000,37 @@ paths:
       security:
       - SecurityScheme:
         - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/schulrelevantebeeintraechtigung/default:
+    get:
+      operationId: UntersuchungSchulrelevanteBeeintraechtigungResource_getDefaultUntersuchungSchulrelevanteBeeintraechtigung
+      tags:
+      - UntersuchungSchulrelevanteBeeintraechtigung
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSchulrelevanteBeeintraechtigungSaveJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Default Untersuchung Schulrelevante Beeintraechtigung
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
   /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sehen/bemerkungfragebogen:
     put:
       operationId: UntersuchungSehenResource_saveUntersuchungSehenBemerkungFragebogen
@@ -9058,6 +9266,37 @@ paths:
         "403":
           description: Not Allowed
       summary: Get Untersuchung Sprache
+      security:
+      - SecurityScheme:
+        - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
+  /api/anlaesse/{anlassId}/einladungen/{einladungId}/untersuchung/sprache/default:
+    get:
+      operationId: UntersuchungSpracheResource_getDefaultUntersuchungSprache
+      tags:
+      - UntersuchungSprache
+      parameters:
+      - name: anlassId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/IDAnlass"
+      - name: einladungId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/HasUntersuchungIDWrapper"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UntersuchungSpracheSaveJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Get Default Untersuchung Sprache
       security:
       - SecurityScheme:
         - SU_AERZTLICHE_UNTERSUCHUNG_LESEN
@@ -9675,6 +9914,27 @@ paths:
         "403":
           description: Not Allowed
       summary: Find All Archivdokumente
+      security:
+      - SecurityScheme:
+        - ARCHIVIERUNG
+  /api/archivdokumente/download-bulk:
+    get:
+      operationId: ArchivdokumentResource_bulkDownloadArchivFiles
+      tags:
+      - Archivdokument
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Bulk Download Archiv Files
       security:
       - SecurityScheme:
         - ARCHIVIERUNG
@@ -14645,6 +14905,6 @@ paths:
         - SUPPORT
 info:
   title: esc-api API
-  version: 26.11.0-SNAPSHOT
+  version: 26.13.0-SNAPSHOT
 servers:
 - url: https://local-esc-bs.localhost:8443

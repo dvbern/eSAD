@@ -99,6 +99,12 @@
         </ng-select>
       </svui-form-control>
 
+      <!-- Gueltig ab Wachstumskurve PCH -->
+      <svui-form-control [label]="'config.tenant.gueltigAbWachstumskurvePch' | transloco"
+                         [viewValue]="form.group.getRawValue().gueltigAbWachstumskurvePch | date: 'dd.MM.yyyy'">
+        <input svuiTextInput="date" [formControl]="form.group.controls.gueltigAbWachstumskurvePch"/>
+      </svui-form-control>
+
       <!-- TENANT-FEATURES-->
       <h2 svuiHeading="formSection">{{ 'config.tenant.section.features' | transloco }}</h2>
 
@@ -435,6 +441,24 @@
           bindLabel="dummy"
           appendTo="body"
           [formControl]="form.group.controls.features.controls.anlassTitleRequiredFeature.controls.featureEnabled"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="false">
+          @for (opt of featureSettingOptions; track opt) {
+            <ng-option [value]="opt">
+              {{ 'FeatureEnabledSetting.' + opt | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
+      <!-- Tenant Header In Exports Feature -->
+      <svui-form-control [label]="'config.tenant.features.tenantHeaderInExportsFeature' | transloco"
+                         [viewValue]="form.group.controls.features.controls.tenantHeaderInExportsFeature.controls.featureEnabled.value">
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.features.controls.tenantHeaderInExportsFeature.controls.featureEnabled"
           [placeholder]="'global.select.bitte-auswaehlen' | transloco"
           [multiple]="false">
           @for (opt of featureSettingOptions; track opt) {

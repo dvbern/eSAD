@@ -33,11 +33,11 @@ import {
   TextInputDirective,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasAerztlicheUntersuchungEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import {hasAerztlicheUntersuchungEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
-import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
+import {setupApplyDefaultValuesEffect} from '../../default-values.util';
 import {UntersuchungArztStore} from '../untersuchung-arzt.store';
 import {
   BewegungsapparatSubFormType,
@@ -119,18 +119,11 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
       }
       this.form.setDisabled(!this.canEdit());
     });
-    effect(() => {
-      // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
-      const defaultArzt = this.store.defaultArztToApply();
-      if (isNotNullish(defaultArzt)) {
-        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultArzt);
-        if (hasAnyValue) {
-          this.form.resetForm(defaultArzt);
-          this.form.group.markAsDirty();
-        }
-        this.store.resetApplyDefaultUntersuchungArzt();
-        this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
-      }
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.store.defaultToApply,
+      form: this.form,
+      resetApplyDefault: () => this.store.resetApplyDefault(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
     });
   }
 
@@ -144,7 +137,7 @@ export class UntersuchungArztBeurteilungComponent implements DirtyMarker {
   }
 
   loadDefault(): void {
-    this.store.applyDefaultUntersuchungArzt();
+    this.store.applyDefault();
   }
 
   async submitIfValid(): Promise<void> {

@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.shared.benutzer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -29,10 +31,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.util.HasZustaendigkeit;
 import ch.dvbern.oss.hemed.esc.api.shared.util.VerantwortlicherSchuleChangedDTO;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,7 +53,6 @@ public class ZustaendigePersonService {
     private final DossierQueueService dossierQueueService;
     private final EinladungService einladungService;
     private final AnlassService anlassService;
-
 
     public void requireImmediateZustaendigkeit(@NonNull HasZustaendigkeit entity) {
         if (tenantSettingsService.isZentraleOrganisation()) {
@@ -77,10 +77,14 @@ public class ZustaendigePersonService {
         }
     }
 
-    public boolean hasZustaendigkeitChanged(@NonNull HasZustaendigkeit entity, @Nullable ID<Benutzer> newZustaendigerArztID) {
+    public boolean hasZustaendigkeitChanged(
+        @NonNull HasZustaendigkeit entity,
+        @Nullable ID<Benutzer> newZustaendigerArztID) {
         if (entity.getZustaendigArzt() != null && !entity.getZustaendigArzt().getId().equals(newZustaendigerArztID)) {
             Organisation currentOrganisationOrNull = entity.getSingleOrganisation();
-            Organisation newOrganisationOrNull = newZustaendigerArztID != null ? benutzerService.getById(newZustaendigerArztID).getSingleOrganisation() : null;
+            Organisation newOrganisationOrNull = newZustaendigerArztID != null ?
+                benutzerService.getById(newZustaendigerArztID).getSingleOrganisation() :
+                null;
             return currentOrganisationOrNull != null && !currentOrganisationOrNull.equals(newOrganisationOrNull);
         }
         return false;
@@ -95,13 +99,14 @@ public class ZustaendigePersonService {
                 String jsonString = objectMapper.writeValueAsString(args);
                 dossierService.findBySchule(schule.getId()).forEach(dossier
                     -> dossierQueueService.createDossierQueueItem(
-                        dossier.getId(),
-                        DossierQueueTyp.VERANTW_CHANGED_ON_SCHULE,
-                        jsonString
-                    ));
+                    dossier.getId(),
+                    DossierQueueTyp.VERANTW_CHANGED_ON_SCHULE,
+                    jsonString
+                ));
             } catch (JsonProcessingException e) {
                 throw new AppFailureException(
-                    AppFailureMessage.internalError("Could not store json parameter for VERANTWORTLICHER_CHANGED_ON_SCHULE"), e);
+                    AppFailureMessage.internalError(
+                        "Could not store json parameter for VERANTWORTLICHER_CHANGED_ON_SCHULE"), e);
             }
         }
     }
@@ -114,12 +119,14 @@ public class ZustaendigePersonService {
     ) {
         try {
             Dossier dossier = dossierService.getById(dossierID);
-            VerantwortlicherSchuleChangedDTO args = objectMapper.readValue(parameters, VerantwortlicherSchuleChangedDTO.class);
+            VerantwortlicherSchuleChangedDTO args =
+                objectMapper.readValue(parameters, VerantwortlicherSchuleChangedDTO.class);
             // TODO ESC-1139 Soll bei VerantwortlicherChange on Schule nicht archiviert werden?
             handleSchulVerantwortlicheChangedForDossier(dossier, args, false);
         } catch (JsonProcessingException e) {
             throw new AppFailureException(
-                AppFailureMessage.internalError("Could not read json parameter for VERANTWORTLICHER_CHANGED_ON_SCHULE"), e);
+                AppFailureMessage.internalError("Could not read json parameter for VERANTWORTLICHER_CHANGED_ON_SCHULE"),
+                e);
         }
     }
 
@@ -157,35 +164,54 @@ public class ZustaendigePersonService {
             // Bei dezentral organisierten Tenants wird der Schule-Arzt uebernommen, falls vorher Schule und
             // Dossier die gleichen Verantwortlichen hatten
             if (args.hasArztChanged()) {
-                ID<Benutzer> arztFromDossierID = dossier.getZustaendigArzt() != null ? dossier.getZustaendigArzt().getId() : null;
+                ID<Benutzer> arztFromDossierID =
+                    dossier.getZustaendigArzt() != null ? dossier.getZustaendigArzt().getId() : null;
                 if (Objects.equals(arztFromDossierID, args.getArztVorher())) {
                     if (args.getArztNachher() != null) {
                         // Archivieren fuer den bisherigen Verantwortlichen des Dossiers
                         if (archivierenIfNecessary) {
                             // Nur wenn wir tatsächlich den Verantwortlichen geändert haben, muss u.U. archiviert werden
                             if (arztFromDossierID != null) {
-                                Organisation orgsNew = benutzerService.getById(args.getArztNachher()).getSingleOrganisation();
-                                Organisation orgsOld = benutzerService.getById(arztFromDossierID).getSingleOrganisation();
+                                Organisation orgsNew =
+                                    benutzerService.getById(args.getArztNachher()).getSingleOrganisation();
+                                Organisation orgsOld =
+                                    benutzerService.getById(arztFromDossierID).getSingleOrganisation();
                                 if (!Objects.equals(orgsNew, orgsOld)) {
                                     // Der bisherige Arzt ist nicht mehr berechtigt -> archivieren
                                     Benutzer arztFuerArchivierung = benutzerService.getById(arztFromDossierID);
-                                    archivierungService.createGesamtArchivdokument(dossier, arztFuerArchivierung, ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED);
+                                    archivierungService.createGesamtArchivdokument(
+                                        dossier,
+                                        arztFuerArchivierung,
+                                        ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED);
                                 }
                             }
                         }
                         // Den neuen Verantwortlichen auf dem Dossier setzen
-                        Benutzer arztFromSchuleNew = benutzerService.getBenutzerIfCorrectRole(args.getArztNachher(), FachRolle.SCHULAERZTIN);
+                        Benutzer arztFromSchuleNew =
+                            benutzerService.getBenutzerIfCorrectRole(args.getArztNachher(), FachRolle.SCHULAERZTIN);
                         dossier.setZustaendigArzt(arztFromSchuleNew);
+                        // if arztFromSchuleNew has not the same organisation as the existing mpa -> delete the mpa
+                        if (dossier.getZustaendigMPA() != null) {
+                            Organisation orgFromNewArzt =
+                                arztFromSchuleNew != null ? arztFromSchuleNew.getSingleOrganisation() : null;
+                            Organisation orgFromOldMpa = dossier.getZustaendigMPA().getSingleOrganisation();
+                            if (!Objects.equals(orgFromNewArzt, orgFromOldMpa)) {
+                                dossier.setZustaendigMPA(null);
+                            }
+                        }
                         dossier.disableOptimisticLockingCheck();
                         dossierService.persist(dossier);
                     }
                 }
             }
             if (args.hasMpaChanged()) {
-                ID<Benutzer> mpaFromDossierID = dossier.getZustaendigMPA() != null ? dossier.getZustaendigMPA().getId() : null;
+                ID<Benutzer> mpaFromDossierID =
+                    dossier.getZustaendigMPA() != null ? dossier.getZustaendigMPA().getId() : null;
                 if (Objects.equals(mpaFromDossierID, args.getMpaVorher())) {
                     if (args.getMpaNachher() != null) {
-                        Benutzer mpaFromSchuleNew = benutzerService.getBenutzerIfOneOfRolesIsCorrect(args.getMpaNachher(), FachRolle.fachrollenHilfsperson());
+                        Benutzer mpaFromSchuleNew = benutzerService.getBenutzerIfOneOfRolesIsCorrect(
+                            args.getMpaNachher(),
+                            FachRolle.fachrollenHilfsperson());
                         dossier.setZustaendigMPA(mpaFromSchuleNew);
                         dossier.disableOptimisticLockingCheck();
                         dossierService.persist(dossier);
@@ -225,7 +251,9 @@ public class ZustaendigePersonService {
         if (Objects.equals(mpaFromSchule, mpaDossierNeu)) {
             dossier.setZustaendigMPA(null);
         } else {
-            dossier.setZustaendigMPA(benutzerService.getBenutzerIfOneOfRolesIsCorrect(mpaDossierNeu, FachRolle.fachrollenHilfsperson()));
+            dossier.setZustaendigMPA(benutzerService.getBenutzerIfOneOfRolesIsCorrect(
+                mpaDossierNeu,
+                FachRolle.fachrollenHilfsperson()));
         }
         // Bei zentrale organisierten Tenants werden die Verantwortlichen nur gesetzt, wenn sie nicht sowieso
         // schon auf der Schule gesetzt sind
@@ -245,7 +273,9 @@ public class ZustaendigePersonService {
         ID<Benutzer> mpaDossierAlt = dossier.getZustaendigMPA() != null ? dossier.getZustaendigMPA().getId() : null;
         if (!Objects.equals(mpaDossierAlt, mpaDossierNeu)) {
             // Hilfsperson hat geändert
-            dossier.setZustaendigMPA(benutzerService.getBenutzerIfOneOfRolesIsCorrect(mpaDossierNeu, FachRolle.fachrollenHilfsperson()));
+            dossier.setZustaendigMPA(benutzerService.getBenutzerIfOneOfRolesIsCorrect(
+                mpaDossierNeu,
+                FachRolle.fachrollenHilfsperson()));
         }
         // Bei dezentral organisierten Tenants wird der neue Arzt immer übernommen (wenn er überhaupt geändert hat)
         // Falls dadurch der bisherige Arzt den Zugriff verliert, erhält er eine Archivierung
@@ -256,7 +286,10 @@ public class ZustaendigePersonService {
             dossier.setZustaendigArzt(benutzerService.getBenutzerIfCorrectRole(arztDossierNeu, FachRolle.SCHULAERZTIN));
             // War vorher ein Arzt gesetzt und hat dieser durch die Änderung den Zugriff verloren?
             if (arztDossierAlt != null && !dossier.isBenutzerZustaendigForDossier(arztDossierAlt)) {
-                archivierungService.createGesamtArchivdokument(dossier, arztDossierAlt, ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED);
+                archivierungService.createGesamtArchivdokument(
+                    dossier,
+                    arztDossierAlt,
+                    ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED);
             }
         }
     }
@@ -267,7 +300,8 @@ public class ZustaendigePersonService {
         @Nullable ID<Benutzer> arztAnlassNeu,
         @Nullable ID<Benutzer> mpaAnlassNeu
     ) {
-        // Sollte nur gemacht werden wenn der Arzt auch wirklich gewechselt hat, ansonsten wird für einen Privatarzt bei jeder Änderung am Anlass die Archivierung durchgeführt.
+        // Sollte nur gemacht werden wenn der Arzt auch wirklich gewechselt hat, ansonsten wird für einen Privatarzt
+        // bei jeder Änderung am Anlass die Archivierung durchgeführt.
         if (anlass.getArzt() != null && !anlass.getArzt().getId().equals(arztAnlassNeu)) {
             List<Einladung> einladungen = einladungService.findByAnlass(anlass.getId());
             for (Einladung einladung : einladungen) {
@@ -276,7 +310,9 @@ public class ZustaendigePersonService {
         }
 
         anlass.setArzt(benutzerService.getBenutzerIfCorrectRole(arztAnlassNeu, FachRolle.SCHULAERZTIN));
-        anlass.setMpa(benutzerService.getBenutzerIfOneOfRolesIsCorrect(mpaAnlassNeu, FachRolle.fachrollenHilfsperson()));
+        anlass.setMpa(benutzerService.getBenutzerIfOneOfRolesIsCorrect(
+            mpaAnlassNeu,
+            FachRolle.fachrollenHilfsperson()));
         anlass.disableOptimisticLockingCheck();
         return anlassService.persistAndFlush(anlass);
     }
@@ -294,7 +330,10 @@ public class ZustaendigePersonService {
             // War vorher ein Arzt gesetzt und hat dieser durch die Änderung den Zugriff verloren?
             Benutzer arztAnlassAlt = anlass.getArzt();
             if (arztAnlassAlt != null && !dossier.isBenutzerZustaendigForDossier(arztAnlassAlt)) {
-                archivierungService.createTeilArchivdokument(dossier, ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED, anlass);
+                archivierungService.createTeilArchivdokument(
+                    dossier,
+                    ArchivierungTyp.ZUSTAENDIGER_ARZT_CHANGED,
+                    anlass);
             }
         }
     }
@@ -310,7 +349,10 @@ public class ZustaendigePersonService {
 
         if (!zentraleOrganisation && otherDossier.getZustaendigArzt() != null) {
             if (!basisDossier.isBenutzerZustaendigForDossier(otherDossier.getZustaendigArzt())) {
-                archivierungService.createGesamtArchivdokument(otherDossier, otherDossier.getZustaendigArzt(), ArchivierungTyp.DUPLIKAT_MERGE);
+                archivierungService.createGesamtArchivdokument(
+                    otherDossier,
+                    otherDossier.getZustaendigArzt(),
+                    ArchivierungTyp.DUPLIKAT_MERGE);
             }
         }
     }

@@ -1,0 +1,150 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (C) 2026 DV Bern AG, Switzerland
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <!--
+    AnlassConfig: add new single-/multi-value + allowed-values columns for Groesse/Gewicht/Bmi Perzentile.
+    groessegewichtbmiperzentilevalues already exists (added in 0008), so it is not added again.
+  -->
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-1">
+    <addColumn tableName="anlassconfig">
+      <column name="groessegewichtgroesseperzentilesinglevalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgroesseperzentilemultivalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgroesseperzentilevalues" type="VARCHAR(2000)"/>
+      <column name="groessegewichtgewichtperzentilesinglevalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgewichtperzentilemultivalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgewichtperzentilevalues" type="VARCHAR(2000)"/>
+      <column name="groessegewichtbmiperzentilesinglevalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtbmiperzentilemultivalue" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-2">
+    <addColumn tableName="anlassconfig_aud">
+      <column name="groessegewichtgroesseperzentilesinglevalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgroesseperzentilemultivalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgroesseperzentilevalues" type="VARCHAR(2000)"/>
+      <column name="groessegewichtgewichtperzentilesinglevalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgewichtperzentilemultivalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtgewichtperzentilevalues" type="VARCHAR(2000)"/>
+      <column name="groessegewichtbmiperzentilesinglevalue" type="VARCHAR(30)"/>
+      <column name="groessegewichtbmiperzentilemultivalue" type="VARCHAR(30)"/>
+    </addColumn>
+  </changeSet>
+
+  <!--
+    UntersuchungGroesseGewicht: add new single-/multi-value columns for Groesse/Gewicht/Bmi Perzentile.
+  -->
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-3">
+    <addColumn tableName="untersuchunggroessegewicht">
+      <column name="groesseperzentilesinglevalue" type="VARCHAR(255)"/>
+      <column name="groesseperzentilemultivalue" type="VARCHAR(2000)"/>
+      <column name="gewichtperzentilesinglevalue" type="VARCHAR(255)"/>
+      <column name="gewichtperzentilemultivalue" type="VARCHAR(2000)"/>
+      <column name="bmiperzentilesinglevalue" type="VARCHAR(255)"/>
+      <column name="bmiperzentilemultivalue" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-4">
+    <addColumn tableName="untersuchunggroessegewicht_aud">
+      <column name="groesseperzentilesinglevalue" type="VARCHAR(255)"/>
+      <column name="groesseperzentilemultivalue" type="VARCHAR(2000)"/>
+      <column name="gewichtperzentilesinglevalue" type="VARCHAR(255)"/>
+      <column name="gewichtperzentilemultivalue" type="VARCHAR(2000)"/>
+      <column name="bmiperzentilesinglevalue" type="VARCHAR(255)"/>
+      <column name="bmiperzentilemultivalue" type="VARCHAR(2000)"/>
+    </addColumn>
+  </changeSet>
+
+  <!--
+    Data migration AnlassConfig: copy old RequirementSetting single-value config into the new SingleValue
+    column. MultiValue defaults to NOT_VISIBLE. Allowed-values default to all values (matching the existing
+    default used for groessegewichtbmiperzentilevalues).
+  -->
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-5">
+    <sql>
+      UPDATE anlassconfig
+      SET groessegewichtgroesseperzentilesinglevalue = groessegewichtgroesseperzentile
+      WHERE groessegewichtgroesseperzentilesinglevalue IS NULL;
+      UPDATE anlassconfig
+      SET groessegewichtgroesseperzentilemultivalue = 'NOT_VISIBLE'
+      WHERE groessegewichtgroesseperzentilemultivalue IS NULL;
+      UPDATE anlassconfig
+      SET groessegewichtgroesseperzentilevalues = 'NORMAL,PERZENTILE_TIEF,PERZENTILE_HOCH,NICHT_GEPRUEFT'
+      WHERE groessegewichtgroesseperzentilevalues IS NULL;
+
+      UPDATE anlassconfig
+      SET groessegewichtgewichtperzentilesinglevalue = groessegewichtgewichtperzentile
+      WHERE groessegewichtgewichtperzentilesinglevalue IS NULL;
+      UPDATE anlassconfig
+      SET groessegewichtgewichtperzentilemultivalue = 'NOT_VISIBLE'
+      WHERE groessegewichtgewichtperzentilemultivalue IS NULL;
+      UPDATE anlassconfig
+      SET groessegewichtgewichtperzentilevalues = 'NORMAL,PERZENTILE_TIEF,PERZENTILE_HOCH,NICHT_GEPRUEFT'
+      WHERE groessegewichtgewichtperzentilevalues IS NULL;
+
+      UPDATE anlassconfig
+      SET groessegewichtbmiperzentilesinglevalue = groessegewichtbmiperzentile
+      WHERE groessegewichtbmiperzentilesinglevalue IS NULL;
+      UPDATE anlassconfig
+      SET groessegewichtbmiperzentilemultivalue = 'NOT_VISIBLE'
+      WHERE groessegewichtbmiperzentilemultivalue IS NULL;
+    </sql>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtgroesseperzentilesinglevalue"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtgroesseperzentilemultivalue"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtgewichtperzentilesinglevalue"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtgewichtperzentilemultivalue"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtbmiperzentilesinglevalue"/>
+    <addNotNullConstraint tableName="anlassconfig" columnName="groessegewichtbmiperzentilemultivalue"/>
+  </changeSet>
+
+  <!--
+    Data migration UntersuchungGroesseGewicht: straight copy of the already $1$/$2$-encoded old single
+    examination percentile values into the new SingleValue columns, without re-encoding.
+  -->
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-6">
+    <sql>
+      UPDATE untersuchunggroessegewicht
+      SET groesseperzentilesinglevalue = groesseperzentile
+      WHERE groesseperzentilesinglevalue IS NULL AND groesseperzentile IS NOT NULL;
+      UPDATE untersuchunggroessegewicht
+      SET gewichtperzentilesinglevalue = gewichtperzentile
+      WHERE gewichtperzentilesinglevalue IS NULL AND gewichtperzentile IS NOT NULL;
+      UPDATE untersuchunggroessegewicht
+      SET bmiperzentilesinglevalue = bmiperzentile
+      WHERE bmiperzentilesinglevalue IS NULL AND bmiperzentile IS NOT NULL;
+    </sql>
+  </changeSet>
+
+  <!--
+    AnlassConfig and UntersuchungGroesseGewicht: the legacy single-value columns
+    groessegewicht(groesse|gewicht|bmi)perzentile (anlassconfig) and groesse|gewicht|bmiperzentile
+    (untersuchunggroessegewicht) are superseded by the new SingleValue/MultiValue columns added and
+    migrated above. Neither entity maps those legacy columns anymore, so they are now dead. This changeset
+    drops them from the live tables only; the corresponding _aud columns are kept so the audit history
+    (envers) still reflects the values that were recorded before this migration.
+  -->
+  <changeSet author="junie" id="0083-groesse-gewicht-perzentile-single-multi-value-7">
+    <dropColumn tableName="anlassconfig" columnName="groessegewichtgroesseperzentile"/>
+    <dropColumn tableName="anlassconfig" columnName="groessegewichtgewichtperzentile"/>
+    <dropColumn tableName="anlassconfig" columnName="groessegewichtbmiperzentile"/>
+    <dropColumn tableName="untersuchunggroessegewicht" columnName="groesseperzentile"/>
+    <dropColumn tableName="untersuchunggroessegewicht" columnName="gewichtperzentile"/>
+    <dropColumn tableName="untersuchunggroessegewicht" columnName="bmiperzentile"/>
+  </changeSet>
+
+</databaseChangeLog>

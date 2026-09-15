@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -21,8 +22,8 @@ public class BMIBeurteilungCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungGroesseGewicht(
             einladung,
             untersuchungGroesseGewicht -> {
-                PerzentileBmi resultat =
-                    ValueEnhancedUtil.getEnumValueOrNull(untersuchungGroesseGewicht.getBmiPerzentile(), PerzentileBmi.class);
+                PerzentileBmi resultat = ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungGroesseGewicht.getBmiPerzentileSingleValue(), PerzentileBmi.class);
                 if (resultat == null) {
                     return "";
                 }
@@ -35,7 +36,7 @@ public class BMIBeurteilungCsvColumn extends AbstractCsvColumn {
                     case PerzentileBmi.PERZENTILE_HOCH -> "3";
                     case PerzentileBmi.NICHT_GEPRUEFT -> "4";
                     default -> throw new IllegalStateException("Unexpected value for BmiPerzentile: "
-                        + untersuchungGroesseGewicht.getBmiPerzentile());
+                        + untersuchungGroesseGewicht.getBmiPerzentileSingleValue());
                 };
             }
         );

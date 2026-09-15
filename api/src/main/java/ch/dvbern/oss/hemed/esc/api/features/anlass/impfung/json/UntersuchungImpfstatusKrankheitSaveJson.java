@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json;
 import java.time.LocalDate;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +34,7 @@ public class UntersuchungImpfstatusKrankheitSaveJson implements SaveJsonWithOpti
     private LocalDate datumLetzteImpfung;
 
     @Schema(required = false)
-    private boolean impfschutzGegeben = false;
+    private ImpfschutzGegeben impfschutzGegeben = ImpfschutzGegeben.KEINE_ANGABE;
 
     @Schema(required = false)
     private boolean impfempfehlung = false;

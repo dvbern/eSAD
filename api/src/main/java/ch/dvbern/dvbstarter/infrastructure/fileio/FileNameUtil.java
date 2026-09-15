@@ -1,18 +1,24 @@
 package ch.dvbern.dvbstarter.infrastructure.fileio;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
+
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 
 @UtilityClass
 public class FileNameUtil {
@@ -21,6 +27,12 @@ public class FileNameUtil {
     private static final String UNDERLINE = "_";
     public static final DateTimeFormatter
         DATE_FORMATTER_FOR_FILENAME = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.of("de", "CH"));
+
+    /**
+     * Includes the time: without it two  downloads on the same day land under the same name in the download folder.
+     */
+    public static final DateTimeFormatter DOWNLOAD_FILENAME_TIMESTAMP_FORMATTER =
+        DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss", Locale.of("de", "CH"));
 
     /**
      * Generates a file with a standardized name based on various parameters.
@@ -144,5 +156,31 @@ public class FileNameUtil {
             return FileTyp.IMPFEINVERSTAENDNIS;
         }
         return defaultTyp;
+    }
+
+    /**
+     * Makes {@code entryName} unique within {@code usedEntryNames} by inserting a counter before the file extension,
+     * registering the result as used.
+     * <p>
+     * {@code entryName} may be a zip path such as {@code Anhaenge/05-03-2025_Notiz/scan.pdf}. Only the segment after
+     * the last {@code /} is ever modified - a counter spliced into a folder name would move the entry into a
+     * different folder.
+     */
+    @NonNull
+    public static String uniqueEntryName(@NonNull Set<String> usedEntryNames, @NonNull String entryName) {
+        int slashIndex = entryName.lastIndexOf('/');
+        int dotIndex = entryName.lastIndexOf('.');
+        // the dot has to sit inside the last segment, and not be its first character (dotfiles have no extension)
+        boolean hasExtension = dotIndex > slashIndex + 1;
+
+        String candidate = entryName;
+        int counter = 1;
+        while (!usedEntryNames.add(candidate)) {
+            candidate = hasExtension
+                ? entryName.substring(0, dotIndex) + '_' + counter + entryName.substring(dotIndex)
+                : entryName + '_' + counter;
+            counter++;
+        }
+        return candidate;
     }
 }

@@ -1,107 +1,124 @@
 @if (anlassStore.selectedEntity()?.anlassConfig?.showTabSchulrelevanteBeeintraechtigung) {
 
-  <form svuiFormLayout
-        [formType]="'kacheln'"
-        [mode]="'edit'"
-        [formGroup]="form.group"
-        (ngSubmit)="submitIfValid()">
+  @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+    <svui-card-in-card class="mb-3">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span>{{ 'untersuchung.tab.defaultwerte.info' | transloco }}</span>
+        <button
+          class="nav-link"
+          (click)="loadDefaults()"
+          data-testid="untersuchung-schulrelevante-beeintraechtigung-defaultwerte">
+          <svui-icon [useCase]="'edit'"></svui-icon>
+          {{ 'untersuchung.tab.defaultwerte' | transloco }}
+        </button>
+      </div>
+    </svui-card-in-card>
+  }
 
-    <!-- Freies Gehen -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungFreiesGehen !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.freiesGehenSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen'"
-        [valuePrefix]="'FreiesGehen'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-        <div ngProjectAs="fieldsBeforeSingle" class="freies-gehen-fields">
-          <svui-form-control
-            class="textcontrol"
-            [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen.jahre' | transloco"
-            [viewValue]="form.group.controls.anzahlJahreFreiesGehen.value?.toString()">
-            <input [svuiTextInput]="'number'" [formControl]="form.group.controls.anzahlJahreFreiesGehen"/>
-          </svui-form-control>
+  <svui-card-in-card class="mb-3">
+    <form svuiFormLayout
+          [formType]="'kacheln'"
+          [mode]="'edit'"
+          [formGroup]="form.group"
+          (ngSubmit)="submitIfValid()">
 
-          <svui-form-control
-            class="textcontrol"
-            [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen.monate' | transloco"
-            [viewValue]="form.group.controls.anzahlMonateFreiesGehen.value?.toString()">
-            <input [svuiTextInput]="'number'" [formControl]="form.group.controls.anzahlMonateFreiesGehen"/>
-          </svui-form-control>
-        </div>
-      </feat-value-enhanced>
-    }
+      <!-- Freies Gehen -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungFreiesGehen !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.freiesGehenSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen'"
+          [valuePrefix]="'FreiesGehen'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+          <div ngProjectAs="fieldsBeforeSingle" class="freies-gehen-fields">
+            <svui-form-control
+              class="textcontrol"
+              [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen.jahre' | transloco"
+              [viewValue]="form.group.controls.anzahlJahreFreiesGehen.value?.toString()">
+              <input [svuiTextInput]="'number'" [formControl]="form.group.controls.anzahlJahreFreiesGehen"/>
+            </svui-form-control>
 
-    <!-- Ohne Stuetzrad Velofahren -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungOhneStuetzradVelofahren !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.ohneStuetzradVelofahrenSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.ohneStuetzradVelofahren'"
-        [valuePrefix]="'OhneStuetzradVelofahren'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-      </feat-value-enhanced>
-    }
+            <svui-form-control
+              class="textcontrol"
+              [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.freiesGehen.monate' | transloco"
+              [viewValue]="form.group.controls.anzahlMonateFreiesGehen.value?.toString()">
+              <input [svuiTextInput]="'number'" [formControl]="form.group.controls.anzahlMonateFreiesGehen"/>
+            </svui-form-control>
+          </div>
+        </feat-value-enhanced>
+      }
 
-    <!-- Grafamotorik -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGrafomotorik !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.grafomotorikSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grafomotorik'"
-        [valuePrefix]="'Grafomotorik'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-      </feat-value-enhanced>
-    }
+      <!-- Ohne Stuetzrad Velofahren -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungOhneStuetzradVelofahren !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.ohneStuetzradVelofahrenSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.ohneStuetzradVelofahren'"
+          [valuePrefix]="'OhneStuetzradVelofahren'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        </feat-value-enhanced>
+      }
 
-    <!-- Feinmotorik -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungFeinmotorik !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.feinmotorikSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik'"
-        [valuePrefix]="'Feinmotorik'"
-        [tooltipKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik.tooltip'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-      </feat-value-enhanced>
-    }
+      <!-- Grafamotorik -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGrafomotorik !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.grafomotorikSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grafomotorik'"
+          [valuePrefix]="'Grafomotorik'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        </feat-value-enhanced>
+      }
 
-    <!-- Grobmotorik -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGrobmotorik !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.grobmotorikEinbeinhuepfenSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik'"
-        [valuePrefix]="'GrobmotorikEinbeinhuepfen'"
-        [tooltipKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik.tooltip'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-      </feat-value-enhanced>
-    }
+      <!-- Feinmotorik -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungFeinmotorik !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.feinmotorikSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik'"
+          [valuePrefix]="'Feinmotorik'"
+          [tooltipKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.feinmotorik.tooltip'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        </feat-value-enhanced>
+      }
 
-    <!-- Gleichgewicht -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGleichgewicht !== RequirementSetting.NOT_VISIBLE) {
-      <feat-value-enhanced
-        [form]="form.gleichgewichtEinbeinstandSingleValueForm"
-        [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.gleichgewicht'"
-        [valuePrefix]="'GleichgewichtEinbeinstand'"
-        [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
-      </feat-value-enhanced>
-    }
+      <!-- Grobmotorik -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGrobmotorik !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.grobmotorikEinbeinhuepfenSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik'"
+          [valuePrefix]="'GrobmotorikEinbeinhuepfen'"
+          [tooltipKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.grobmotorik.tooltip'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        </feat-value-enhanced>
+      }
 
-    <!-- Bemerkung -->
-    @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungBemerkung !== RequirementSetting.NOT_VISIBLE) {
-      <svui-title [context]="'formSection'"
-                  class="mb-3">{{ 'untersuchung.tab.schulrelevanteBeeintraechtigung.bemerkung' | transloco }}
-      </svui-title>
-      <svui-form-control
-        [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.bemerkung' | transloco"
-        [topLabelVisibility]="'hidden'"
-        [viewValue]="form.group.controls.bemerkungen.value">
-        <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
-      </svui-form-control>
-    }
+      <!-- Gleichgewicht -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungGleichgewicht !== RequirementSetting.NOT_VISIBLE) {
+        <feat-value-enhanced
+          [form]="form.gleichgewichtEinbeinstandSingleValueForm"
+          [valueTitleKey]="'untersuchung.tab.schulrelevanteBeeintraechtigung.gleichgewicht'"
+          [valuePrefix]="'GleichgewichtEinbeinstand'"
+          [nichtGeprueftGrundEnabled]="tenantSettingsStore.nichtGeprueftGrundEnabled()">
+        </feat-value-enhanced>
+      }
 
-    <!-- Save / Cancel Buttons -->
-    @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
-      <svui-save-cancel-buttons
-        [saving]="false"
-        [canEdit]="true"
-        (cancelClicked)="abbrechen()"/>
-    }
-  </form>
+      <!-- Bemerkung -->
+      @if (anlassStore.selectedEntity()?.anlassConfig?.data?.untersuchungBeeintraechtigungBemerkung !== RequirementSetting.NOT_VISIBLE) {
+        <svui-title [context]="'formSection'"
+                    class="mb-3">{{ 'untersuchung.tab.schulrelevanteBeeintraechtigung.bemerkung' | transloco }}
+        </svui-title>
+        <svui-form-control
+          [label]="'untersuchung.tab.schulrelevanteBeeintraechtigung.bemerkung' | transloco"
+          [topLabelVisibility]="'hidden'"
+          [viewValue]="form.group.controls.bemerkungen.value">
+          <textarea svuiTextarea [formControl]="form.group.controls.bemerkungen" [minHeightPx]="120"></textarea>
+        </svui-form-control>
+      }
+
+      <!-- Save / Cancel Buttons -->
+      @if (this.anlassStore.canUserEditAnlassInCurrentState()) {
+        <svui-save-cancel-buttons
+          [saving]="false"
+          [canEdit]="true"
+          (cancelClicked)="abbrechen()"/>
+      }
+    </form>
+  </svui-card-in-card>
 }

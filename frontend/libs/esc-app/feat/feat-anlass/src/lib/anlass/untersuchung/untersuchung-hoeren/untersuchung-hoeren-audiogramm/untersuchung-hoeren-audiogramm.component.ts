@@ -24,11 +24,11 @@ import {
   TitleComponent,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasHoerenEditBerechtigung, isNotNullish, isNullish, requireValue} from '@dvb/util-shared';
+import {hasHoerenEditBerechtigung, isNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
-import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
+import {setupApplyDefaultValuesEffect} from '../../default-values.util';
 
 import {AudiogrammForm} from './audiogramm/audiogramm-form';
 import {getAllAudiogrammKeys} from './audiogramm/audiogramm-util';
@@ -123,22 +123,16 @@ export class UntersuchungHoerenAudiogrammComponent implements DirtyMarker {
       this.form.setDisabled(!this.canEdit());
     });
 
-    effect(() => {
-      // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
-      const defaultHoerenAudiogramm = this.hoerenAudiogrammStore.defaultHoerenAudiogrammToApply();
-      if (isNotNullish(defaultHoerenAudiogramm)) {
-        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultHoerenAudiogramm);
-        if (hasAnyValue) {
-          console.log(defaultHoerenAudiogramm);
-          this.form.resetForm(defaultHoerenAudiogramm);
-          this.form.group.markAsDirty();
-          this.form.group.controls.audiogrammBeurteilung.controls.valueArray.markAsDirty();
-          this.form.group.controls.empfehlung.controls.valueArray.markAsDirty();
-          this.form.group.controls.zusaetzlicheAngaben.controls.valueArray.markAsDirty();
-        }
-        this.hoerenAudiogrammStore.resetApplyDefaultHoeren();
-        this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
-      }
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.hoerenAudiogrammStore.defaultHoerenAudiogrammToApply,
+      form: this.form,
+      resetApplyDefault: () => this.hoerenAudiogrammStore.resetApplyDefaultHoeren(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
+      onAfterApply: (form) => {
+        form.group.controls.audiogrammBeurteilung.controls.valueArray.markAsDirty();
+        form.group.controls.empfehlung.controls.valueArray.markAsDirty();
+        form.group.controls.zusaetzlicheAngaben.controls.valueArray.markAsDirty();
+      },
     });
   }
 

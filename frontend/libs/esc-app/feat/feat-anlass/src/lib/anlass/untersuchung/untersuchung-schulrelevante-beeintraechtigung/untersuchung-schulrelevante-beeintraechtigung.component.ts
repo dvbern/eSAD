@@ -1,8 +1,10 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from "@angular/core";
 import {NonNullableFormBuilder, ReactiveFormsModule} from "@angular/forms";
 import {
+  CardInCardComponent,
   FormControlComponent,
   FormLayoutComponent,
+  IconComponent,
   SaveCancelButtonsComponent,
   TextareaDirective,
   TextInputDirective,
@@ -25,6 +27,7 @@ import {UntersuchungSchulrelevanteBeeintraechtigungStore} from "./untersuchung-s
 import {UntersuchungSchulrelevanteBeeintraechtigungForm} from "./untersuchung-schulrelevante-beeintraechtigung.form";
 import {AnlassStore} from "../../anlass.store";
 import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedComponent} from "@dvb/feat-shared";
+import {setupApplyDefaultValuesEffect} from "../default-values.util";
 
 @Component({
   selector: 'feat-untersuchung-schulrelevante-beeintraechtigung',
@@ -38,6 +41,8 @@ import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedCompone
     TitleComponent,
     ValueEnhancedComponent,
     TextInputDirective,
+    CardInCardComponent,
+    IconComponent,
   ],
   templateUrl: './untersuchung-schulrelevante-beeintraechtigung.component.html',
   styleUrl: './untersuchung-schulrelevante-beeintraechtigung.component.scss',
@@ -82,6 +87,12 @@ export class UntersuchungSchulrelevanteBeeintraechtigungComponent implements Dir
       }
       this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
     });
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.store.defaultToApply,
+      form: this.form,
+      resetApplyDefault: () => this.store.resetApplyDefault(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
+    });
   }
 
   isDirty(): boolean {
@@ -91,6 +102,10 @@ export class UntersuchungSchulrelevanteBeeintraechtigungComponent implements Dir
   abbrechen(): void {
     const untersuchungSchulrelevanteBeeintraechtigung = this.store.untersuchungSchulrelevanteBeeintraechtigung();
     this.form.resetForm(untersuchungSchulrelevanteBeeintraechtigung?.data);
+  }
+
+  loadDefaults(): void {
+    this.store.applyDefault();
   }
 
   async submitIfValid(): Promise<void> {

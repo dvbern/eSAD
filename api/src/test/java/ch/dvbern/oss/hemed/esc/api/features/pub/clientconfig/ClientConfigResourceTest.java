@@ -1,12 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.pub.clientconfig;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Nested;
@@ -31,6 +33,9 @@ class ClientConfigResourceTest {
 
     @ConfigProperty(name = "app.allow-timetravel")
     String allowTimetravel;
+
+    @ConfigProperty(name = "esc.archive.bulk-download.max-files", defaultValue = "600")
+    String archiveBulkDownloadMaxFiles;
 
     @Nested
     @TestAsAdminBS
@@ -58,9 +63,10 @@ class ClientConfigResourceTest {
 		"logoutRedirectUrl": null
 	},
 	"featureConfigJson": {
-	    "timetravelEnabled": %s
+	    "timetravelEnabled": %s,
+	    "archiveBulkDownloadMaxFiles": %s
 	}
-}""".formatted(appVersion, publicUrl, allowTimetravel.toLowerCase())));
+}""".formatted(appVersion, publicUrl, allowTimetravel.toLowerCase(), archiveBulkDownloadMaxFiles)));
 
         }
     }

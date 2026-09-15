@@ -83,10 +83,12 @@ export class BenutzerDetailsComponent implements DirtyMarker {
       .map(organisation => ({organisation: organisation, fachRollen: [], berechtigungen: []} as OrganisationRollenJson))
   );
 
-  showOrganisation = computed(() => isNullish(this.organisation())
-    && this.benutzerListStore.selectedIsNew()
+  // Organisation can be selected, if SUPPORT, no organsation and role present yet, and dezentraler mandant
+  showOrganisation = computed(() =>
+    isNullish(this.organisation())
+    && this.benutzerListStore.selectedEntity()?.data.organisationRollen.length == 0
+    && isNullish(this.benutzerListStore.selectedEntity()?.data.systemRollen)
     && !this.tenantSettingsStore.zentraleOrganisationEnabled()
-    && !this.alwaysCreateNewOrganisation()
     && this.benutzerStore.createHasRequiredRoleSig(hasOrganisationVerwaltungSupportBerechtigung())
   );
 

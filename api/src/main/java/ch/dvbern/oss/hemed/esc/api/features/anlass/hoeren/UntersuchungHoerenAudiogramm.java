@@ -106,20 +106,20 @@ public class UntersuchungHoerenAudiogramm extends AbstractEntity<UntersuchungHoe
     @Embedded
     @Nullable
     @AttributeOverride(name = "value",
-        column = @Column(name = "audiogrammBeurteilung", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+        column = @Column(name = "audiogrammBeurteilung", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<AudiogrammBeurteilung> audiogrammBeurteilung = MultiValueEnhanced.of();
 
     @Valid
     @Embedded
     @Nullable
     @AttributeOverride(name = "value",
-        column = @Column(name = "zusaetzlicheAngaben", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+        column = @Column(name = "zusaetzlicheAngaben", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<HoerenZusaetzlicheAngaben> zusaetzlicheAngaben = MultiValueEnhanced.of();
 
     @Valid
     @Embedded
     @Nullable
-    @AttributeOverride(name = "value", column = @Column(name = "empfehlung", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "empfehlung", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<HoerenEmpfehlung> empfehlung = MultiValueEnhanced.of();
 
     @Nullable

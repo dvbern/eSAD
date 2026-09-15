@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnDestroy } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { FileDataJson, PreviewService } from '@dvb/data-access-backend';
-import { requireValidBackendEntityId } from '@dvb/data-access-types';
-import { HeadingDirective, IconComponent } from '@dvb/ui-components';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { catchError, map, Observable, of, startWith, switchMap, tap } from 'rxjs';
+import {ChangeDetectionStrategy, Component, computed, inject, input, OnDestroy} from '@angular/core';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {FileDataJson, PreviewService} from '@dvb/data-access-backend';
+import {requireValidBackendEntityId} from '@dvb/data-access-types';
+import {IconComponent} from '@dvb/ui-components';
+import {TranslocoPipe} from '@jsverse/transloco';
+import {catchError, map, Observable, of, startWith, switchMap, tap} from 'rxjs';
 
 type PreviewStatus = 'loading' | 'ready' | 'unsupported' | 'error';
 
@@ -27,7 +27,7 @@ const INITIAL_STATE: PreviewImageModel = { url: null, status: 'loading' };
   templateUrl: './file-preview.component.html',
   styleUrl: './file-preview.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe, IconComponent, HeadingDirective],
+  imports: [TranslocoPipe, IconComponent],
 })
 export class FilePreviewComponent implements OnDestroy {
   readonly file = input.required<FileDataJson>();

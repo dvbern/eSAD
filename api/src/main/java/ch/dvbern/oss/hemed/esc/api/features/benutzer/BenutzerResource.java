@@ -115,12 +115,11 @@ public class BenutzerResource {
     public BenutzerJson createBenutzer(
         @NonNull @NotNull @Valid BenutzerSaveJson saveJson
     ) {
-        BenutzerJson newBenutzerJson = mapper.create(
+        return mapper.create(
             saveJson,
             benutzer -> authorizerService.requireWriteAuthorizationBenutzer(
                 benutzer,
                 List.of(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN)));
-        return newBenutzerJson;
     }
 
     @PUT
@@ -137,7 +136,9 @@ public class BenutzerResource {
             saveJson,
             benutzer -> authorizerService.requireWriteAuthorizationBenutzer(
                 benutzer,
-                List.of(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN)));
+                List.of(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, Berechtigung.ORGANISATION_VERWALTEN_SCHREIBEN)),
+            authorizerService::requireWriteAuthorizationOrganisation
+        );
     }
 
     @PUT

@@ -518,11 +518,19 @@ public final class MergeSourceDummyDataCreator {
         untersuchungGroesseGewicht.setGroesse(150);
         untersuchungGroesseGewicht.setGewicht(BigDecimal.valueOf(70));
         untersuchungGroesseGewicht.setBmi(BigDecimal.valueOf(31.1));
-        untersuchungGroesseGewicht.setGroessePerzentile(SingleValueEnhanced.of(PerzentileGroesse.NORMAL, null));
-        untersuchungGroesseGewicht.setGewichtPerzentile(SingleValueEnhanced.of(
+        untersuchungGroesseGewicht.setGroessePerzentileSingleValue(
+            SingleValueEnhanced.of(PerzentileGroesse.NORMAL, null));
+        untersuchungGroesseGewicht.setGroessePerzentileMultiValue(
+            MultiValueEnhanced.of(EnumSet.of(PerzentileGroesse.NORMAL), null));
+        untersuchungGroesseGewicht.setGewichtPerzentileSingleValue(SingleValueEnhanced.of(
             PerzentileGewicht.PERZENTILE_HOCH,
             null));
-        untersuchungGroesseGewicht.setBmiPerzentile(SingleValueEnhanced.of(PerzentileBmi.PERZENTILE_HOCH, null));
+        untersuchungGroesseGewicht.setGewichtPerzentileMultiValue(
+            MultiValueEnhanced.of(EnumSet.of(PerzentileGewicht.PERZENTILE_HOCH), null));
+        untersuchungGroesseGewicht.setBmiPerzentileSingleValue(
+            SingleValueEnhanced.of(PerzentileBmi.PERZENTILE_HOCH, null));
+        untersuchungGroesseGewicht.setBmiPerzentileMultiValue(
+            MultiValueEnhanced.of(EnumSet.of(PerzentileBmi.PERZENTILE_HOCH), null));
         return untersuchungGroesseGewicht;
     }
 
@@ -598,11 +606,14 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // impfungenDataMinimalHpvAnzahlImpfungen
             RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfempfehlung
             RequirementSetting.OPTIONAL,    // impfungenDataMinimalImpfungDurchgefuehrt
+            RequirementSetting.OPTIONAL,    // impfungenNurUnvollstaendige
             RequirementSetting.OPTIONAL,    // sehenBrilleLinsen,
             EnumSetUtil.toString(EnumSet.allOf(BrilleLinsenResultat.class)), // sehenBrilleLinsenValues
+            BrilleLinsenResultat.OHNE_KEINE, // sehenBrilleLinsenDefaultValue
             RequirementSetting.OPTIONAL,    // sehenFarbsehen
             RequirementSetting.OPTIONAL,    // sehenTafel
             RequirementSetting.OPTIONAL,    // sehenFernvisus
+            BigDecimal.valueOf(1.0),        // sehenFernvisusDefaultValue
             RequirementSetting.OPTIONAL,    // sehenFernvisusAugeEinzeln
             RequirementSetting.OPTIONAL,    // sehenStereoTest
             RequirementSetting.OPTIONAL,    // sehenStrabismus
@@ -618,8 +629,11 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // sehenBemerkungenFragebogen
             RequirementSetting.OPTIONAL,    // sehenMassnahmen
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm
+            Dezibel.DB20,                   // hoerenAudiogrammDefaultValue
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm250Hz
+            Dezibel.DB20,                   // hoerenAudiogramm250HzDefaultValue
             RequirementSetting.OPTIONAL,    // hoerenAudiogramm8000Hz
+            Dezibel.DB20,                   // hoerenAudiogramm8000HzDefaultValue
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammSimpel
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammBeurteilung
             RequirementSetting.OPTIONAL,    // hoerenAudiogrammZusaetzlicheAngaben
@@ -631,9 +645,14 @@ public final class MergeSourceDummyDataCreator {
             RequirementSetting.OPTIONAL,    // groesseGewichtGroesse
             RequirementSetting.OPTIONAL,    // groesseGewichtGewicht
             RequirementSetting.OPTIONAL,    // groesseGewichtBmi
-            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentile
-            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentile
-            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentile
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentileSingleValue
+            RequirementSetting.OPTIONAL,    // groesseGewichtGroessePerzentileMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileGroesse.class)),// groesseGewichtGroessePerzentileValues
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentileSingleValue
+            RequirementSetting.OPTIONAL,    // groesseGewichtGewichtPerzentileMultiValue
+            EnumSetUtil.toString(EnumSet.allOf(PerzentileGewicht.class)),// groesseGewichtGewichtPerzentileValues
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentileSingleValue
+            RequirementSetting.OPTIONAL,    // groesseGewichtBmiPerzentileMultiValue
             EnumSetUtil.toString(EnumSet.allOf(PerzentileBmi.class)),// groesseGewichtBmiPerzentileValues
             RequirementSetting.OPTIONAL,    // groesseGewichtEmpfehlung
             RequirementSetting.OPTIONAL,    // groesseGewichtBemerkungen

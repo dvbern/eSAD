@@ -1,0 +1,15 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet author="hefr" id="seed-anlassconfig-default-values-be-1">
+    <sql>
+      UPDATE anlassconfig SET sehenbrillelinsendefaultvalue = 'OHNE_KEINE';
+      UPDATE anlassconfig SET sehenfernvisusdefaultvalue = 0.8 WHERE anlasstyp = 'KINDERGARTEN';
+      UPDATE anlassconfig SET sehenfernvisusdefaultvalue = 1.0 WHERE anlasstyp &lt;&gt; 'KINDERGARTEN';
+      UPDATE anlassconfig SET hoerenaudiogrammdefaultvalue = 'DB20';
+      UPDATE anlassconfig SET hoerenaudiogramm250hzdefaultvalue = 'DB20';
+      UPDATE anlassconfig SET hoerenaudiogramm8000hzdefaultvalue = 'DB20';
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

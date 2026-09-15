@@ -2,8 +2,10 @@ import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracke
 import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
 import {Nachsprechen, RequirementSetting, Sprachverstaendnis, Wortschatz} from '@dvb/data-access-backend';
 import {
+  CardInCardComponent,
   FormControlComponent,
   FormLayoutComponent,
+  IconComponent,
   SaveCancelButtonsComponent,
   TextareaDirective,
   TitleComponent,
@@ -16,6 +18,7 @@ import {AnlassStore} from '../../anlass.store';
 import {UntersuchungStore} from '../untersuchung.store';
 import {UntersuchungSpracheStore} from './untersuchung-sprache.store';
 import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedComponent} from '@dvb/feat-shared';
+import {setupApplyDefaultValuesEffect} from "../default-values.util";
 
 @Component({
   selector: 'feat-untersuchung-sprache',
@@ -28,6 +31,8 @@ import {createSingleValueEnhancedForm, TenantSettingsStore, ValueEnhancedCompone
     TextareaDirective,
     TitleComponent,
     ValueEnhancedComponent,
+    CardInCardComponent,
+    IconComponent,
   ],
   templateUrl: './untersuchung-sprache.component.html',
   styleUrl: './untersuchung-sprache.component.scss',
@@ -66,6 +71,12 @@ export class UntersuchungSpracheComponent implements DirtyMarker {
       }
       this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
     });
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.store.defaultToApply,
+      form: this.form,
+      resetApplyDefault: () => this.store.resetApplyDefault(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
+    });
   }
 
   isDirty(): boolean {
@@ -75,6 +86,10 @@ export class UntersuchungSpracheComponent implements DirtyMarker {
   abbrechen(): void {
     const untersuchungSprache = this.store.untersuchungSprache();
     this.form.resetForm(untersuchungSprache?.data);
+  }
+
+  loadDefaults(): void {
+    this.store.applyDefault();
   }
 
   async submitIfValid(): Promise<void> {

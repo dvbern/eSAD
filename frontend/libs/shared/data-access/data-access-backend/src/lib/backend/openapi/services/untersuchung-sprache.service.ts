@@ -25,6 +25,11 @@ import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables'
 import { Configuration }                                     from '../configuration';
 
 
+export interface UntersuchungSpracheServiceGetDefaultUntersuchungSpracheRequestParams {
+    anlassId: BackendEntityId;
+    einladungId: BackendEntityIdWithClass;
+}
+
 export interface UntersuchungSpracheServiceGetUntersuchungSpracheRequestParams {
     anlassId: BackendEntityId;
     einladungId: BackendEntityIdWithClass;
@@ -99,6 +104,81 @@ export class UntersuchungSpracheService {
             throw Error("key may not be null if value is not object or array");
         }
         return httpParams;
+    }
+
+    /**
+     * Get Default Untersuchung Sprache
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getDefaultUntersuchungSprache$(requestParameters?: UntersuchungSpracheServiceGetDefaultUntersuchungSpracheRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<UntersuchungSpracheSaveJson>;
+    public getDefaultUntersuchungSprache$(requestParameters?: UntersuchungSpracheServiceGetDefaultUntersuchungSpracheRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<UntersuchungSpracheSaveJson>>;
+    public getDefaultUntersuchungSprache$(requestParameters?: UntersuchungSpracheServiceGetDefaultUntersuchungSpracheRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<UntersuchungSpracheSaveJson>>;
+    public getDefaultUntersuchungSprache$(requestParameters?: UntersuchungSpracheServiceGetDefaultUntersuchungSpracheRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const anlassId = requestParameters?.anlassId;
+        if (anlassId === null || anlassId === undefined) {
+            throw new Error('Required parameter anlassId was null or undefined when calling getDefaultUntersuchungSprache.');
+        }
+        const einladungId = requestParameters?.einladungId;
+        if (einladungId === null || einladungId === undefined) {
+            throw new Error('Required parameter einladungId was null or undefined when calling getDefaultUntersuchungSprache.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (SecurityScheme) required
+        localVarCredential = this.configuration.lookupCredential('SecurityScheme');
+        if (localVarCredential) {
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+        let localVarTransferCache: boolean | undefined = options && options.transferCache;
+        if (localVarTransferCache === undefined) {
+            localVarTransferCache = true;
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/anlaesse/${this.configuration.encodeParam({name: "anlassId", value: anlassId, in: "path", style: "simple", explode: false, dataType: "BackendEntityId", dataFormat: "entity-id"})}/einladungen/${this.configuration.encodeParam({name: "einladungId", value: einladungId, in: "path", style: "simple", explode: false, dataType: "BackendEntityIdWithClass", dataFormat: "entity-id-with-class"})}/untersuchung/sprache/default`;
+        return this.httpClient.request<UntersuchungSpracheSaveJson>('get', `${this.configuration.basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                transferCache: localVarTransferCache,
+                reportProgress: reportProgress
+            }
+        );
     }
 
     /**

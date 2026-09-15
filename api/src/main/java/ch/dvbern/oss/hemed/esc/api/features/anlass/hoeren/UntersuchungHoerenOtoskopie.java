@@ -72,7 +72,7 @@ public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoer
     @Embedded
     @Nullable
     @AttributeOverride(name = "value",
-        column = @Column(name = "otoskopieRechts", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+        column = @Column(name = "otoskopieRechts", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<OtoskopieResultat> otoskopieRechts = MultiValueEnhanced.of();
 
     @Nullable
@@ -84,7 +84,7 @@ public class UntersuchungHoerenOtoskopie extends AbstractEntity<UntersuchungHoer
     @Embedded
     @Nullable
     @AttributeOverride(name = "value",
-        column = @Column(name = "otoskopieLinks", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+        column = @Column(name = "otoskopieLinks", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<OtoskopieResultat> otoskopieLinks = MultiValueEnhanced.of();
 
     @Nullable

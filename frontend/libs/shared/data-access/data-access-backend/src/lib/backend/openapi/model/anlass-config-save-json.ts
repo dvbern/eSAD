@@ -8,16 +8,19 @@
  * Do not edit the class manually.
  */
 import { Einbeinhuepfen } from './einbeinhuepfen';
+import { PerzentileGroesse } from './perzentile-groesse';
+import { Krankheit } from './krankheit';
+import { ImpfungenMassnahmenEmpfehlung } from './impfungen-massnahmen-empfehlung';
+import { PerzentileBmi } from './perzentile-bmi';
+import { StrabismusResultat } from './strabismus-resultat';
+import { Dezibel } from './dezibel';
 import { Einbeinstand } from './einbeinstand';
 import { ISODateString } from '@dvb/data-access-types';
 import { BrilleLinsenResultat } from './brille-linsen-resultat';
-import { Krankheit } from './krankheit';
 import { Motorik } from './motorik';
-import { ImpfungenMassnahmenEmpfehlung } from './impfungen-massnahmen-empfehlung';
 import { Sprachfaehigkeit } from './sprachfaehigkeit';
 import { AnlassTyp } from './anlass-typ';
-import { PerzentileBmi } from './perzentile-bmi';
-import { StrabismusResultat } from './strabismus-resultat';
+import { PerzentileGewicht } from './perzentile-gewicht';
 import { RequirementSetting } from './requirement-setting';
 
 
@@ -72,11 +75,14 @@ export interface AnlassConfigSaveJson {
     impfungenDataMinimalHpvAnzahlImpfungen: RequirementSetting;
     impfungenDataMinimalImpfempfehlung: RequirementSetting;
     impfungenDataMinimalImpfungDurchgefuehrt: RequirementSetting;
+    impfungenNurUnvollstaendige: RequirementSetting;
     sehenBrilleLinsen: RequirementSetting;
     sehenBrilleLinsenValues: Array<BrilleLinsenResultat>;
+    sehenBrilleLinsenDefaultValue?: BrilleLinsenResultat;
     sehenFarbsehen: RequirementSetting;
     sehenTafel: RequirementSetting;
     sehenFernvisus: RequirementSetting;
+    sehenFernvisusDefaultValue?: number;
     sehenFernvisusAugeEinzeln: RequirementSetting;
     sehenStereoTest: RequirementSetting;
     sehenStrabismus: RequirementSetting;
@@ -92,8 +98,11 @@ export interface AnlassConfigSaveJson {
     sehenBemerkungenFragebogen: RequirementSetting;
     sehenMassnahmen: RequirementSetting;
     hoerenAudiogramm: RequirementSetting;
+    hoerenAudiogrammDefaultValue?: Dezibel;
     hoerenAudiogramm250Hz: RequirementSetting;
+    hoerenAudiogramm250HzDefaultValue?: Dezibel;
     hoerenAudiogramm8000Hz: RequirementSetting;
+    hoerenAudiogramm8000HzDefaultValue?: Dezibel;
     hoerenAudiogrammSimpel: RequirementSetting;
     hoerenAudiogrammBeurteilung: RequirementSetting;
     hoerenAudiogrammZusaetzlicheAngaben: RequirementSetting;
@@ -105,9 +114,14 @@ export interface AnlassConfigSaveJson {
     groesseGewichtGroesse: RequirementSetting;
     groesseGewichtGewicht: RequirementSetting;
     groesseGewichtBmi: RequirementSetting;
-    groesseGewichtGroessePerzentile: RequirementSetting;
-    groesseGewichtGewichtPerzentile: RequirementSetting;
-    groesseGewichtBmiPerzentile: RequirementSetting;
+    groesseGewichtGroessePerzentileSingleValue: RequirementSetting;
+    groesseGewichtGroessePerzentileMultiValue: RequirementSetting;
+    groesseGewichtGroessePerzentileValues: Array<PerzentileGroesse>;
+    groesseGewichtGewichtPerzentileSingleValue: RequirementSetting;
+    groesseGewichtGewichtPerzentileMultiValue: RequirementSetting;
+    groesseGewichtGewichtPerzentileValues: Array<PerzentileGewicht>;
+    groesseGewichtBmiPerzentileSingleValue: RequirementSetting;
+    groesseGewichtBmiPerzentileMultiValue: RequirementSetting;
     groesseGewichtBmiPerzentileValues: Array<PerzentileBmi>;
     groesseGewichtEmpfehlung: RequirementSetting;
     groesseGewichtBemerkungen: RequirementSetting;

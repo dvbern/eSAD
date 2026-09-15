@@ -12,6 +12,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.AnlassUntersuchu
 import com.itextpdf.layout.Document;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
 @NoTransactionService
 @UtilityClass
 public final class AnonymerEintragPrinter {
@@ -19,12 +20,13 @@ public final class AnonymerEintragPrinter {
     public static void print(
         @NonNull AnonymerEintragPrintDTO dto,
         @NonNull OutputStream outputStream,
-        @NonNull FileStoreService fileStoreService
+        @NonNull FileStoreService fileStoreService,
+        boolean showHeader
     ) {
         BasePrinter basePrinter = new BasePrinter(dto.getLanguage(), dto.getTenant(), fileStoreService);
 
         Document document = basePrinter.getDocument(outputStream);
-        basePrinter.addHeader(document);
+        basePrinter.addHeader(document, showHeader);
         basePrinter.addH1Title(
             I18nMessage.of(
                 "printer.anonymer-eintrag.title",

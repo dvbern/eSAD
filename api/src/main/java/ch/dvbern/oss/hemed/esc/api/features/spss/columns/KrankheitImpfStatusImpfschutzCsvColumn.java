@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.features.spss.columns;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,7 +28,7 @@ public class KrankheitImpfStatusImpfschutzCsvColumn extends AbstractCsvColumn {
             einladung,
             krankheit,
             config,
-            impfstatus -> PrintUtil.trimToPlaceholder(impfstatus.isImpfschutzGegeben(), config.tl()));
+            impfstatus -> PrintUtil.trimToPlaceholder(impfstatus.getImpfschutzGegeben() == ImpfschutzGegeben.JA, config.tl()));
     }
 
     @Override

@@ -1,8 +1,7 @@
-
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { PerzentileBmi, RequirementSetting } from '@dvb/data-access-backend';
-import { BenutzerStore, Path, TranslatedEnumViewValuePipe } from '@dvb/feat-shared';
+import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, untracked} from '@angular/core';
+import {NonNullableFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {PerzentileBmi, PerzentileGewicht, PerzentileGroesse, RequirementSetting} from '@dvb/data-access-backend';
+import {BenutzerStore, Path, TranslatedEnumViewValuePipe} from '@dvb/feat-shared';
 import {
   FormButtonsComponent,
   FormControlComponent,
@@ -11,14 +10,14 @@ import {
   HeadingDirective,
   NgSelectDirective,
 } from '@dvb/ui-components';
-import { DirtyMarker } from '@dvb/util-angular';
-import { isNullish } from '@dvb/util-shared';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import { AnlassConfigStore } from '../../anlass-config.store';
-import { AnlassConfigForm } from '../anlass-config-detail.form';
-import { AnlassConfigHelperService } from '../../anlass-config-helper.service';
-import { ActivatedRoute } from '@angular/router';
+import {DirtyMarker} from '@dvb/util-angular';
+import {isNullish} from '@dvb/util-shared';
+import {TranslocoPipe} from '@jsverse/transloco';
+import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {AnlassConfigStore} from '../../anlass-config.store';
+import {AnlassConfigForm} from '../anlass-config-detail.form';
+import {AnlassConfigHelperService} from '../../anlass-config-helper.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'feat-config-detail-groesse-gewicht',
@@ -34,7 +33,7 @@ import { ActivatedRoute } from '@angular/router';
     NgSelectDirective,
     TranslocoPipe,
     TranslatedEnumViewValuePipe
-],
+  ],
   templateUrl: './anlass-config-detail-groesse-gewicht.component.html',
   styleUrl: './anlass-config-detail-groesse-gewicht.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +45,8 @@ export class AnlassConfigDetailGroesseGewichtComponent implements DirtyMarker {
   readonly anlassConfigHelperService = inject(AnlassConfigHelperService);
 
   readonly requirementSettingOptions = Object.values(RequirementSetting);
+  readonly groesseGewichtGroessePerzentileValues = Object.values(PerzentileGroesse);
+  readonly groesseGewichtGewichtPerzentileValues = Object.values(PerzentileGewicht);
   readonly groesseGewichtBmiPerzentileValues = Object.values(PerzentileBmi);
   protected readonly Path = Path;
 

@@ -1,0 +1,45 @@
+<svui-form-error-message
+  [errors]="errors()"/>
+
+<div class="column-container">
+
+  @for (column of this.columns(); track column) {
+
+    <table class="impf_table">
+      <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>{{ 'Impfung.Impfentscheid.table.col.ungenuegend' | transloco }}</th>
+      </tr>
+      </thead>
+
+      <tbody [style.grid-row]="gridRowValue()">
+
+        @for (krankheit of column; track krankheit) {
+          <tr class="{{statusForKrankheit(krankheit)}}">
+            <td class="impf_table_td_icon" style="min-width: 2rem; padding-right: 0;"></td>
+            <td class="impf_table_td_name">{{ 'Krankheit.' + krankheit | transloco }}</td>
+            <td class="p-0">
+              <label class="checkbox-label-around"
+                     [for]="krankheit + '_impfschutzGenuegend'">
+                @if (controlForKrankheit(krankheit, 'impfschutzGegeben'); as control) {
+                  <input class="form-check-input"
+                         type="checkbox"
+                         [id]="krankheit + '_impfschutzGenuegend'"
+                         [attr.aria-label]="('Krankheit.' + krankheit | transloco) + ' ' + ('Impfung.Impfentscheid.table.col.genuegend' | transloco)"
+                    [formControl]="control"
+                    data-testid="impfschutz-genugend-checkbox">
+                }
+              </label>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+
+
+

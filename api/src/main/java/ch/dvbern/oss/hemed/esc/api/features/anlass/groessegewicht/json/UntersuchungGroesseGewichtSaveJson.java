@@ -1,11 +1,12 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json;
 
 import java.math.BigDecimal;
+import jakarta.validation.Valid;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.SaveJsonWithOptimisticLocking;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.ValueEnhancedJson;
-import jakarta.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -28,17 +29,32 @@ public class UntersuchungGroesseGewichtSaveJson implements SaveJsonWithOptimisti
     @NonNull
     @Schema(required = true)
     @Valid
-    private ValueEnhancedJson groessePerzentile;
+    private ValueEnhancedJson groessePerzentileSingleValue;
 
     @NonNull
     @Schema(required = true)
     @Valid
-    private ValueEnhancedJson gewichtPerzentile;
+    private ValueEnhancedJson groessePerzentileMultiValue;
 
     @NonNull
     @Schema(required = true)
     @Valid
-    private ValueEnhancedJson bmiPerzentile;
+    private ValueEnhancedJson gewichtPerzentileSingleValue;
+
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson gewichtPerzentileMultiValue;
+
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson bmiPerzentileSingleValue;
+
+    @NonNull
+    @Schema(required = true)
+    @Valid
+    private ValueEnhancedJson bmiPerzentileMultiValue;
 
     @Nullable
     @Schema(required = false)

@@ -23,12 +23,12 @@ import {
   TitleComponent,
 } from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
-import {hasSehenEditBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
+import {hasSehenEditBerechtigung, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 import {AnlassStore} from '../../../anlass.store';
 import {UntersuchungStore} from '../../untersuchung.store';
-import {hasSomeNotNullishValueIgnoringVersion} from '../../untersuchung.util';
+import {setupApplyDefaultValuesEffect} from '../../default-values.util';
 import {UntersuchungSehenStore} from './../untersuchung-sehen.store';
 import {UntersuchungSehenBeurteilungForm} from './untersuchung-sehen-beurteilung.form';
 import {
@@ -120,19 +120,11 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
       }
       this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
     });
-    effect(() => {
-      // Wenn die Default-Values zu applyen markiert sind, dann das Formular mit den neuen Werten laden
-      const defaultSehen = this.store.defaultSehenBeurteilungToApply();
-
-      if (isNotNullish(defaultSehen)) {
-        const hasAnyValue = hasSomeNotNullishValueIgnoringVersion(defaultSehen);
-        if (hasAnyValue) {
-          this.form.resetForm(defaultSehen);
-          this.form.group.markAsDirty();
-        }
-        this.store.resetApplyDefaultSehenBeurteilung();
-        this.form.setDisabled(!this.anlassStore.canUserEditAnlassInCurrentState());
-      }
+    setupApplyDefaultValuesEffect({
+      defaultValuesToApply: this.store.defaultToApply,
+      form: this.form,
+      resetApplyDefault: () => this.store.resetApplyDefault(),
+      canEdit: () => this.anlassStore.canUserEditAnlassInCurrentState(),
     });
   }
 
@@ -158,6 +150,6 @@ export class UntersuchungSehenBeurteilungComponent implements DirtyMarker {
   }
 
   loadDefault(): void {
-    this.store.applyDefaultSehenBeurteilung();
+    this.store.applyDefault();
   }
 }

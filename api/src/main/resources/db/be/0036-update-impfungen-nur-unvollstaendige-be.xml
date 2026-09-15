@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet id="1787821032549-1" author="Franziska Herger">
+    <sql>
+      UPDATE anlassconfig SET impfungennurunvollstaendige = 'REQUIRED' WHERE anlasstyp in (
+        'KINDERGARTEN', 'KINDERGARTEN_ANONYM',
+        'KLASSE_4', 'KLASSE_4_ANONYM',
+        'KLASSE_8', 'KLASSE_8_ANONYM'
+      );
+    </sql>
+  </changeSet>
+  <changeSet id="1787821032549-2" author="Franziska Herger">
+    <sql>
+      UPDATE anlassconfig SET impfungendataminimalimpfausweisgeprueft = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalimmunsuppression = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalmasernimpfstatus = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalmasernanzahlimpfungen = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalhpvimpfstatus = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalhpvanzahlimpfungen = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalimpfempfehlung = 'NOT_VISIBLE';
+      UPDATE anlassconfig SET impfungendataminimalimpfungdurchgefuehrt = 'NOT_VISIBLE';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

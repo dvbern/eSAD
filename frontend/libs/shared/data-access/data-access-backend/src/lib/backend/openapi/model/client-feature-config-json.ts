@@ -11,6 +11,10 @@
 
 export interface ClientFeatureConfigJson { 
     timetravelEnabled: boolean;
+    /**
+     * Maximum number of files that are included in a single bulk archive download zip.
+     */
+    archiveBulkDownloadMaxFiles: number;
 }
 
 

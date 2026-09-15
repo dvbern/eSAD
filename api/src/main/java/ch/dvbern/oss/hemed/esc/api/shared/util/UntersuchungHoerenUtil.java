@@ -20,11 +20,15 @@ package ch.dvbern.oss.hemed.esc.api.shared.util;
 
 import java.util.EnumSet;
 
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
+
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -63,5 +67,16 @@ public class UntersuchungHoerenUtil {
             return MultiValueEnhanced.of(EnumSet.of(defaultWert), null);
         }
         return MultiValueEnhanced.of(EnumSet.noneOf(OtoskopieResultat.class), null);
+    }
+
+    @Nullable
+    public static SingleValueEnhanced<HoerenHoerhilfe> getHoerenHoerhilfeDefault(
+        @NonNull AnlassConfig config,
+        @NonNull HoerenHoerhilfe defaultWert
+    ) {
+        if (config.getHoerenHoerhilfe().isVisible()) {
+            return SingleValueEnhanced.of(defaultWert, null);
+        }
+        return null;
     }
 }

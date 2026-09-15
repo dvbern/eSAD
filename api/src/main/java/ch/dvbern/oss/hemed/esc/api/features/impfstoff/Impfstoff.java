@@ -52,7 +52,7 @@ public class Impfstoff extends AbstractEntity<Impfstoff> implements EntityWithOp
 
     @NotNull
     @NonNull
-    @Size(max = DbConst.DB_DEFAULT_MAX_LENGTH)
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
     @Column(nullable = false, length = DbConst.DB_ENUM_LIST_LENGTH)
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)

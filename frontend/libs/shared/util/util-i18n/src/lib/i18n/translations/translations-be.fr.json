@@ -11,6 +11,9 @@
       }
     }
   },
+  "untersuchung.impfungen.nurUnvollstaendige.impfausweisVollstaendig.tooltip": "Cela désigne l'ensemble des vaccinations de base prévues par le plan de vaccination suisse, ainsi que celles contre les méningocoques B et ACWY.",
+  "untersuchung.impfungen.massnahmen.title": "Mesures de vaccination (facultatif)",
+  "untersuchung.tab.defaultwerte.info": "Laisser le système remplir automatiquement les valeurs par défaut (définit des valeurs pour les résultats normaux, tels que « Normal » ou « Réussite »)",
   "untersuchung.tab.sprache.nachsprechen.tooltip": "Réussi : l’enfant répète couramment au moins 4 des 10 mots magiques",
   "untersuchung.tab.sprache.sprachverstaendnis.tooltip": "Réussi : l’enfant montre la bonne image ou la bonne personne pour les trois phrases. Sinon, utiliser les 3 phrases supplémentaires : 5 comprises correctement",
   "untersuchung.tab.sprache.wortschatz.tooltip": "Réussi : l’enfant nomme correctement 11 des 12 images",

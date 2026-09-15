@@ -21,6 +21,15 @@ package ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht;
 import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
@@ -33,16 +42,9 @@ import ch.dvbern.oss.hemed.esc.api.infrastructure.optimisticlocking.EntityWithOp
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckUntersuchungGroesseGewichtPresentIfReq;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,8 +80,15 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
     @Embedded
     @Valid
     @AttributeOverride(name = "value",
-        column = @Column(name = "groessePerzentile", length = DbConst.DB_DEFAULT_MAX_LENGTH))
-    private SingleValueEnhanced<PerzentileGroesse> groessePerzentile = SingleValueEnhanced.of();
+        column = @Column(name = "groessePerzentileSingleValue", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<PerzentileGroesse> groessePerzentileSingleValue = SingleValueEnhanced.of();
+
+    @Nullable
+    @Embedded
+    @Valid
+    @AttributeOverride(name = "value",
+        column = @Column(name = "groessePerzentileMultiValue", length = DbConst.DB_ENUM_LIST_LENGTH))
+    private MultiValueEnhanced<PerzentileGroesse> groessePerzentileMultiValue = MultiValueEnhanced.of();
 
     @Nullable
     @Column(nullable = true, precision = DbConst.DB_DEFAULT_PRECISION, scale = DbConst.DB_ZAHL_SCALE_1)
@@ -89,8 +98,15 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
     @Embedded
     @Valid
     @AttributeOverride(name = "value",
-        column = @Column(name = "gewichtPerzentile", length = DbConst.DB_DEFAULT_MAX_LENGTH))
-    private SingleValueEnhanced<PerzentileGewicht> gewichtPerzentile = SingleValueEnhanced.of();
+        column = @Column(name = "gewichtPerzentileSingleValue", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<PerzentileGewicht> gewichtPerzentileSingleValue = SingleValueEnhanced.of();
+
+    @Nullable
+    @Embedded
+    @Valid
+    @AttributeOverride(name = "value",
+        column = @Column(name = "gewichtPerzentileMultiValue", length = DbConst.DB_ENUM_LIST_LENGTH))
+    private MultiValueEnhanced<PerzentileGewicht> gewichtPerzentileMultiValue = MultiValueEnhanced.of();
 
     @Nullable
     @Column(nullable = true)
@@ -99,8 +115,16 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
     @Nullable
     @Embedded
     @Valid
-    @AttributeOverride(name = "value", column = @Column(name = "bmiPerzentile", length = DbConst.DB_DEFAULT_MAX_LENGTH))
-    private SingleValueEnhanced<PerzentileBmi> bmiPerzentile = SingleValueEnhanced.of();
+    @AttributeOverride(name = "value",
+        column = @Column(name = "bmiPerzentileSingleValue", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    private SingleValueEnhanced<PerzentileBmi> bmiPerzentileSingleValue = SingleValueEnhanced.of();
+
+    @Nullable
+    @Embedded
+    @Valid
+    @AttributeOverride(name = "value",
+        column = @Column(name = "bmiPerzentileMultiValue", length = DbConst.DB_ENUM_LIST_LENGTH))
+    private MultiValueEnhanced<PerzentileBmi> bmiPerzentileMultiValue = MultiValueEnhanced.of();
 
     @Nullable
     @Size(max = DbConst.DB_TEXTAREA_MAX_LENGTH_2000)
@@ -146,32 +170,62 @@ public class UntersuchungGroesseGewicht extends AbstractEntity<UntersuchungGroes
         }
         AnlassConfig config = untersuchung.getAnlass().getAnlassConfig();
 
-        groesseGewicht.setGroessePerzentile(
+        groesseGewicht.setGroessePerzentileSingleValue(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
                 config,
-                AnlassConfig::getGroesseGewichtGroessePerzentile,
+                AnlassConfig::getGroesseGewichtGroessePerzentileSingleValue,
                 groesseGewicht,
-                UntersuchungGroesseGewicht::getGroessePerzentile,
+                UntersuchungGroesseGewicht::getGroessePerzentileSingleValue,
                 PerzentileGroesse.NICHT_GEPRUEFT,
                 nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
             )
         );
-        groesseGewicht.setGewichtPerzentile(
+        groesseGewicht.setGroessePerzentileMultiValue(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getGroesseGewichtGroessePerzentileMultiValue,
+                groesseGewicht,
+                UntersuchungGroesseGewicht::getGroessePerzentileMultiValue,
+                PerzentileGroesse.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        groesseGewicht.setGewichtPerzentileSingleValue(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
                 config,
-                AnlassConfig::getGroesseGewichtGewichtPerzentile,
+                AnlassConfig::getGroesseGewichtGewichtPerzentileSingleValue,
                 groesseGewicht,
-                UntersuchungGroesseGewicht::getGewichtPerzentile,
+                UntersuchungGroesseGewicht::getGewichtPerzentileSingleValue,
                 PerzentileGewicht.NICHT_GEPRUEFT,
                 nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
             )
         );
-        groesseGewicht.setBmiPerzentile(
+        groesseGewicht.setGewichtPerzentileMultiValue(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getGroesseGewichtGewichtPerzentileMultiValue,
+                groesseGewicht,
+                UntersuchungGroesseGewicht::getGewichtPerzentileMultiValue,
+                PerzentileGewicht.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        groesseGewicht.setBmiPerzentileSingleValue(
             ValueEnhancedUtil.getSingleValueEnhancedForUntersuchungAbschliessen(
                 config,
-                AnlassConfig::getGroesseGewichtBmiPerzentile,
+                AnlassConfig::getGroesseGewichtBmiPerzentileSingleValue,
                 groesseGewicht,
-                UntersuchungGroesseGewicht::getBmiPerzentile,
+                UntersuchungGroesseGewicht::getBmiPerzentileSingleValue,
+                PerzentileBmi.NICHT_GEPRUEFT,
+                nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
+            )
+        );
+        groesseGewicht.setBmiPerzentileMultiValue(
+            ValueEnhancedUtil.getMultiValueEnhancedForUntersuchungAbschliessen(
+                config,
+                AnlassConfig::getGroesseGewichtBmiPerzentileMultiValue,
+                groesseGewicht,
+                UntersuchungGroesseGewicht::getBmiPerzentileMultiValue,
                 PerzentileBmi.NICHT_GEPRUEFT,
                 nichtGeprueftGrundFeatureIsEnabledForDeploymentEnv
             )

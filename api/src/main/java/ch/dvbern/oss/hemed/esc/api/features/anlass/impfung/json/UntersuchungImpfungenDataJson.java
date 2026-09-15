@@ -43,4 +43,9 @@ public class UntersuchungImpfungenDataJson {
     @Schema(required = false)
     private final UntersuchungImpfungenDataMinimalJson dataMinimal;
 
+    @Nullable
+    @Valid
+    @Schema(required = false)
+    private final UntersuchungImpfungenNurUnvollstaendigeJson nurUnvollstaendige;
+
 }

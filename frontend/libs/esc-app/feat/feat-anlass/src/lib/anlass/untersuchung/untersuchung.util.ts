@@ -33,7 +33,7 @@ export function checkIfArrayContainsCheckedValue<T>(controls: FormGroup<{
  * traversal, not just the top, so a nested object carrying its own version does not falsely count as content.
  */
 export function hasSomeNotNullishValueIgnoringVersion(
-  defaultUntersuchungsValues: { version: number }
+  defaultUntersuchungsValues: unknown
 ): boolean {
   const stack: unknown[] = [defaultUntersuchungsValues];
   const seen = new WeakSet<object>();

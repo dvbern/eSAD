@@ -1,5 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.impfung;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.HasUntersuchungIDWrapper;
@@ -9,14 +15,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpf
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.json.UntersuchungImpfstatusListSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 @JaxMapper
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public final class UntersuchungImpfstatusKrankheitMapper {
             impfstatusKrankheit.getKrankheit(),
             impfstatusKrankheit.getAnzahlImpfungen(),
             impfstatusKrankheit.getDatumLetzteImpfung(),
-            impfstatusKrankheit.isImpfschutzGegeben(),
+            impfstatusKrankheit.getImpfschutzGegeben(),
             impfstatusKrankheit.isImpfempfehlung(),
             impfstatusKrankheit.isImpfentscheid(),
             impfstatusKrankheit.getVersion()
@@ -58,22 +60,22 @@ public final class UntersuchungImpfstatusKrankheitMapper {
                 saveJson.getKrankheit(),
                 saveJson.getAnzahlImpfungen(),
                 saveJson.getDatumLetzteImpfung(),
-                saveJson.isImpfschutzGegeben(),
+                saveJson.getImpfschutzGegeben(),
                 saveJson.isImpfempfehlung(),
                 saveJson.isImpfentscheid(),
                 appClock.offsetDateTime().now());
         } else {
             if (!Objects.equals(impfstatusKrankheit.getAnzahlImpfungen(), saveJson.getAnzahlImpfungen())
-            || !Objects.equals(impfstatusKrankheit.getDatumLetzteImpfung(), saveJson.getDatumLetzteImpfung())
-            || !Objects.equals(impfstatusKrankheit.isImpfschutzGegeben(), saveJson.isImpfschutzGegeben())
-            || !Objects.equals(impfstatusKrankheit.isImpfempfehlung(), saveJson.isImpfentscheid())
-            || !Objects.equals(impfstatusKrankheit.isImpfentscheid(), saveJson.isImpfentscheid())
+                || !Objects.equals(impfstatusKrankheit.getDatumLetzteImpfung(), saveJson.getDatumLetzteImpfung())
+                || impfstatusKrankheit.getImpfschutzGegeben() != saveJson.getImpfschutzGegeben()
+                || !Objects.equals(impfstatusKrankheit.isImpfempfehlung(), saveJson.isImpfentscheid())
+                || !Objects.equals(impfstatusKrankheit.isImpfentscheid(), saveJson.isImpfentscheid())
             ) {
                 impfstatusKrankheit.setTimestampLastManualChange(appClock.offsetDateTime().now());
             }
             impfstatusKrankheit.setAnzahlImpfungen(saveJson.getAnzahlImpfungen());
             impfstatusKrankheit.setDatumLetzteImpfung(saveJson.getDatumLetzteImpfung());
-            impfstatusKrankheit.setImpfschutzGegeben(saveJson.isImpfschutzGegeben());
+            impfstatusKrankheit.setImpfschutzGegeben(saveJson.getImpfschutzGegeben());
             impfstatusKrankheit.setImpfempfehlung(saveJson.isImpfempfehlung());
             impfstatusKrankheit.setImpfentscheid(saveJson.isImpfentscheid());
         }
@@ -93,9 +95,10 @@ public final class UntersuchungImpfstatusKrankheitMapper {
     ) {
         List<UntersuchungImpfstatusKrankheit> existingImpfstatus =
             untersuchungImpfstatusKrankheitService.findByUntersuchung(impfungen.getUntersuchung().getId());
-        // Eigentlich sollten die Impfstatus beim Erstellen der Untersuchung erstellt werden. Bei schon bestehenden Untersuchungen erstellen wir sie hier noch.
+        // Eigentlich sollten die Impfstatus beim Erstellen der Untersuchung erstellt werden. Bei schon bestehenden
+        // Untersuchungen erstellen wir sie hier noch.
         if (existingImpfstatus.isEmpty()) {
-            if(copyImpfhistory){
+            if (copyImpfhistory) {
                 Optional<Einladung> lastEinladung =
                     einladungService.findLastEinladungForKind(
                         impfungen.getUntersuchung().getAnlass(),
@@ -104,9 +107,13 @@ public final class UntersuchungImpfstatusKrankheitMapper {
             } else {
                 untersuchungService.createCompleteImpfstatusWithoutHistory(impfungen);
             }
-            existingImpfstatus = untersuchungImpfstatusKrankheitService.findByUntersuchung(impfungen.getUntersuchung().getId());
+            existingImpfstatus =
+                untersuchungImpfstatusKrankheitService.findByUntersuchung(impfungen.getUntersuchung().getId());
         }
-        return existingImpfstatus.stream().map(UntersuchungImpfstatusKrankheitMapper::toJson).toList();
+        return existingImpfstatus.stream()
+            .sorted(Comparator.comparing(UntersuchungImpfstatusKrankheit::getKrankheit))
+            .map(UntersuchungImpfstatusKrankheitMapper::toJson)
+            .toList();
     }
 
     @NonNull
@@ -132,7 +139,10 @@ public final class UntersuchungImpfstatusKrankheitMapper {
                     impfungen.getId(),
                     statusJson.getKrankheit());
             UntersuchungImpfstatusKrankheit entity = toEntity(untersuchung, existing.orElse(null), statusJson);
-            untersuchungImpfstatusKrankheitService.persistWithOptimisticLocking(entity, statusJson.getVersion(), !wrappedId.isAnonymerEintrag());
+            untersuchungImpfstatusKrankheitService.persistWithOptimisticLocking(
+                entity,
+                statusJson.getVersion(),
+                !wrappedId.isAnonymerEintrag());
         }
     }
 }

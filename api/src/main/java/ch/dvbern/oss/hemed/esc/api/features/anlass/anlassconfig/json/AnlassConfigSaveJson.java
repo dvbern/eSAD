@@ -18,8 +18,10 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxDTO;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Einbeinhuepfen;
@@ -28,16 +30,20 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Sprachfaehigkeit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.StrabismusResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Value
@@ -285,6 +291,13 @@ public class AnlassConfigSaveJson {
     @Schema(required = true)
     private RequirementSetting impfungenDataMinimalImpfungDurchgefuehrt;
 
+    // ImpfungenNurUnvollstaendige
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting impfungenNurUnvollstaendige;
+
     // Sehen
 
     @NotNull
@@ -296,6 +309,10 @@ public class AnlassConfigSaveJson {
     @NonNull
     @Schema(required = true)
     private List<BrilleLinsenResultat> sehenBrilleLinsenValues;
+
+    @Nullable
+    @Schema(required = false)
+    private BrilleLinsenResultat sehenBrilleLinsenDefaultValue;
 
     @NotNull
     @NonNull
@@ -311,6 +328,10 @@ public class AnlassConfigSaveJson {
     @NonNull
     @Schema(required = true)
     private RequirementSetting sehenFernvisus;
+
+    @Nullable
+    @Schema(required = false)
+    private BigDecimal sehenFernvisusDefaultValue;
 
     @NotNull
     @NonNull
@@ -389,15 +410,27 @@ public class AnlassConfigSaveJson {
     @Schema(required = true)
     private RequirementSetting hoerenAudiogramm;
 
+    @Nullable
+    @Schema(required = false)
+    private Dezibel hoerenAudiogrammDefaultValue;
+
     @NotNull
     @NonNull
     @Schema(required = true)
     private RequirementSetting hoerenAudiogramm250Hz;
 
+    @Nullable
+    @Schema(required = false)
+    private Dezibel hoerenAudiogramm250HzDefaultValue;
+
     @NotNull
     @NonNull
     @Schema(required = true)
     private RequirementSetting hoerenAudiogramm8000Hz;
+
+    @Nullable
+    @Schema(required = false)
+    private Dezibel hoerenAudiogramm8000HzDefaultValue;
 
     @NotNull
     @NonNull
@@ -461,17 +494,42 @@ public class AnlassConfigSaveJson {
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting groesseGewichtGroessePerzentile;
+    private RequirementSetting groesseGewichtGroessePerzentileSingleValue;
 
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting groesseGewichtGewichtPerzentile;
+    private RequirementSetting groesseGewichtGroessePerzentileMultiValue;
 
     @NotNull
     @NonNull
     @Schema(required = true)
-    private RequirementSetting groesseGewichtBmiPerzentile;
+    private List<PerzentileGroesse> groesseGewichtGroessePerzentileValues;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting groesseGewichtGewichtPerzentileSingleValue;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting groesseGewichtGewichtPerzentileMultiValue;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<PerzentileGewicht> groesseGewichtGewichtPerzentileValues;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting groesseGewichtBmiPerzentileSingleValue;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private RequirementSetting groesseGewichtBmiPerzentileMultiValue;
 
     @NotNull
     @NonNull

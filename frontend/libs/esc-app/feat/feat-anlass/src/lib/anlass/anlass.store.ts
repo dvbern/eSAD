@@ -20,14 +20,7 @@ import {
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withComputed, withMethods, withState} from '@ngrx/signals';
-import {
-  addEntity,
-  removeAllEntities,
-  removeEntity,
-  setEntities,
-  setEntity,
-  withEntities
-} from '@ngrx/signals/entities';
+import {addEntity, removeAllEntities, removeEntity, setEntities, setEntity, withEntities} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap, tap} from 'rxjs';
 import {enhanceAnlass} from './anlass.util';
@@ -79,6 +72,12 @@ export class AnlassStore extends signalStore(
       }),
       weiterePersonOfCurrentAnlass: computed(() => {
         return selectedEntity()?.data?.weiterePerson;
+      }),
+      groesseGewichtGroessePerzentileValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.groesseGewichtGroessePerzentileValues ?? [];
+      }),
+      groesseGewichtGewichtPerzentileValues: computed(() => {
+        return selectedEntity()?.anlassConfig.data.groesseGewichtGewichtPerzentileValues ?? [];
       }),
       groesseGewichtBmiPerzentileValues: computed(() => {
         return selectedEntity()?.anlassConfig.data.groesseGewichtBmiPerzentileValues ?? [];

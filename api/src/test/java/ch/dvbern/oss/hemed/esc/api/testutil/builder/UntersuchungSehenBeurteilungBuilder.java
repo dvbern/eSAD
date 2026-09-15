@@ -121,6 +121,17 @@ public class UntersuchungSehenBeurteilungBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
+    public UntersuchungSehenBeurteilungBuilder withFernvisusAugeEinzeln(
+        @Nullable DistanzSehenAugeEinzelnResultat fernvisusAugeEinzeln,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.sehen.setFernvisusAugeLinks(SingleValueEnhanced.of(fernvisusAugeEinzeln, nichtGeprueftGrund));
+        this.sehen.setFernvisusAugeRechts(SingleValueEnhanced.of(fernvisusAugeEinzeln, nichtGeprueftGrund));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
     public UntersuchungSehenBeurteilungBuilder withFernvisusLinks(@Nullable BigDecimal fernvisusLinks) {
         this.sehen.setFernvisusLinks(fernvisusLinks);
         return this;

@@ -15,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.schulrelevantebeeintraechtigung.types.OhneStuetzradVelofahren;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -94,6 +95,21 @@ public class UntersuchungSchulrelevanteBeeintraechtigungMapper {
         beeintraechtung.setBemerkungen(saveJson.getBemerkungen());
 
         return beeintraechtung;
+    }
+
+    @NonNull
+    public UntersuchungSchulrelevanteBeeintraechtigungSaveJson getDefaultUntersuchungSchulrelevanteBeeintraechtigung() {
+        return new UntersuchungSchulrelevanteBeeintraechtigungSaveJson(
+            SingleValueEnhancedMapper.toJson(FreiesGehen.class, SingleValueEnhanced.of()),
+            null,
+            SingleValueEnhancedMapper.toJson(OhneStuetzradVelofahren.class, SingleValueEnhanced.of(OhneStuetzradVelofahren.JA_OHNE_STUETZRAD_VELOFAHREN, null)),
+            SingleValueEnhancedMapper.toJson(Grafomotorik.class, SingleValueEnhanced.of(Grafomotorik.GUT, null)),
+            SingleValueEnhancedMapper.toJson(Feinmotorik.class, SingleValueEnhanced.of(Feinmotorik.BESTANDEN, null)),
+            SingleValueEnhancedMapper.toJson(GrobmotorikEinbeinhuepfen.class, SingleValueEnhanced.of(GrobmotorikEinbeinhuepfen.BESTANDEN, null)),
+            SingleValueEnhancedMapper.toJson(GleichgewichtEinbeinstand.class, SingleValueEnhanced.of(GleichgewichtEinbeinstand.BESTANDEN, null)),
+            null,
+            0L
+        );
     }
 
     @Nullable

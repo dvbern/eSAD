@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { AgbResponsability } from './agb-responsability';
+import { ISODateString } from '@dvb/data-access-types';
 import { EinladungStatus } from './einladung-status';
 import { AppLanguages } from './app-languages';
 import { LandingPageOption } from './landing-page-option';
@@ -24,6 +25,7 @@ export interface TenantSettingSaveJson {
     features: TenantSettingFeaturesJson;
     einladungStatusValues: Array<EinladungStatus>;
     defaultLandingPage: LandingPageOption;
+    gueltigAbWachstumskurvePch: ISODateString;
 }
 export namespace TenantSettingSaveJson {
 }

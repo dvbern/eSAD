@@ -2,22 +2,25 @@ package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGewicht;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.json.UntersuchungGroesseGewichtJson;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewichtMapper;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.NichtGeprueftGrund;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.mapper.UntersuchungGroesseGewichtJsonSpecMapper;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungGroesseGewichtJsonSpec;
+
 import org.assertj.core.annotation.CanIgnoreReturnValue;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -80,7 +83,17 @@ public class UntersuchungGroesseGewichtBuilder {
         @Nullable PerzentileGroesse perzentile,
         @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.groesseGewicht.setGroessePerzentile(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
+        this.groesseGewicht.setGroessePerzentileSingleValue(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungGroesseGewichtBuilder withGroessePerzentileMultiValue(
+        @Nullable EnumSet<PerzentileGroesse> perzentile,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.groesseGewicht.setGroessePerzentileMultiValue(MultiValueEnhanced.of(perzentile, nichtGeprueftGrund));
         return this;
     }
 
@@ -90,7 +103,17 @@ public class UntersuchungGroesseGewichtBuilder {
         @Nullable PerzentileGewicht perzentile,
         @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.groesseGewicht.setGewichtPerzentile(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
+        this.groesseGewicht.setGewichtPerzentileSingleValue(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungGroesseGewichtBuilder withGewichtPerzentileMultiValue(
+        @Nullable EnumSet<PerzentileGewicht> perzentile,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.groesseGewicht.setGewichtPerzentileMultiValue(MultiValueEnhanced.of(perzentile, nichtGeprueftGrund));
         return this;
     }
 
@@ -100,7 +123,17 @@ public class UntersuchungGroesseGewichtBuilder {
         @Nullable PerzentileBmi perzentile,
         @Nullable NichtGeprueftGrund nichtGeprueftGrund
     ) {
-        this.groesseGewicht.setBmiPerzentile(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
+        this.groesseGewicht.setBmiPerzentileSingleValue(SingleValueEnhanced.of(perzentile, nichtGeprueftGrund));
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungGroesseGewichtBuilder withBmiPerzentileMultiValue(
+        @Nullable EnumSet<PerzentileBmi> perzentile,
+        @Nullable NichtGeprueftGrund nichtGeprueftGrund
+    ) {
+        this.groesseGewicht.setBmiPerzentileMultiValue(MultiValueEnhanced.of(perzentile, nichtGeprueftGrund));
         return this;
     }
 

@@ -1,5 +1,9 @@
 package ch.dvbern.oss.hemed.esc.api.features.pub.clientconfig;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst;
@@ -8,10 +12,8 @@ import ch.dvbern.oss.hemed.esc.api.features.pub.clientconfig.json.ClientDeployme
 import ch.dvbern.oss.hemed.esc.api.features.pub.clientconfig.json.ClientFeatureConfigJson;
 import ch.dvbern.oss.hemed.esc.api.features.pub.clientconfig.json.ConfigJson;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+
 import io.smallrye.faulttolerance.api.RateLimit;
-import jakarta.annotation.security.PermitAll;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -44,7 +46,8 @@ public class ClientConfigResource {
                 configService.getClientAuthConfigLogoutUrl().orElse(null)),
 
             new ClientFeatureConfigJson(
-                configService.isFeatureTimeTravelEndpointEnabled())
+                configService.isFeatureTimeTravelEndpointEnabled(),
+                configService.getArchiveBulkDownloadMaxFiles())
         );
     }
 }

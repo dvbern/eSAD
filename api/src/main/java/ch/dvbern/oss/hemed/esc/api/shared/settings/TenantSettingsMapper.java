@@ -41,7 +41,8 @@ public final class TenantSettingsMapper {
                     settings.getTenantSettingFeatures()
                 ),
                 EnumSetUtil.toList(settings.getEinladungStatusValues()),
-                settings.getDefaultLandingPage()
+                settings.getDefaultLandingPage(),
+                settings.getGueltigAbWachstumskurvePch()
             ),
             FachRolle.getFachrollenWithBerechtigung(tenant),
             FachRolle.getBerechtigteDelegierBareFachrollen(tenant)
@@ -58,6 +59,7 @@ public final class TenantSettingsMapper {
         existing.setSupportEmail(saveJson.getSupportEmail());
         existing.setAgbResponsability(saveJson.getAgbResponsability());
         existing.setDefaultLandingPage(saveJson.getDefaultLandingPage());
+        existing.setGueltigAbWachstumskurvePch(saveJson.getGueltigAbWachstumskurvePch());
         tenantSettingsFeatureMapper.toEntity(existing.getTenantSettingFeatures(), saveJson.getFeatures());
     }
 

@@ -4,6 +4,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 
 import ch.dvbern.oss.hemed.esc.api.shared.util.ValueEnhancedUtil;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -22,8 +23,8 @@ public class GroesseBeurteilungCsvColumn extends AbstractCsvColumn {
         return ExtractorForCsvUtil.extractUntersuchungGroesseGewicht(
             einladung,
             untersuchungGroesseGewicht -> {
-                PerzentileGroesse resultat =
-                    ValueEnhancedUtil.getEnumValueOrNull(untersuchungGroesseGewicht.getGroessePerzentile(), PerzentileGroesse.class);
+                PerzentileGroesse resultat = ValueEnhancedUtil.getEnumValueOrNull(
+                    untersuchungGroesseGewicht.getGroessePerzentileSingleValue(), PerzentileGroesse.class);
                 if (resultat == null) {
                     return "";
                 }

@@ -56,6 +56,18 @@ public class UntersuchungSchulrelevanteBeeintraechtigungResource {
                 List.of(Berechtigung.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)));
     }
 
+    @GET
+    @Path("/default")
+    @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_LESEN)
+    @NonNull
+    public UntersuchungSchulrelevanteBeeintraechtigungSaveJson getDefaultUntersuchungSchulrelevanteBeeintraechtigung(
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @PathParam("einladungId") HasUntersuchungIDWrapper wrappedId
+    ) {
+        einladungMapper.requireConsistentPathParams(wrappedId, anlassId);
+        return untersuchungSchulrelevanteBeeintraechtigungMapper.getDefaultUntersuchungSchulrelevanteBeeintraechtigung();
+    }
+
     @PUT
     @NonNull
     @RolesAllowed(BerechtigungName.SU_AERZTLICHE_UNTERSUCHUNG_SCHREIBEN)

@@ -2,25 +2,41 @@
   [formGroup]="form.group"
   (ngSubmit)="submitIfValid()">
 
-  <h2 svuiHeading="formSection">{{ 'untersuchung.impfungen.imfstatusList.title' | transloco }}</h2>
+  <h2 svuiHeading="formSection">
+    {{
+      (form.isNurUnvollstaendige() ? 'untersuchung.impfungen.imfstatusNurUnvollstaendigeList.title': 'untersuchung.impfungen.imfstatusList.title')| transloco
+    }}
+  </h2>
 
-  <div style="display: flex; align-items: center; justify-content: stretch; gap: 16px;">
-      @if (dossier()?.dataMedizinisch?.immunitaetMasern) {
-        <svui-status-text icon="vaccinated" style="flex: 1;"
-                          statusColor="success">{{ 'kind.dossier.masern.immunitaet' | transloco }}
-        </svui-status-text>
-      }
-      @if (dossier()?.dataMedizinisch?.immunitaetVarizellen) {
-        <svui-status-text icon="vaccinated" style="flex: 1; margin-top: 0;"
-                          statusColor="success">{{ 'kind.dossier.varizellen.immunitaet' |transloco }}
-        </svui-status-text>
-      }
-  </div>
-  <feat-untersuchung-impfstatus-list
-    [impfentscheideFormGroup]="form.group.controls.impfentscheide"
-    [krankheitenLeft]="krankheitenLeft()"
-    [krankheitenRight]="krankheitenRight()"
-  />
+
+  @if (!form.isNurUnvollstaendige()) {
+    <div style="display: flex; align-items: center; justify-content: stretch; gap: 16px;">
+        @if (dossier()?.dataMedizinisch?.immunitaetMasern) {
+          <svui-status-text icon="vaccinated" style="flex: 1;"
+                            statusColor="success">{{ 'kind.dossier.masern.immunitaet' | transloco }}
+          </svui-status-text>
+        }
+        @if (dossier()?.dataMedizinisch?.immunitaetVarizellen) {
+          <svui-status-text icon="vaccinated" style="flex: 1; margin-top: 0;"
+                            statusColor="success">{{ 'kind.dossier.varizellen.immunitaet' |transloco }}
+          </svui-status-text>
+        }
+    </div>
+  }
+
+  @if (form.isNurUnvollstaendige()) {
+    <feat-untersuchung-impfstatus-nur-unvollstaendige-list
+      [impfentscheideFormGroup]="form.group.controls.impfentscheide"
+      [krankheitenLeft]="krankheitenLeft()"
+      [krankheitenRight]="krankheitenRight()"
+    />
+  } @else {
+    <feat-untersuchung-impfstatus-list
+      [impfentscheideFormGroup]="form.group.controls.impfentscheide"
+      [krankheitenLeft]="krankheitenLeft()"
+      [krankheitenRight]="krankheitenRight()"
+    />
+  }
 
   <!--messages for whole form -->
   <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

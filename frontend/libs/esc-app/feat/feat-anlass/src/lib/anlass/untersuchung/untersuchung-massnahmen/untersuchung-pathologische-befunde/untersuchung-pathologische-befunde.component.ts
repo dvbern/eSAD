@@ -313,13 +313,19 @@ export class UntersuchungPathologischeBefundeComponent {
     const data: UntersuchungGroesseGewichtSaveJson | undefined =
       this.groesseGewichtStore.groesseGewicht()?.untersuchungGroesseGewichtJson?.data;
     // Groesse
-    const groessePathologisch = this.addFilteredEnumListValue(
+    const groesseSingleValuePathologisch = this.addFilteredEnumListValue(
       groesseGewichtMap,
       'untersuchung.pathologische.befunde.groessegewicht.groessePerzentile',
-      data?.groessePerzentile?.value,
+      data?.groessePerzentileSingleValue?.value,
       'PerzentileGroesse',
     );
-    if (groessePathologisch) {
+    const groesseMultiValuePathologisch = this.addFilteredEnumListValue(
+      groesseGewichtMap,
+      'untersuchung.pathologische.befunde.groessegewicht.groessePerzentile',
+      data?.groessePerzentileMultiValue?.value,
+      'PerzentileGroesse',
+    );
+    if (groesseSingleValuePathologisch || groesseMultiValuePathologisch) {
       this.addSimpleValue(
         groesseGewichtMap,
         'untersuchung.pathologische.befunde.groessegewicht.groesse',
@@ -327,13 +333,19 @@ export class UntersuchungPathologischeBefundeComponent {
       );
     }
     // Gewicht
-    const gewichtPathologisch = this.addFilteredEnumListValue(
+    const gewichtSingleValuePathologisch = this.addFilteredEnumListValue(
       groesseGewichtMap,
       'untersuchung.pathologische.befunde.groessegewicht.gewichtPerzentile',
-      data?.gewichtPerzentile?.value,
+      data?.gewichtPerzentileSingleValue?.value,
       'PerzentileGewicht',
     );
-    if (gewichtPathologisch) {
+    const gewichtMultiValuePathologisch = this.addFilteredEnumListValue(
+      groesseGewichtMap,
+      'untersuchung.pathologische.befunde.groessegewicht.gewichtPerzentile',
+      data?.gewichtPerzentileMultiValue?.value,
+      'PerzentileGewicht',
+    );
+    if (gewichtSingleValuePathologisch || gewichtMultiValuePathologisch) {
       this.addSimpleValue(
         groesseGewichtMap,
         'untersuchung.pathologische.befunde.groessegewicht.gewicht',
@@ -341,13 +353,19 @@ export class UntersuchungPathologischeBefundeComponent {
       );
     }
     // BMI
-    const bmiPathologisch = this.addFilteredEnumListValue(
+    const bmiSingleValuePathologisch = this.addFilteredEnumListValue(
       groesseGewichtMap,
       'untersuchung.pathologische.befunde.groessegewicht.bmiPerzentile',
-      data?.bmiPerzentile?.value,
+      data?.bmiPerzentileSingleValue?.value,
       'PerzentileBmi',
     );
-    if (bmiPathologisch) {
+    const bmiMultiValuePathologisch = this.addFilteredEnumListValue(
+      groesseGewichtMap,
+      'untersuchung.pathologische.befunde.groessegewicht.bmiPerzentile',
+      data?.bmiPerzentileMultiValue?.value,
+      'PerzentileBmi',
+    );
+    if (bmiSingleValuePathologisch || bmiMultiValuePathologisch) {
       const bmi = calculateBmi(data?.groesse, data?.gewicht);
       this.addSimpleValue(groesseGewichtMap, 'untersuchung.pathologische.befunde.groessegewicht.bmi', bmi);
     }
@@ -753,7 +771,6 @@ export class UntersuchungPathologischeBefundeComponent {
     }
     return false;
   }
-
 
   private addSimpleValue(map: Map<string, string>, key: string, value: string | number | undefined): void {
     if (value) {

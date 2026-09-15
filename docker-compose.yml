@@ -1,6 +1,14 @@
 services:
+
+  init-perms:
+    image: alpine
+    user: "0:0"
+    command: chown -R 1000:1000 /opt/keycloak/data/h2
+    volumes:
+    - "esc-keycloak-h2:/opt/keycloak/data/h2"
+
   esc-keycloak:
-    image: docker-registry.dvbern.ch/quay/keycloak/keycloak:26.3.3
+    image: docker-registry.dvbern.ch/quay/keycloak/keycloak:26.7
     ports:
       - "8989:8443"
     volumes:
@@ -20,6 +28,19 @@ services:
     #  JAVA_OPTS: -XX:UseSVE=0 # fix for m4 mac
     command: >
       start-dev --import-realm
+    depends_on:
+      init-perms:
+        condition: service_completed_successfully
+    healthcheck:
+      # The management/health port 9000 is served over HTTPS (certs are configured) and this image
+      # has no curl/openssl/wget, so we can't probe it with the /dev/tcp trick. Instead probe a
+      # plain-HTTP endpoint on 8080 that always responds once Keycloak is serving: the master
+      # realm's OIDC discovery document (master always exists, independent of the realm import).
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && printf 'GET /realms/master/.well-known/openid-configuration HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && head -c 15 <&3 | grep -q '200 OK'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
 
 
   esc-oauthProxy-bs:
@@ -37,7 +58,8 @@ services:
     env_file:
       - ./api/.env
     depends_on:
-      - esc-keycloak
+      esc-keycloak:
+        condition: service_healthy
 
   esc-oauthProxy-win:
     image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
@@ -54,7 +76,8 @@ services:
     env_file:
       - ./api/.env
     depends_on:
-      - esc-keycloak
+      esc-keycloak:
+        condition: service_healthy
 
   esc-oauthProxy-be:
     image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
@@ -71,8 +94,8 @@ services:
     env_file:
       - ./api/.env
     depends_on:
-      - esc-keycloak
-      #    condition: service_healthy
+      esc-keycloak:
+        condition: service_healthy
 ## For debugging
 #  esc-debug-image:
 #    image: docker-registry.dvbern.ch/devops/docker/tools/openshift-workspace:latest

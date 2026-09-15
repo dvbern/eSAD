@@ -32,6 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurte
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.json.AnlassWithDateTimeJson;
@@ -73,6 +74,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrintD
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.AnlassUntersuchungPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierUntersuchungImpfungenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -115,6 +117,7 @@ import org.apache.tika.mime.MediaType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
@@ -159,6 +162,69 @@ class PrinterTest {
     void setUpBeforeEach() {
         Mockito.when(tenantSettingsServiceMock.getTenantSetting())
             .thenReturn(TenantSettingBuilder.defaultTenantSetting());
+        Mockito.when(tenantSettingsServiceMock.isTenantHeaderInExportsEnabled()).thenReturn(true);
+    }
+
+    @Test
+    void addHeader_showHeaderTrue_rendersTenantAddress() throws IOException {
+        // ARRANGE & ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, TenantEnum.BE, fileStoreServiceMock);
+            Document document = basePrinter.getDocument(byteArrayOutputStream);
+            basePrinter.addHeader(document, true);
+            document.close();
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT
+        assertThat(extractPdfText(pdfBytes)).contains("Bern");
+    }
+
+    @Test
+    void addHeader_showHeaderFalse_omitsTenantAddress() throws IOException {
+        // ARRANGE & ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, TenantEnum.BE, fileStoreServiceMock);
+            Document document = basePrinter.getDocument(byteArrayOutputStream);
+            basePrinter.addHeader(document, false);
+            document.close();
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT
+        assertThat(extractPdfText(pdfBytes)).doesNotContain("Bern");
+    }
+
+    @Test
+    void printTableImpfstatus_sortsDiseasesByKrankheitEnumOrder() throws IOException {
+        // ARRANGE: diseases provided in a deliberately unsorted order
+        List<UntersuchungImpfstatusKrankheit> unsorted = List.of(
+            UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forKrankheit(Krankheit.POLIO)),
+            UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forKrankheit(Krankheit.DIPHTERIE)),
+            UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forKrankheit(Krankheit.PERTUSSIS)),
+            UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forKrankheit(Krankheit.TETANUS)));
+
+        // ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, TenantEnum.BS, fileStoreServiceMock);
+            Document document = basePrinter.getDocument(byteArrayOutputStream);
+            KinderdossierUntersuchungImpfungenUtil.printTableImpfstatus(unsorted, basePrinter, document);
+            document.close();
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT: rendered in Krankheit enum declaration order DIPHTERIE, TETANUS, PERTUSSIS, POLIO
+        String pdfText = extractPdfText(pdfBytes);
+        int diphterie = pdfText.indexOf("Diphtherie");
+        int tetanus = pdfText.indexOf("Tetanus");
+        int pertussis = pdfText.indexOf("Pertussis");
+        int polio = pdfText.indexOf("Poliomyelitis");
+        assertThat(diphterie).isGreaterThanOrEqualTo(0).isLessThan(tetanus);
+        assertThat(tetanus).isLessThan(pertussis);
+        assertThat(pertussis).isLessThan(polio);
     }
 
     @ParameterizedTest
@@ -651,7 +717,7 @@ class PrinterTest {
         // other printer tests).
         byte[] pdfBytes;
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            AnonymerEintragPrinter.print(dto, byteArrayOutputStream, fileStoreServiceMock);
+            AnonymerEintragPrinter.print(dto, byteArrayOutputStream, fileStoreServiceMock, true);
             pdfBytes = byteArrayOutputStream.toByteArray();
         }
         try (FileOutputStream outputStream = getFileOutputStream("anonymer-eintrag", tenantEnum)) {
@@ -699,7 +765,7 @@ class PrinterTest {
         // ACT
         byte[] pdfBytes;
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            AnonymerEintragPrinter.print(dto, byteArrayOutputStream, fileStoreServiceMock);
+            AnonymerEintragPrinter.print(dto, byteArrayOutputStream, fileStoreServiceMock, true);
             pdfBytes = byteArrayOutputStream.toByteArray();
         }
 
@@ -868,7 +934,7 @@ class PrinterTest {
             BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, tenantEnum, fileStoreServiceMock);
             Document document = basePrinter.getDocument(outputStream);
 
-            basePrinter.addHeader(document);
+            basePrinter.addHeader(document, true);
 
             FileData fileData = FileDataBuilder.defaultPdfFileData();
 
@@ -892,7 +958,7 @@ class PrinterTest {
             BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, tenantEnum, fileStoreServiceMock);
             Document document = basePrinter.getDocument(outputStream);
 
-            basePrinter.addHeader(document);
+            basePrinter.addHeader(document, true);
 
             FileData fileData = FileDataBuilder.defaultPdfFileData();
 
@@ -916,7 +982,7 @@ class PrinterTest {
             BasePrinter basePrinter = new BasePrinter(AppLanguages.DE, tenantEnum, fileStoreServiceMock);
             Document document = basePrinter.getDocument(outputStream);
 
-            basePrinter.addHeader(document);
+            basePrinter.addHeader(document, true);
 
             FileData fileData = FileDataBuilder.defaultImgFileData();
 

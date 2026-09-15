@@ -14,15 +14,9 @@
 
 package ch.dvbern.oss.hemed.esc.api.shared.documentqueue;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -33,12 +27,10 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.Briefvorlage;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.BriefvorlageService;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.json.DocumentQueueMassenbriefSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.TempFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueService.unmarshalDocumentQueueCsvParameter;
@@ -50,41 +42,19 @@ import static ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueServ
 @Slf4j
 public class DocumentQueueFileService {
 
-    private static final FileAttribute<Set<PosixFilePermission>> FILE_PERMS_OWNER_ONLY =
-        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
-
     private final BriefvorlageService briefvorlageService;
     private final AppClock appClock;
     private final TL tl;
-    private final ConfigService configService;
+    private final TempFileService tempFileService;
 
     @NonNull
     public Path createTempFile(@NonNull CleanFileName fileName, byte[] content) {
-        try {
-            Path tempFileLoc = createTempFile(fileName);
-
-            FileUtils.writeByteArrayToFile(tempFileLoc.toFile(), content);
-            return tempFileLoc;
-        } catch (IOException e) {
-            throw new AppFailureException(AppFailureMessage.internalError("Error while writing to temp file"), e);
-        }
+        return tempFileService.createTempFile(fileName, content);
     }
 
     @NonNull
     public Path createTempFile(@NonNull CleanFileName fileName) {
-        try {
-            Path tmpDir = configService.getTmpDir();
-            String prefix = FilenameUtils.getBaseName(fileName.getFileName()) + '_';
-            String extension = FilenameUtils.getExtension(fileName.getFileName());
-            String suffix = extension.isEmpty() ? "" : '.' + extension;
-
-            if (tmpDir.getFileSystem().supportedFileAttributeViews().contains("posix")) {
-                return Files.createTempFile(tmpDir, prefix, suffix, FILE_PERMS_OWNER_ONLY);
-            }
-            return Files.createTempFile(tmpDir, prefix, suffix);
-        } catch (IOException e) {
-            throw new AppFailureException(AppFailureMessage.internalError("Error while creating temp file"), e);
-        }
+        return tempFileService.createTempFile(fileName);
     }
 
     public CleanFileName getCleanFileNameFromDocumentQueue(

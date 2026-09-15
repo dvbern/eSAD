@@ -2,13 +2,14 @@
   <div>
     @if (canEdit()) {
       <svui-card-in-card class="mb-3">
-        <div style="display: flex; justify-content: end;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>{{'untersuchung.tab.defaultwerte.info' | transloco}}</span>
           <button
             class="nav-link"
             (click)="loadDefaults()"
             data-testid="untersuchung-hoeren-defaultwerte">
             <svui-icon [useCase]="'edit'"></svui-icon>
-            {{ 'untersuchung.tab.sehen.defaultwerte' | transloco }}
+            {{ 'untersuchung.tab.defaultwerte' | transloco }}
           </button>
         </div>
       </svui-card-in-card>

@@ -5,6 +5,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGr
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileBmi;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,7 +35,7 @@ class BMIBeurteilungCsvColumnTest extends AbstractBaseColumnTest {
 
         assertThat(column.extract(einladung)).isEmpty();
 
-        untersuchungGroesseGewicht.setBmiPerzentile(SingleValueEnhanced.of(perzentileBmi, null));
+        untersuchungGroesseGewicht.setBmiPerzentileSingleValue(SingleValueEnhanced.of(perzentileBmi, null));
 
         assertThat(column.extract(einladung)).isEqualTo(expected);
     }
@@ -59,7 +60,7 @@ class BMIBeurteilungCsvColumnTest extends AbstractBaseColumnTest {
         assertThat(column.extract(einladung)).isEmpty();
 
         when(tlMock.translateValue(PerzentileBmi.NORMAL)).thenReturn("BMI Normal");
-        untersuchungGroesseGewicht.setBmiPerzentile(SingleValueEnhanced.of(PerzentileBmi.NORMAL, null));
+        untersuchungGroesseGewicht.setBmiPerzentileSingleValue(SingleValueEnhanced.of(PerzentileBmi.NORMAL, null));
         assertThat(column.extract(einladung)).isEqualTo("BMI Normal");
     }
 }

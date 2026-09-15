@@ -45,6 +45,21 @@ class AnlassConfigAutoMapperTest {
         Assertions.assertThat(result).isNotNull()
             .returns(von, AnlassConfigSaveJson::getDatumVon)
             .returns(bis, AnlassConfigSaveJson::getDatumBis)
+            .returns(
+                configKlasse4.getSehenBrilleLinsenDefaultValue(),
+                AnlassConfigSaveJson::getSehenBrilleLinsenDefaultValue)
+            .returns(
+                configKlasse4.getSehenFernvisusDefaultValue(),
+                AnlassConfigSaveJson::getSehenFernvisusDefaultValue)
+            .returns(
+                configKlasse4.getHoerenAudiogrammDefaultValue(),
+                AnlassConfigSaveJson::getHoerenAudiogrammDefaultValue)
+            .returns(
+                configKlasse4.getHoerenAudiogramm250HzDefaultValue(),
+                AnlassConfigSaveJson::getHoerenAudiogramm250HzDefaultValue)
+            .returns(
+                configKlasse4.getHoerenAudiogramm8000HzDefaultValue(),
+                AnlassConfigSaveJson::getHoerenAudiogramm8000HzDefaultValue)
             .extracting(AnlassConfigSaveJson::getGroesseGewichtBmiPerzentileValues)
             .asInstanceOf(InstanceOfAssertFactories.LIST)
             .containsExactly(PerzentileBmi.values());

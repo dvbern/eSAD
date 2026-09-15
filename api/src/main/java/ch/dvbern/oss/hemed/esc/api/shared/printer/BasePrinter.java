@@ -22,6 +22,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.mandant.TranslatedString;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
+
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -68,7 +69,7 @@ public class BasePrinter {
     private static final String COLOR_PROFILE_NAME = "sRGB IEC61966-2.1";
 
     private static final String BS_HEADER_IMAGE = "/logo/logo_bs.jpg";
-    private static final String BE_HEADER_IMAGE = "/logo/logo_be.jpg";
+    private static final String BE_HEADER_IMAGE = "/logo/logo_be.png";
     private static final String WIN_HEADER_IMAGE = "/logo/logo_win.jpg";
 
     // !!! Don't add any other services !!!
@@ -117,7 +118,10 @@ public class BasePrinter {
         return document;
     }
 
-    public void addHeader(@NonNull Document document) {
+    public void addHeader(@NonNull Document document, boolean showHeader) {
+        if (!showHeader) {
+            return;
+        }
         try {
             InputStream logoStream = BasePrinter.class.getResourceAsStream(getTenantHeaderImage(this.tenant));
             if (logoStream != null) {
@@ -163,9 +167,14 @@ public class BasePrinter {
         document.getPdfDocument().addEventHandler(PdfDocumentEvent.END_PAGE, footerWithPageCounterHandler);
     }
 
-    public void addPaginationFooter(@NonNull I18nMessage keyLeft, @NonNull I18nMessage keyRight, @NonNull Document document) {
+    public void addPaginationFooter(
+        @NonNull I18nMessage keyLeft,
+        @NonNull I18nMessage keyRight,
+        @NonNull Document document) {
         FooterWithPageCounterHandler footerWithPageCounterHandler =
-            new FooterWithPageCounterHandler(new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(keyLeft))), new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(keyRight))));
+            new FooterWithPageCounterHandler(
+                new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(keyLeft))),
+                new Paragraph(PDFAPrintUtil.sanitizeForPDFA(tl.translate(keyRight))));
         document.getPdfDocument().addEventHandler(PdfDocumentEvent.END_PAGE, footerWithPageCounterHandler);
     }
 

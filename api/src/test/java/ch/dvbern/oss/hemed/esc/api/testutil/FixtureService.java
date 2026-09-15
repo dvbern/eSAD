@@ -19,6 +19,8 @@
 package ch.dvbern.oss.hemed.esc.api.testutil;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -31,6 +33,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
@@ -87,8 +93,13 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenNurUnvollstaendige;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenNurUnvollstaendigeService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGrundUnvollstaendig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisVollstaendig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.laeusekontrolle.UntersuchungLaeusekontrolle;
@@ -111,6 +122,8 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerk
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilungService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.FarbsehenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.InspektionKonvergenzResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.MotilitaetResultat;
@@ -190,8 +203,12 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnonymerEintragBuilder;
@@ -226,6 +243,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfstatusKrankh
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenMassnahmenBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungenNurUnvollstaendigeBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungLaeusekontrolleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSchulrelevanteBeeintraechtigungBuilder;
@@ -235,10 +253,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSignaturBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSpracheBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungVorabklaerungenBuilder;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.annotation.CanIgnoreReturnValue;
@@ -289,6 +304,7 @@ public class FixtureService {
     private final UntersuchungArztBemerkungService untersuchungArztBemerkungService;
     private final NachkontrolleService nachkontrolleService;
     private final BriefvorlageService briefvorlageService;
+    private final FileDataService fileDataService;
     private final UntersuchungKindDatenService untersuchungKindDatenService;
     private final UntersuchungImpfungenMassnahmenService untersuchungImpfungenMassnahmenService;
     private final UntersuchungSpracheService untersuchungSpracheService;
@@ -304,6 +320,7 @@ public class FixtureService {
     private final OrganisationService organisationService;
     private final EntityManager entityManager;
     private final AnonymerEintragService anonymerEintragService;
+    private final UntersuchungImpfungenNurUnvollstaendigeService untersuchungImpfungenNurUnvollstaendigeService;
 
     public static final ID<Briefvorlage> BRIEFVORLAGE_ID_1 =
         ID.of(UUID.fromString("c7c95f65-247f-4b81-8cf1-bdc1644c76ff"), Briefvorlage.class);
@@ -456,9 +473,14 @@ public class FixtureService {
         existingConfig.setGroesseGewichtGroesse(requirementSetting);
         existingConfig.setGroesseGewichtGewicht(requirementSetting);
         existingConfig.setGroesseGewichtBmi(requirementSetting);
-        existingConfig.setGroesseGewichtGroessePerzentile(requirementSetting);
-        existingConfig.setGroesseGewichtGewichtPerzentile(requirementSetting);
-        existingConfig.setGroesseGewichtBmiPerzentile(requirementSetting);
+        existingConfig.setGroesseGewichtGroessePerzentileSingleValue(requirementSetting);
+        existingConfig.setGroesseGewichtGroessePerzentileMultiValue(requirementSetting);
+        existingConfig.setGroesseGewichtGroessePerzentileValues(EnumSet.of(PerzentileGroesse.PERZENTILE_HOCH));
+        existingConfig.setGroesseGewichtGewichtPerzentileSingleValue(requirementSetting);
+        existingConfig.setGroesseGewichtGewichtPerzentileMultiValue(requirementSetting);
+        existingConfig.setGroesseGewichtGewichtPerzentileValues(EnumSet.of(PerzentileGewicht.PERZENTILE_HOCH));
+        existingConfig.setGroesseGewichtBmiPerzentileSingleValue(requirementSetting);
+        existingConfig.setGroesseGewichtBmiPerzentileMultiValue(requirementSetting);
         existingConfig.setGroesseGewichtBmiPerzentileValues(EnumSet.of(PerzentileBmi.PERZENTILE_HOCH));
         existingConfig.setGroesseGewichtBemerkungen(requirementSetting);
         // Triage
@@ -653,12 +675,12 @@ public class FixtureService {
     @Transactional(TxType.REQUIRES_NEW)
     public void createSchulenInBulk(int howMany) {
         entityManager.createNativeQuery("""
-                insert into schule (
+                INSERT INTO schule (
                     id, timestamperstellt, timestampmutiert, usererstellt, usermutiert,
                     version, schulhaus, schuleaktivstatus)
-                select gen_random_uuid(), now(), now(), 'test', 'test',
+                SELECT gen_random_uuid(), now(), now(), 'test', 'test',
                        0, 'BulkSchulhaus ' || i, 'AKTIV'
-                from generate_series(1, :rows) i
+                FROM generate_series(1, :rows) i
                 """)
             .setParameter("rows", howMany)
             .executeUpdate();
@@ -1242,6 +1264,11 @@ public class FixtureService {
                     impfMassnahmen.getAufgabeRueckfrageHausarzt().getAufgabeStatus();
                 }
             }
+            UntersuchungImpfungenNurUnvollstaendige nurUnvollstaendige = impfungen.getUntersuchungImpfungenNurUnvollstaendige();
+            if (nurUnvollstaendige != null) {
+                nurUnvollstaendige.getImpfausweisVollstaendig();
+                nurUnvollstaendige.getImpfausweisGrundUnvollstaendig();
+            }
         }
         UntersuchungDurchfuehrung durchfuehrung = untersuchung.getUntersuchungDurchfuehrung();
         if (durchfuehrung != null) {
@@ -1345,30 +1372,34 @@ public class FixtureService {
     @NonNull
     public Untersuchung createUntersuchungWithDurchfuehrung() {
         Untersuchung untersuchung = createUntersuchung();
-        return createUntersuchungWithDurchfuehrung(untersuchung);
-    }
-
-    @NonNull
-    public Untersuchung createUntersuchungWithDurchfuehrung(@NonNull Untersuchung untersuchung) {
-        return createUntersuchungWithDurchfuehrung(untersuchung, null);
+        return createUntersuchungWithDurchfuehrung(untersuchung, null, null);
     }
 
     @NonNull
     public Untersuchung createUntersuchungWithDurchfuehrung(
         @NonNull Untersuchung untersuchung,
+        @Nullable Benutzer durchfuehrenderArzt
+    ) {
+        return createUntersuchungWithDurchfuehrung(untersuchung, durchfuehrenderArzt, null);
+    }
+
+    @NonNull
+    public Untersuchung createUntersuchungWithDurchfuehrung(
+        @NonNull Untersuchung untersuchung,
+        @Nullable Benutzer durchfuehrenderArzt,
         @Nullable Consumer<UntersuchungDurchfuehrungBuilder> buildBlock
     ) {
 
         Untersuchung u = untersuchungRepo.getById(untersuchung.getId());
 
-        Benutzer arztMpa = createBenutzerFuerZentraleOrganisation();
+        Benutzer arzt = durchfuehrenderArzt != null ? durchfuehrenderArzt : createBenutzerFuerZentraleOrganisation();
         UntersuchungDurchfuehrung existingDurchfuehrung;
         if (buildBlock == null) {
             existingDurchfuehrung =
                 UntersuchungDurchfuehrungBuilder.create(builder -> builder
                     .forUntersuchung(u)
-                    .withArzt(arztMpa)
-                    .withMpa(arztMpa));
+                    .withArzt(arzt)
+                    .withMpa(arzt));
         } else {
             existingDurchfuehrung = UntersuchungDurchfuehrungBuilder.create(buildBlock);
         }
@@ -1464,6 +1495,8 @@ public class FixtureService {
             UntersuchungSehenBeurteilungBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withBrilleLinsen(BrilleLinsenResultat.OHNE_KEINE, null)
+                .withFernvisus(List.of(DistanzSehenResultat.NORMAL), null)
+                .withFernvisusAugeEinzeln(DistanzSehenAugeEinzelnResultat.NORMAL, null)
                 .withStereotest(StereotestResultat.NORMAL, null)
                 .withFarbsehen(FarbsehenResultat.NORMAL, null)
                 .withInspektion(InspektionKonvergenzResultat.UNAUFFAELLIG, null)
@@ -1726,16 +1759,26 @@ public class FixtureService {
     }
 
     @NonNull
-    public Untersuchung createUntersuchungWithImpfungen(@NonNull Untersuchung untersuchung) {
-        Benutzer benutzer = createBenutzerFuerZentraleOrganisation();
+    public Untersuchung createUntersuchungWithImpfungen(
+        @NonNull Untersuchung untersuchung,
+        @Nullable Benutzer benutzer
+    ) {
+        Benutzer durchfuehrenderArzt = benutzer != null ? benutzer : createBenutzerFuerZentraleOrganisation();
         UntersuchungImpfungen existingImpfungen = untersuchungImpfungenService.persist(
             UntersuchungImpfungenBuilder.create(builder -> builder
                 .forUntersuchung(untersuchung)
                 .withBemerkungen("Bemerkungen zu den Impfungen")
                 .withImpfausweisUnvollstaendig(true)
-                .withVisum1(benutzer, appClock.offsetDateTime().now().toLocalDate())));
+                .withVisum1(durchfuehrenderArzt, appClock.offsetDateTime().now().toLocalDate())));
+        UntersuchungImpfungenNurUnvollstaendige nurUnvollstaendige = untersuchungImpfungenNurUnvollstaendigeService.persist(
+            UntersuchungImpfungenNurUnvollstaendigeBuilder.create(builder -> builder
+                .forUntersuchungImpfungen(existingImpfungen)
+                .withImpfausweisVollstaendig(ImpfausweisVollstaendig.NEIN)
+                .withImpfausweisGrundUnvollstaendig(ImpfausweisGrundUnvollstaendig.IMPFUNG_AUFGESCHOBEN)));
+        existingImpfungen.setUntersuchungImpfungenNurUnvollstaendige(nurUnvollstaendige);
         existingImpfungen.disableOptimisticLockingCheck();
         untersuchung.setUntersuchungImpfungen(existingImpfungen);
+        untersuchungImpfungenService.persist(existingImpfungen);
         untersuchungRepo.persist(untersuchung);
         return untersuchung;
     }
@@ -1832,7 +1875,7 @@ public class FixtureService {
                 .forUntersuchungImpfungen(untersuchungImpfungen)
                 .forKrankheit(krankheit)));
         impfstatus.disableOptimisticLockingCheck();
-        impfstatus.setImpfschutzGegeben(impfschutzGegeben);
+        impfstatus.setImpfschutzGegeben(impfschutzGegeben ? ImpfschutzGegeben.JA : ImpfschutzGegeben.NEIN);
         impfstatus.setDatumLetzteImpfung(datumLetzteImpfung);
         return untersuchungImpfstatusKrankheitService.persist(impfstatus);
     }
@@ -1841,19 +1884,26 @@ public class FixtureService {
     public Untersuchung createUntersuchungWithCompleteData() {
         final Anlass anlass = createAnlass();
         final Dossier dossier = createDossier();
-        return createUntersuchungWithCompleteData(anlass, dossier);
+        return createUntersuchungWithCompleteData(anlass, dossier, null);
     }
 
     @NonNull
-    public Untersuchung createUntersuchungWithCompleteData(@NonNull Anlass anlass, @NonNull Dossier dossier) {
+    public Untersuchung createUntersuchungWithCompleteData(@NonNull Benutzer benutzer) {
+        final Anlass anlass = createAnlass(AnlassTyp.KINDERGARTEN, benutzer);
+        final Dossier dossier = createDossier(benutzer);
+        return createUntersuchungWithCompleteData(anlass, dossier, benutzer);
+    }
+
+    @NonNull
+    public Untersuchung createUntersuchungWithCompleteData(@NonNull Anlass anlass, @NonNull Dossier dossier, @Nullable Benutzer benutzer) {
         Einladung einladung = createEinladung(anlass, dossier);
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
-        untersuchung = createUntersuchungWithDurchfuehrung(untersuchung);
+        untersuchung = createUntersuchungWithDurchfuehrung(untersuchung, benutzer, null);
         untersuchung = createUntersuchungWithTriage(untersuchung);
         untersuchung = createUntersuchungWithSehen(untersuchung);
         untersuchung = createUntersuchungWithHoerenAudiogramm(untersuchung);
         untersuchung = createUntersuchungWithHoerenOtoskopie(untersuchung);
-        untersuchung = createUntersuchungWithImpfungen(untersuchung);
+        untersuchung = createUntersuchungWithImpfungen(untersuchung, benutzer);
         untersuchung = createUntersuchungWithImpfungenMassnahmen(untersuchung);
         untersuchung = createUntersuchungWithMassnahmen(untersuchung);
         untersuchung = createUntersuchungWithGroesseGewicht(untersuchung);
@@ -1866,14 +1916,15 @@ public class FixtureService {
     @NonNull
     public Untersuchung createUntersuchungWithCompleteDataInNewTransaction(
         @NonNull Anlass anlass,
-        @NonNull Dossier dossier) {
+        @NonNull Dossier dossier
+    ) {
         Einladung einladung = createEinladungInNewTransaction(anlass, dossier);
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
-        untersuchung = createUntersuchungWithDurchfuehrung(untersuchung);
+        untersuchung = createUntersuchungWithDurchfuehrung(untersuchung, null, null);
         untersuchung = createUntersuchungWithTriage(untersuchung);
         untersuchung = createUntersuchungWithSehen(untersuchung);
         untersuchung = createUntersuchungWithHoerenAudiogramm(untersuchung);
-        untersuchung = createUntersuchungWithImpfungen(untersuchung);
+        untersuchung = createUntersuchungWithImpfungen(untersuchung, null);
         untersuchung = createUntersuchungWithImpfungenMassnahmen(untersuchung);
         untersuchung = createUntersuchungWithMassnahmen(untersuchung);
         untersuchung = createUntersuchungWithGroesseGewicht(untersuchung);
@@ -2081,6 +2132,30 @@ public class FixtureService {
         File briefvorlageFile = TestUtil.loadTestWord();
         FileUpload fileUpload = FileUploadWrapper.fromFile(briefvorlageFile);
         return briefvorlageService.saveBriefvorlageAttachmentInFilestorage(fileUpload);
+    }
+
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    public FileData createFileData(@NonNull File file, @NonNull String prefix) {
+        FileUpload fileUpload = FileUploadWrapper.fromFile(file);
+
+        byte[] fileBytes;
+        try {
+            fileBytes = Files.readAllBytes(fileUpload.uploadedFile());
+        } catch (IOException e) {
+            LOG.error("Error reading file bytes of testfile {}", fileUpload.name(), e);
+            fileBytes = new byte[0];
+        }
+
+        PrintResultDTO printResultDTO = new PrintResultDTO(
+            fileBytes,
+            FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.KINDERDOSSIER)
+        );
+
+        return fileDataService.createFileData(
+            printResultDTO,
+            FileTyp.KINDERDOSSIER,
+            prefix);
     }
 
     @NonNull

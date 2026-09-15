@@ -20,7 +20,9 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.Perzenti
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.types.PerzentileGroesse;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhancedMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhancedMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -63,9 +65,24 @@ public class UntersuchungGroesseGewichtMapper {
             new UntersuchungGroesseGewichtSaveJson(
                 groesseGewicht.getGroesse(),
                 groesseGewicht.getGewicht(),
-                SingleValueEnhancedMapper.toJson(PerzentileGroesse.class, groesseGewicht.getGroessePerzentile()),
-                SingleValueEnhancedMapper.toJson(PerzentileGewicht.class, groesseGewicht.getGewichtPerzentile()),
-                SingleValueEnhancedMapper.toJson(PerzentileBmi.class, groesseGewicht.getBmiPerzentile()),
+                SingleValueEnhancedMapper.toJson(
+                    PerzentileGroesse.class,
+                    groesseGewicht.getGroessePerzentileSingleValue()),
+                MultiValueEnhancedMapper.toJson(
+                    PerzentileGroesse.class,
+                    groesseGewicht.getGroessePerzentileMultiValue()),
+                SingleValueEnhancedMapper.toJson(
+                    PerzentileGewicht.class,
+                    groesseGewicht.getGewichtPerzentileSingleValue()),
+                MultiValueEnhancedMapper.toJson(
+                    PerzentileGewicht.class,
+                    groesseGewicht.getGewichtPerzentileMultiValue()),
+                SingleValueEnhancedMapper.toJson(
+                    PerzentileBmi.class,
+                    groesseGewicht.getBmiPerzentileSingleValue()),
+                MultiValueEnhancedMapper.toJson(
+                    PerzentileBmi.class,
+                    groesseGewicht.getBmiPerzentileMultiValue()),
                 groesseGewicht.getBemerkungen(),
                 groesseGewicht.getVersion()
             ),
@@ -88,15 +105,24 @@ public class UntersuchungGroesseGewichtMapper {
         groesseGewicht.setBmi(GroesseGewichtUtil.calculateBmi(
             groesseGewicht.getGroesse(),
             groesseGewicht.getGewicht()));
-        groesseGewicht.setGroessePerzentile(SingleValueEnhancedMapper.toEntity(
+        groesseGewicht.setGroessePerzentileSingleValue(SingleValueEnhancedMapper.toEntity(
             PerzentileGroesse.class,
-            saveJson.getGroessePerzentile()));
-        groesseGewicht.setGewichtPerzentile(SingleValueEnhancedMapper.toEntity(
+            saveJson.getGroessePerzentileSingleValue()));
+        groesseGewicht.setGroessePerzentileMultiValue(MultiValueEnhancedMapper.toEntity(
+            PerzentileGroesse.class,
+            saveJson.getGroessePerzentileMultiValue()));
+        groesseGewicht.setGewichtPerzentileSingleValue(SingleValueEnhancedMapper.toEntity(
             PerzentileGewicht.class,
-            saveJson.getGewichtPerzentile()));
-        groesseGewicht.setBmiPerzentile(SingleValueEnhancedMapper.toEntity(
+            saveJson.getGewichtPerzentileSingleValue()));
+        groesseGewicht.setGewichtPerzentileMultiValue(MultiValueEnhancedMapper.toEntity(
+            PerzentileGewicht.class,
+            saveJson.getGewichtPerzentileMultiValue()));
+        groesseGewicht.setBmiPerzentileSingleValue(SingleValueEnhancedMapper.toEntity(
             PerzentileBmi.class,
-            saveJson.getBmiPerzentile()));
+            saveJson.getBmiPerzentileSingleValue()));
+        groesseGewicht.setBmiPerzentileMultiValue(MultiValueEnhancedMapper.toEntity(
+            PerzentileBmi.class,
+            saveJson.getBmiPerzentileMultiValue()));
         groesseGewicht.setBemerkungen(saveJson.getBemerkungen());
         return groesseGewicht;
     }

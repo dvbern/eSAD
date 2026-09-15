@@ -14,6 +14,9 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag;
 
+import java.time.LocalDate;
+import jakarta.ws.rs.core.Response.Status;
+
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -46,14 +49,12 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnonymerEintragCreateJs
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AnonymerEintragJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.GeschlechtSpec;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -256,8 +257,8 @@ class AnonymerEintragResourceITest extends AbstractITest {
         // GroesseGewicht
         UntersuchungGroesseGewicht groesseGewicht = untersuchungAbgeschlossen.getUntersuchungGroesseGewicht();
         assertThat(groesseGewicht).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile()).isNotNull();
-        assertThat(groesseGewicht.getGroessePerzentile().getEnumValue(PerzentileGroesse.class))
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue()).isNotNull();
+        assertThat(groesseGewicht.getGroessePerzentileSingleValue().getEnumValue(PerzentileGroesse.class))
             .isEqualTo(PerzentileGroesse.NICHT_GEPRUEFT);
     }
 }

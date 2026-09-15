@@ -43,6 +43,10 @@ export class DeploymentStore extends AbstractSignalStore<DeploymentState> {
     return requireValue(this.config()).featureConfigJson.timetravelEnabled;
   });
 
+  archiveBulkDownloadMaxFiles = computed(() => {
+    return requireValue(this.config()).featureConfigJson.archiveBulkDownloadMaxFiles;
+  });
+
   environment = computed(() => this.config().clientDeploymentConfigJson.environment);
 
   publicUrl = computed(() => this.config().clientDeploymentConfigJson.publicUrl);

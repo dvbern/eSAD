@@ -18,7 +18,6 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.anlass.sehen;
 
-import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.function.Consumer;
 
@@ -46,8 +45,6 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelRes
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.util.UntersuchungSehenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhancedMapper;
@@ -63,7 +60,6 @@ public class UntersuchungSehenBeurteilungMapper {
     private final AnlassService anlassService;
     private final UntersuchungService untersuchungService;
     private final UntersuchungSehenBeurteilungService untersuchungSehenBeurteilungService;
-    private final TenantProducer tenantProducer;
 
     @Nullable
     public static UntersuchungSehenBeurteilungJson toJson(
@@ -194,18 +190,15 @@ public class UntersuchungSehenBeurteilungMapper {
     public UntersuchungSehenBeurteilungSaveJson getDefaultUntersuchungSehenForAnlassConfig(
         @NonNull ID<Anlass> anlassID
     ) {
-        TenantEnum tenant = tenantProducer.produceTenant();
-
         AnlassConfig config = anlassService.getById(anlassID).getAnlassConfig();
         boolean isKindergarten = config.getAnlassTyp() == AnlassTyp.KINDERGARTEN;
         boolean isFremdsprachen = config.getAnlassTyp() == AnlassTyp.FREMDSPRACHEN;
-        BigDecimal fernvisus = isKindergarten ? BigDecimal.valueOf(0.8) : BigDecimal.valueOf(1.0);
         return new UntersuchungSehenBeurteilungSaveJson(
             SingleValueEnhancedMapper.toJson(
                 BrilleLinsenResultat.class,
                 UntersuchungSehenUtil.getBrilleLinsenDefault(
                     config,
-                    tenant == TenantEnum.BS ? null : BrilleLinsenResultat.OHNE_KEINE)
+                    config.getSehenBrilleLinsenDefaultValue())
             ),
             SingleValueEnhancedMapper.toJson(
                 StereotestResultat.class,
@@ -227,10 +220,16 @@ public class UntersuchungSehenBeurteilungMapper {
                 DistanzSehenResultat.class,
                 UntersuchungSehenUtil.getFernvisusDefault(
                     config, DistanzSehenResultat.NORMAL)),
-            UntersuchungSehenUtil.getFernvisusRechts(config, null, fernvisus),
-            UntersuchungSehenUtil.getFernvisusLinks(config, null, fernvisus),
-            null,
-            null,
+            UntersuchungSehenUtil.getFernvisusRechts(config, null, config.getSehenFernvisusDefaultValue()),
+            UntersuchungSehenUtil.getFernvisusLinks(config, null, config.getSehenFernvisusDefaultValue()),
+            SingleValueEnhancedMapper.toJson(
+                DistanzSehenResultat.class,
+                UntersuchungSehenUtil.getFernvisusAugeEinzelnDefault(config, DistanzSehenResultat.NORMAL)
+            ),
+            SingleValueEnhancedMapper.toJson(
+                DistanzSehenResultat.class,
+                UntersuchungSehenUtil.getFernvisusAugeEinzelnDefault(config, DistanzSehenResultat.NORMAL)
+            ),
             MultiValueEnhancedMapper.toJson(
                 DistanzSehenResultat.class,
                 UntersuchungSehenUtil.getNahvisusDefault(

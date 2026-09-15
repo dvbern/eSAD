@@ -107,7 +107,7 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @Valid
     @Embedded
     @Nullable
-    @AttributeOverride(name = "value", column = @Column(name = "fernvisus", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "fernvisus", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<DistanzSehenResultat> fernvisus = MultiValueEnhanced.of();
 
     @Nullable
@@ -137,7 +137,7 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @Valid
     @Embedded
     @Nullable
-    @AttributeOverride(name = "value", column = @Column(name = "nahvisus", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "nahvisus", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<DistanzSehenResultat> nahvisus = MultiValueEnhanced.of();
 
     @Nullable
@@ -159,7 +159,7 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @Valid
     @Embedded
     @Nullable
-    @AttributeOverride(name = "value", column = @Column(name = "strabismus", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "strabismus", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<StrabismusResultat> strabismus = MultiValueEnhanced.of();
 
     @Valid
@@ -191,7 +191,7 @@ public class UntersuchungSehenBeurteilung extends AbstractEntity<UntersuchungSeh
     @Valid
     @Embedded
     @Nullable
-    @AttributeOverride(name = "value", column = @Column(name = "empfehlung", length = DbConst.DB_DEFAULT_MAX_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "empfehlung", length = DbConst.DB_ENUM_LIST_LENGTH))
     private MultiValueEnhanced<SehenEmpfehlung> empfehlung = MultiValueEnhanced.of();
 
     @Nullable

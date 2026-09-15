@@ -3,7 +3,9 @@ package ch.dvbern.oss.hemed.esc.api.features.archivierung;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
+import ch.dvbern.dvbstarter.infrastructure.db.SmartJPAQuery;
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -14,6 +16,8 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.QKind;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+
+import com.querydsl.core.types.Expression;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -59,15 +63,47 @@ public class ArchivdokumentRepo extends BaseRepo<Archivdokument> {
     }
 
     @NonNull
-    public List<Archivdokument> findAllBenutzer(
+    public List<Archivdokument> findAllForBenutzer(
         ID<Benutzer> benutzerID,
         List<ArchivierungStatus> archivierungStatusList) {
-        return db
-            .selectFrom(QArchivdokument.archivdokument)
-            .where(QArchivdokument.archivdokument.archivierungStatus.in(archivierungStatusList)
-                .and(QArchivdokument.archivdokument.owner.id.eq(benutzerID.getUUID())))
-            .orderBy(QArchivdokument.archivdokument.timestampArchiviert.asc())
-            .fetch();
+        return findAllForBenutzer(benutzerID, archivierungStatusList, null);
+    }
+    @NonNull
+    public List<Archivdokument> findAllForBenutzer(
+        ID<Benutzer> benutzerID,
+        List<ArchivierungStatus> archivierungStatusList,
+        @Nullable Integer limit) {
+        return findAllForBenutzerQuery(QArchivdokument.archivdokument, benutzerID, archivierungStatusList, limit).fetch();
+    }
+
+    @NonNull
+    public List<ID<Archivdokument>> findAllArchivdokIDsForBenutzer(
+        ID<Benutzer> benutzerID,
+        List<ArchivierungStatus> archivierungStatusList,
+        @Nullable Integer limit) {
+        List<UUID> ids = findAllForBenutzerQuery(QArchivdokument.archivdokument.id, benutzerID, archivierungStatusList, limit).fetch();
+        return ids.stream()
+            .map(uid -> ID.of(uid, Archivdokument.class))
+            .toList();
+    }
+
+    private <T> SmartJPAQuery<T> findAllForBenutzerQuery(
+        Expression<T> projection,
+        ID<Benutzer> benutzerID,
+        List<ArchivierungStatus> archivierungStatusList,
+        @Nullable Integer limit) {
+        var archivdokument = QArchivdokument.archivdokument;
+        var query = db
+            .select(projection)
+            .from(archivdokument)
+            .where(
+                archivdokument.archivierungStatus.in(archivierungStatusList),
+                archivdokument.owner.id.eq(benutzerID.getUUID()))
+            .orderBy(archivdokument.timestampArchiviert.asc());
+        if (limit != null) {
+            query.limit(limit);
+        }
+        return query;
     }
 
     @NonNull

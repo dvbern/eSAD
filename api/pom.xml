@@ -22,7 +22,7 @@
 
     <groupId>ch.dvbern.oss.hemed.esc</groupId>
     <artifactId>esc-api</artifactId>
-    <version>26.12.0-SNAPSHOT</version>
+    <version>26.13.0-SNAPSHOT</version>
 
     <!-- <editor-fold desc="properties" defaultstate="collapsed"> -->
     <properties>
@@ -224,6 +224,10 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-micrometer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -871,6 +875,15 @@
                                 <configuration>
                                     <inputSpec>${contract.path}</inputSpec>
                                     <output>${rest-assured.temp.gen.dir}</output>
+                                    <!--
+                                    Defaults to true, which registers ${rest-assured.temp.gen.dir}/src/main/java as a
+                                    MAIN compile source root. Maven never notices, because main compile runs before
+                                    generate-test-sources - but quarkus:dev compiles every registered root, and these
+                                    sources import test-scoped io.restassured. So any `mvn test` while dev mode is
+                                    running broke dev mode until the next `mvn clean`. The classes we actually use are
+                                    copied into src/test/java below, so this root is not needed.
+                                    -->
+                                    <addCompileSourceRoot>false</addCompileSourceRoot>
                                     <generatorName>java</generatorName>
                                     <library>rest-assured</library>
                                     <groupId>${project.groupId}</groupId>

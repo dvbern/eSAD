@@ -30,6 +30,7 @@ export interface TenantSettingFeaturesJson {
     anlassSpracheZusammenfassungFeature: TenantSettingFeatureStateJson;
     anlassInformationenFeature: TenantSettingFeatureStateJson;
     anlassTitleRequiredFeature: TenantSettingFeatureStateJson;
+    tenantHeaderInExportsFeature: TenantSettingFeatureStateJson;
 }
 
 
