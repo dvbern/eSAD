@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
@@ -111,6 +112,13 @@ public class AufgabeBuilder {
     @CanIgnoreReturnValue
     public AufgabeBuilder withKind(@Nullable Kind kind) {
         this.aufgabe.setKind(kind);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AufgabeBuilder withAnlass(@Nullable Anlass anlass) {
+        this.aufgabe.setAnlass(anlass);
         return this;
     }
 

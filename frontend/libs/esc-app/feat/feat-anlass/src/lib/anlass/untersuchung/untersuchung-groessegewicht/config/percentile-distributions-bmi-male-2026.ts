@@ -14,7 +14,7 @@ export const Pch2026BmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmiMale2026P3',
       percentile: 3,
-      type: 'bottom',
+      type: 'sub',
       data: [
         {x: 2, y: 14},
         {x: 2.5, y: 13.82},
@@ -54,7 +54,7 @@ export const Pch2026BmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmiMale2026P10',
       percentile: 10,
-      type: 'sub',
+      type: 'bottom',
       data: [
         {x: 2, y: 14.6},
         {x: 2.5, y: 14.41},
@@ -214,7 +214,7 @@ export const Pch2026BmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmiMale2026P90',
       percentile: 90,
-      type: 'sub',
+      type: 'top',
       data: [
         {x: 2, y: 18.19},
         {x: 2.5, y: 17.93},
@@ -254,7 +254,7 @@ export const Pch2026BmiKnabenDistribution: PercentileDistribution = {
     {
       id: 'bmiMale2026P97',
       percentile: 97,
-      type: 'top',
+      type: 'sub',
       data: [
         {x: 2, y: 19.41},
         {x: 2.5, y: 19.12},

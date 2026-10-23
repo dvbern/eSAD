@@ -104,7 +104,7 @@ $focus-invalid-box-shadow: 0 0 0 var(--svui-focus-ring-width) rgba(var(--svui-da
             $select-badge-clear-bg-size: 16px;
             content: '';
             //noinspection CssUnknownTarget
-            background-image: url('/icons/ngselect/heroXMarkSolid_white.svg');
+            background-image: url('../../assets/icons/ngselect/heroXMarkSolid_white.svg');
             width: $select-badge-clear-size;
             height: $select-badge-clear-size;
             background-size: $select-badge-clear-bg-size $select-badge-clear-bg-size;
@@ -171,7 +171,7 @@ $focus-invalid-box-shadow: 0 0 0 var(--svui-focus-ring-width) rgba(var(--svui-da
 
         content: '';
         //noinspection CssUnknownTarget
-        background-image: url('/icons/ngselect/heroXMarkSolid_blue.svg');
+        background-image: url('../../assets/icons/ngselect/heroXMarkSolid_blue.svg');
         width: $select-value-clear-width;
         height: 100%;
         background-size: $select-value-clear-bg-size $select-value-clear-bg-size;
@@ -235,7 +235,7 @@ $focus-invalid-box-shadow: 0 0 0 var(--svui-focus-ring-width) rgba(var(--svui-da
 
         content: '';
         //noinspection CssUnknownTarget
-        background-image: url('/icons/ngselect/heroChevronDownSolid.svg');
+        background-image: url('../../assets/icons/ngselect/heroChevronDownSolid.svg');
         width: $select-arrow-down-size;
         height: $select-arrow-down-size;
         background-size: $select-arrow-down-bg-size $select-arrow-down-bg-size;
@@ -293,6 +293,16 @@ $focus-invalid-box-shadow: 0 0 0 var(--svui-focus-ring-width) rgba(var(--svui-da
   min-width: 15rem !important;
   z-index: 9999 !important;
 
+  // ng-select 24 copies the host classes of <ng-select> onto the panel, including `form-control`
+  // (from svuiNgSelect) and its validation state: keep the input padding and validation icon off the panel
+  &.form-control,
+  &.form-control.is-invalid,
+  &.form-control.is-valid {
+    padding: 0;
+    background-clip: border-box;
+    background-image: none;
+  }
+
   .ng-dropdown-panel-items {
 
     // option
@@ -314,7 +324,7 @@ $focus-invalid-box-shadow: 0 0 0 var(--svui-focus-ring-width) rgba(var(--svui-da
         &:after {
           // checkmark icon svg from Figma
           //noinspection CssUnknownTarget
-          content: url('/icons/ngselect/heroCheckSolid.svg');
+          content: url('../../assets/icons/ngselect/heroCheckSolid.svg');
           width: 20px;
           height: 20px;
           display: inline-block;

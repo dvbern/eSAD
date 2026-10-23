@@ -21,19 +21,39 @@
       }
     </ng-select>
 
-<!--    Anlass Export-->
+    <!--    Options-Button: Ausdruck-Varianten -->
     @if (canDownloadExport()) {
-    <button svuiButton="secondary"
-            type="button"
-            [icon]="'herunterladen'"
-            (click)="downloadPrint()">{{ 'anlass.list.drucken' | transloco }}
-    </button>
+<!--      to make sure tenant BS that does not have the new print we add an else that renders the old btn-->
+      @if (canDownloadPrintImpfen()) {
+        <svui-collapsible-menu
+          [buttonColor]="'secondary'"
+          [loading]="false"
+          label="{{ 'global.actionmenu.tooltip' | transloco }}">
+          <button ngbDropdownItem
+                  type="button"
+                  data-testid="button-anlass-drucken"
+                  (click)="downloadPrint()">{{ 'anlass.list.drucken' | transloco }}
+          </button>
+          <button ngbDropdownItem
+                  type="button"
+                  data-testid="button-anlass-drucken-impfen"
+                  (click)="downloadPrintImpfen()">{{ 'anlass.list.drucken.impfen' | transloco }}
+          </button>
+        </svui-collapsible-menu>
+      } @else {
+        <button svuiButton="secondary"
+                type="button"
+                data-testid="button-anlass-drucken"
+                [icon]="'herunterladen'"
+                (click)="downloadPrint()">{{ 'anlass.list.drucken' | transloco }}
+        </button>
+      }
     }
 
     <!-- Bearbeitung -->
     <button [disabled]="!store.canUserEditAnlassInCurrentState()"
             data-testid="button-anlass-bearbeiten"
-            svuiButton="secondary"
+            svuiButton="primary"
             type="button"
             [icon]="'previous'"
             (click)="gotoBearbeitung()">{{ 'anlass.list.link.bearbetung' | transloco }}
@@ -48,7 +68,7 @@
 
   @if (anzahlAusgewaehlteKinder() > 0) {
     <button svuiButton="primary" type="button" (click)="gotoUntersuchung()" class="mt-3"
-    data-testid="button-kinder-auswaehlen">
+            data-testid="button-kinder-auswaehlen">
       {{ 'anlass.kinder.untersuchung.anzahl' | transloco: {anzahl: anzahlAusgewaehlteKinder()} }}
     </button>
   }

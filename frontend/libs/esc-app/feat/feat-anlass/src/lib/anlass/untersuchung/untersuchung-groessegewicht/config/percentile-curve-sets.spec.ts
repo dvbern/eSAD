@@ -15,11 +15,36 @@ describe('percentile-curve-sets', () => {
 
   describe('percentileReferenceForAnlass', () => {
     it.each([
-      {gueltigAbWachstumskurvePch: '2026-10-06', anlassDatum: undefined, expected: 'BASEL_2019', description: 'no Anlass loaded yet'},
-      {gueltigAbWachstumskurvePch: '2026-10-06', anlassDatum: '2020-01-01', expected: 'BASEL_2019', description: 'long before the cut-off'},
-      {gueltigAbWachstumskurvePch: '2026-10-06', anlassDatum: '2026-06-09', expected: 'BASEL_2019', description: 'the day before the cut-off'},
-      {gueltigAbWachstumskurvePch: '2026-10-06', anlassDatum: '2026-10-06', expected: 'PCH_2026', description: 'the cut-off day itself'},
-      {gueltigAbWachstumskurvePch: '2026-10-06', anlassDatum: '2027-03-15', expected: 'PCH_2026', description: 'after the cut-off'},
+      {
+        gueltigAbWachstumskurvePch: '2026-10-06',
+        anlassDatum: undefined,
+        expected: 'BASEL_2019',
+        description: 'no Anlass loaded yet'
+      },
+      {
+        gueltigAbWachstumskurvePch: '2026-10-06',
+        anlassDatum: '2020-01-01',
+        expected: 'BASEL_2019',
+        description: 'long before the cut-off'
+      },
+      {
+        gueltigAbWachstumskurvePch: '2026-10-06',
+        anlassDatum: '2026-06-09',
+        expected: 'BASEL_2019',
+        description: 'the day before the cut-off'
+      },
+      {
+        gueltigAbWachstumskurvePch: '2026-10-06',
+        anlassDatum: '2026-10-06',
+        expected: 'PCH_2026',
+        description: 'the cut-off day itself'
+      },
+      {
+        gueltigAbWachstumskurvePch: '2026-10-06',
+        anlassDatum: '2027-03-15',
+        expected: 'PCH_2026',
+        description: 'after the cut-off'
+      },
     ])('returns $expected for $description', ({gueltigAbWachstumskurvePch, anlassDatum, expected}) => {
       expect(percentileReferenceForAnlass(gueltigAbWachstumskurvePch as never, anlassDatum as never)).toBe(expected);
     });
@@ -160,7 +185,7 @@ describe('percentile-curve-sets', () => {
     });
 
     it('starts the Gewicht curves at 100 cm and runs to the end of the published table', () => {
-      for (const [gender, lastHeight] of [['male', 200], ['female', 180]] as const) {
+      for (const [gender, lastHeight] of [['male', 200], ['female', 190]] as const) {
         for (const line of GEWICHT_CURVE_SETS.PCH_2026[gender].distribution.lines) {
           expect(line.data[0]!.x).toBe(100);
           expect(line.data[line.data.length - 1]!.x).toBe(lastHeight);
@@ -168,13 +193,77 @@ describe('percentile-curve-sets', () => {
       }
     });
 
-    it('draws the curves out to the end of the Gewicht x axis', () => {
+    it('draws the curves of both genders out to the end of the Gewicht x axis', () => {
       for (const gender of ['male', 'female'] as const) {
         const curveSet = GEWICHT_CURVE_SETS.PCH_2026[gender];
-        const line = curveSet.distribution.lines[0]!;
-        expect(line.data[0]!.x).toBe(curveSet.xAxis.min);
-        expect(line.data[line.data.length - 1]!.x).toBe(curveSet.xAxis.max);
+        for (const line of curveSet.distribution.lines) {
+          expect(line.data[0]!.x).toBe(curveSet.xAxis.min);
+          expect(line.data[line.data.length - 1]!.x).toBe(curveSet.xAxis.max);
+        }
       }
+    });
+
+    // The girls' table (S7) is only published up to 180 cm; rows 181-190 cm are taken from the data
+    // delivered by paediatrie schweiz (see scripts/data/pch-2026/README.md) so the curves run to
+    // 190 cm, same as the x axis. P97 at 190 cm (~107.7 kg) lies above 100 kg, which is why the
+    // girls' y axis goes to 110 kg, so every curve stays fully visible.
+    it('extends the girls\' Gewicht curves to 190 cm using the delivered data', () => {
+      const curveSet = GEWICHT_CURVE_SETS.PCH_2026.female;
+      expect(curveSet.xAxis).toEqual({min: 100, max: 190, interval: 10});
+      expect(curveSet.yAxis).toEqual({min: 10, max: 110, interval: 5});
+      for (const line of curveSet.distribution.lines) {
+        expect(line.data[line.data.length - 1]!.x).toBe(190);
+      }
+
+      const p50At190 = curveSet.distribution.lines
+        .find(line => line.percentile === 50)!
+        .data.find(point => point.x === 190)!;
+      expect(p50At190.y).toBeCloseTo(76.57, 1);
+
+      const p97At190 = curveSet.distribution.lines
+        .find(line => line.percentile === 97)!
+        .data.find(point => point.x === 190)!;
+      expect(p97At190.y).toBeGreaterThan(100);
+      expect(p97At190.y).toBeLessThanOrEqual(curveSet.yAxis.max);
+    });
+  });
+
+  // Basel assesses Gewicht and BMI against P10/P90, so those are drawn solid with the area outside
+  // shaded, as in the old Basel charts. Groesse keeps P3/P97.
+  describe('PCH 2026 line emphasis', () => {
+    const typesByPercentile = (curveSet: PercentileCurveSet): Record<number, string> =>
+      Object.fromEntries(curveSet.distribution.lines.map(line => [line.percentile, line.type]));
+
+    it.each([
+      ['gewicht male', GEWICHT_CURVE_SETS.PCH_2026.male],
+      ['gewicht female', GEWICHT_CURVE_SETS.PCH_2026.female],
+      ['bmi male', BMI_CURVE_SETS.PCH_2026.male],
+      ['bmi female', BMI_CURVE_SETS.PCH_2026.female],
+    ])('%s emphasises P10 and P90', (_name, curveSet) => {
+      expect(typesByPercentile(curveSet)).toEqual({
+        3: 'sub',
+        10: 'bottom',
+        25: 'sub',
+        50: 'main',
+        75: 'sub',
+        90: 'top',
+        97: 'sub',
+      });
+    });
+
+    it.each([
+      ['groesse male', GROESSE_CURVE_SETS.PCH_2026.male],
+      ['groesse female', GROESSE_CURVE_SETS.PCH_2026.female],
+    ])('%s emphasises P3 and P97', (_name, curveSet) => {
+      expect(typesByPercentile(curveSet)).toEqual({
+        3: 'bottom',
+        10: 'sub',
+        25: 'sub',
+        50: 'main',
+        75: 'sub',
+        90: 'sub',
+        97: 'top',
+      });
     });
   });
 });

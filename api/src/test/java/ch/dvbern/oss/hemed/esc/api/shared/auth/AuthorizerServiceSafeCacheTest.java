@@ -1,6 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
 import java.util.Set;
+import jakarta.inject.Inject;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
@@ -15,31 +16,32 @@ import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
+
 import io.quarkus.arc.ClientProxy;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import io.quarkus.security.runtime.QuarkusPrincipal;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class AuthorizerServiceSafeCacheTest {
 
     @Inject
-    AuthorizerService authorizerService;
+    protected AuthorizerService authorizerService;
 
     @Inject
-    TenantProducer tenantProducer;
+    protected TenantContext tenantContext;
 
     @Inject
-    CurrentIdentityAssociation association;
+    protected CurrentIdentityAssociation association;
 
     BenutzerService benutzerService;
 
@@ -58,16 +60,16 @@ class AuthorizerServiceSafeCacheTest {
 
     @BeforeEach
     void setupMocks() {
-        benutzerService = Mockito.mock(BenutzerService.class);
-        organisationService = Mockito.mock(OrganisationService.class);
-        tenantSettingsService = Mockito.mock(TenantSettingsService.class);
-        anlassService = Mockito.mock(AnlassService.class);
-        documentQueueService = Mockito.mock(DocumentQueueService.class);
-        kindService = Mockito.mock(KindService.class);
-        archivdokumentService = Mockito.mock(ArchivdokumentService.class);
-        configService = Mockito.mock(ConfigService.class);
-        einladungService = Mockito.mock(EinladungService.class);
-        dossierService = Mockito.mock(DossierService.class);
+        benutzerService = mock(BenutzerService.class);
+        organisationService = mock(OrganisationService.class);
+        tenantSettingsService = mock(TenantSettingsService.class);
+        anlassService = mock(AnlassService.class);
+        documentQueueService = mock(DocumentQueueService.class);
+        kindService = mock(KindService.class);
+        archivdokumentService = mock(ArchivdokumentService.class);
+        configService = mock(ConfigService.class);
+        einladungService = mock(EinladungService.class);
+        dossierService = mock(DossierService.class);
 
         QuarkusMock.installMockForType(benutzerService, BenutzerService.class);
         QuarkusMock.installMockForType(organisationService, OrganisationService.class);
@@ -96,15 +98,14 @@ class AuthorizerServiceSafeCacheTest {
         field.setAccessible(true);
         assertThat(field.get(realService)).isEqualTo(TenantEnum.BS);
 
-        // ACT 2: Change tenant
-        tenantProducer.setCurrentTenant(TenantEnum.WIN);
+        // ACT 2: Change tenant inside the same request context (not allowed, see PerTenantRunnerService)
+        tenantContext.setCurrentTenant(TenantEnum.WIN);
 
-        // ACT 3: Check if it still uses BS (it SHOULD NOT anymore)
-        authorizerService.hasReadAuthorizationOrganisation(new Organisation());
-
-        assertThat(field.get(realService))
-            .as("The cache should have been invalidated and updated to the new tenant")
-            .isEqualTo(TenantEnum.WIN);
+        // ACT 3 + ASSERT: the cache of BS must never be served for WIN - fail loudly instead
+        Organisation emptyOrganisation = new Organisation();
+        assertThatThrownBy(() -> authorizerService.hasReadAuthorizationOrganisation(emptyOrganisation))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("AuthorizerService");
     }
 
     @Test

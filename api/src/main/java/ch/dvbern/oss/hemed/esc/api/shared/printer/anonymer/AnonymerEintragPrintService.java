@@ -21,7 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
@@ -45,7 +45,7 @@ public class AnonymerEintragPrintService {
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
     private final AppClock appClock;
     private final AppLanguageProvider appLanguageProvider;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final FileStoreService fileStoreService;
     private final TenantSettingsService tenantSettingsService;
     private final TL tl;
@@ -76,7 +76,7 @@ public class AnonymerEintragPrintService {
                 anonymerEintrag.getHash(),
                 List.of(anlassDTO),
                 appClock.getToday(),
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 (AppLanguages) appLanguageProvider.current()
             );
 

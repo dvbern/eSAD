@@ -17,6 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { AnlassPrintVariant } from '../model/anlass-print-variant';
 import { BackendEntityId } from '@dvb/data-access-types';
 import { KinderdossierPrintVariant } from '../model/kinderdossier-print-variant';
 
@@ -26,6 +27,7 @@ import { Configuration }                                     from '../configurat
 
 export interface PrinterServiceDownloadAnlassPrintRequestParams {
     anlassId: BackendEntityId;
+    variant: AnlassPrintVariant;
 }
 
 export interface PrinterServiceDownloadAnonymerEintragRequestParams {
@@ -34,7 +36,7 @@ export interface PrinterServiceDownloadAnonymerEintragRequestParams {
 
 export interface PrinterServiceDownloadKinderdossierRequestParams {
     kindId: BackendEntityId;
-    variation: KinderdossierPrintVariant;
+    variant: KinderdossierPrintVariant;
 }
 
 export interface PrinterServiceDownloadKinderdossierForAnlassRequestParams {
@@ -121,6 +123,16 @@ export class PrinterService {
         if (anlassId === null || anlassId === undefined) {
             throw new Error('Required parameter anlassId was null or undefined when calling downloadAnlassPrint.');
         }
+        const variant = requestParameters?.variant;
+        if (variant === null || variant === undefined) {
+            throw new Error('Required parameter variant was null or undefined when calling downloadAnlassPrint.');
+        }
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (variant !== undefined && variant !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>variant, 'variant');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -157,6 +169,7 @@ export class PrinterService {
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters,
                 responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -241,15 +254,15 @@ export class PrinterService {
         if (kindId === null || kindId === undefined) {
             throw new Error('Required parameter kindId was null or undefined when calling downloadKinderdossier.');
         }
-        const variation = requestParameters?.variation;
-        if (variation === null || variation === undefined) {
-            throw new Error('Required parameter variation was null or undefined when calling downloadKinderdossier.');
+        const variant = requestParameters?.variant;
+        if (variant === null || variant === undefined) {
+            throw new Error('Required parameter variant was null or undefined when calling downloadKinderdossier.');
         }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (variation !== undefined && variation !== null) {
+        if (variant !== undefined && variant !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>variation, 'variation');
+            <any>variant, 'variant');
         }
 
         let localVarHeaders = this.defaultHeaders;

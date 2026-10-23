@@ -54,3 +54,5 @@ Thumbs.db
 .claude/worktrees
 .nx/polygraph
 .nx/self-healing
+/apps/esc-app-e2e/src/util/e2e.env
+.vfox/

@@ -18,11 +18,17 @@ import {
   PageComponent,
   Path
 } from '@dvb/feat-shared';
-import {ButtonComponent, NgSelectDirective, PageHeaderButtonsComponent} from '@dvb/ui-components';
+import {
+  ButtonComponent,
+  CollapsibleMenuComponent,
+  NgSelectDirective,
+  PageHeaderButtonsComponent
+} from '@dvb/ui-components';
 import {AppNotificationStore} from '@dvb/util-angular';
 import {fromISODateString, hasExportAnlassPlanungBerechtigung, isNotNullish, requireValue} from '@dvb/util-shared';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
 import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
+import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 import {interval, Unsubscribable} from 'rxjs';
 import {AnlassStore} from '../../anlass.store';
 import {anlassTitle} from '../../anlass.util';
@@ -47,8 +53,10 @@ import {EinladungenListeComponent} from './einladungen-liste/einladungen-liste.c
     DatenComponent,
     NgSelectComponent,
     NgOptionComponent,
-    NgSelectDirective
-],
+    NgSelectDirective,
+    CollapsibleMenuComponent,
+    NgbDropdownItem,
+  ],
 })
 export class AnlassPlanungPageComponent implements OnDestroy, AfterViewInit {
   readonly store = inject(AnlassStore);
@@ -67,6 +75,7 @@ export class AnlassPlanungPageComponent implements OnDestroy, AfterViewInit {
   readonly anlassStatusList = Object.values(AnlassStatus);
   protected readonly fromISODateString = fromISODateString;
   canDownloadExport = this.benutzerStore.createHasRequiredRoleSig(hasExportAnlassPlanungBerechtigung());
+  canDownloadPrintImpfen = computed(() => this.canDownloadExport() && this.store.showAnlassPrintImpfen());
   pageTitle = computed(() => {
     const currentAnlassData = this.store.selectedEntity()?.data;
     return currentAnlassData
@@ -122,11 +131,11 @@ export class AnlassPlanungPageComponent implements OnDestroy, AfterViewInit {
                 this.saveStatusChange(status, anlass);
               } else {
                 /**
-               * Die Select Komponente behält im Signal den vorherigen Wert aber es wird im GUI Abgeschlossen
-               * angezeigt.
-               * Damit ein Wechsel getriggert wird, setze ich den Wert zuerst auf undefined und danach wieder zurück
-               * auf den effektiven Wert.
-               //  */
+                 * Die Select Komponente behält im Signal den vorherigen Wert aber es wird im GUI Abgeschlossen
+                 * angezeigt.
+                 * Damit ein Wechsel getriggert wird, setze ich den Wert zuerst auf undefined und danach wieder zurück
+                 * auf den effektiven Wert.
+                 //  */
                 this.anlassStatus.set(undefined);
                 setTimeout(() => {
                   this.anlassStatus.set(anlass.data.anlassStatus);
@@ -160,7 +169,10 @@ export class AnlassPlanungPageComponent implements OnDestroy, AfterViewInit {
     this.store.downloadAnlassExportPrint({ anlassId: anlassId });
   }
 
-  protected readonly event = event;
+  public downloadPrintImpfen(): void {
+    const anlassId = requireValue(this.store.selectedEntity()?.id);
+    this.store.downloadAnlassExportPrintImpfen({ anlassId: anlassId });
+  }
 
   public ngOnDestroy() {
     this.#pollingSubscription?.unsubscribe();

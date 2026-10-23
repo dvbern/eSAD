@@ -27,6 +27,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.healthcheck.FileStoreHealthCheckService;
 import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
+import ch.dvbern.oss.hemed.esc.api.features.auditretention.AuditRetentionService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinddeactivation.KindDeactivationService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
@@ -69,6 +70,7 @@ public class SuperAdminRunnerService {
     private final ArchivierungRuleService archivierungRuleService;
     private final DossierQueueService dossierQueueService;
     private final FileStoreHealthCheckService fileStoreHealthCheckService;
+    private final AuditRetentionService auditRetentionService;
 
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void runBenutzerInaktivierenJob(boolean forcerun) {
@@ -311,6 +313,19 @@ public class SuperAdminRunnerService {
             LOG.info(result.getResultString("ESC-ARCHIVIERUNG-DELETE"));
         } else {
             LOG.debug("ESC-ARCHIVIERUNG-DELETE: Scheduler is disabled.");
+        }
+    }
+
+    @Transactional(TxType.NOT_SUPPORTED)
+    @RunAs(username = "be-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void runAuditRetentionCleanupJob(boolean forcerun) {
+        final SchedulerConfig config = schedulerConfigService.getSchedulerConfig(SchedulerTyp.AUD_TABELLEN_BEREINIGEN);
+        if (!config.isDisabled() || forcerun) {
+            SchedulerProcessingResult result =
+                auditRetentionService.cleanupOldAuditRevisions(configService.getAudRetentionYears(), config.getBatchsize());
+            LOG.info(result.getResultString("ESC-AUD-RETENTION"));
+        } else {
+            LOG.debug("ESC-AUD-RETENTION: Scheduler is disabled.");
         }
     }
 

@@ -18,10 +18,12 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RemoveKindService {
 
     private final KindRepo kindRepo;
@@ -37,6 +39,7 @@ public class RemoveKindService {
     private final ArchivdokumentService archivdokumentService;
 
     public void remove(@NonNull ID<Kind> kindID) {
+        LOG.info("ESC-DELETE-KIND: Deleting Kind with ID {}", kindID.getId());
         Optional<Dossier> dossierOptional = dossierService.findByKind(kindID);
 
         // Abhaengige Objekte entfernen

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.LabelBuilder;
@@ -38,7 +38,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 class LabelResourceIMandantITest extends AbstractITest {
 
     private final LabelResourceHelper labelResourceHelper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     private final LabelsApiSpec api = LabelsApiSpec.labels(RequestSpecUtil.quarkusSpec());
 
@@ -85,7 +85,7 @@ class LabelResourceIMandantITest extends AbstractITest {
     @TestAsAdminBE
     @Order(30)
     void create_label_as_admin_be() {
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         LabelJsonSpec createdForBern = labelResourceHelper.createNewLabel("CreatedForBern", LabelTyp.NOTIZEN);
         Assertions.assertThat(createdForBern).isNotNull();
         createdLabelWinId = createdForBern.getId();
@@ -96,7 +96,7 @@ class LabelResourceIMandantITest extends AbstractITest {
     @Order(40)
     void read_filtered_labels_as_admin_basel() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         // ACT
         var result = api
             .labelResourceFilterLabels()
@@ -121,7 +121,7 @@ class LabelResourceIMandantITest extends AbstractITest {
     @Order(50)
     void read_all_labels_as_admin_basel() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         // ACT
         var result = api
             .labelResourceFindAllLabels()
@@ -144,7 +144,7 @@ class LabelResourceIMandantITest extends AbstractITest {
     @TestAsSupportBS
     @Order(60)
     void updateLabel_should_update_user_mutiert() {
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         var result = api.labelResourceGetById()
             .labelIDPath(createdLabelBaselId)
             .execute(ResponseBody::prettyPeek)

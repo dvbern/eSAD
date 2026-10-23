@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
@@ -35,7 +35,7 @@ class FileStoreHealthCheckServiceTest {
 
     private S3AsyncClient s3;
     private ConfigService configService;
-    private TenantProducer tenantProducer;
+    private TenantContext tenantContext;
     private FileDataRepo fileDataRepo;
     private TenantSettingsService tenantSettingsService;
     private FileStoreDiffWhitelistLoader whitelistLoader;
@@ -46,18 +46,18 @@ class FileStoreHealthCheckServiceTest {
     void setUp() {
         s3 = mock(S3AsyncClient.class);
         configService = mock(ConfigService.class);
-        tenantProducer = mock(TenantProducer.class);
+        tenantContext = mock(TenantContext.class);
         fileDataRepo = mock(FileDataRepo.class);
         tenantSettingsService = mock(TenantSettingsService.class);
         whitelistLoader = mock(FileStoreDiffWhitelistLoader.class);
         mailService = mock(FileStoreHealthCheckMailService.class);
-        sut = new FileStoreHealthCheckService(s3, configService, tenantProducer, fileDataRepo, tenantSettingsService, whitelistLoader, mailService);
+        sut = new FileStoreHealthCheckService(s3, configService, tenantContext, fileDataRepo, tenantSettingsService, whitelistLoader, mailService);
 
         when(configService.getS3BucketName()).thenReturn("test-bucket");
         when(configService.getFilestoreHealthcheckWhitelistFile()).thenReturn(Optional.empty());
         when(configService.getFilestoreHealthcheckReportMaxEntries()).thenReturn(500);
         when(whitelistLoader.load(null)).thenReturn(Set.of());
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BS);
+        when(tenantContext.get()).thenReturn(TenantEnum.BS);
 
         TenantSetting tenantSetting = mock(TenantSetting.class);
         when(tenantSetting.getSupportEmail()).thenReturn("support@test.ch");
@@ -115,7 +115,7 @@ class FileStoreHealthCheckServiceTest {
     }
 
     @Test
-    void runForCurrentTenant_driftExceedsMax_reportTruncatedButTotalsCorrect() {
+    void runForCurrentTenant_driftExceedsMax_reportContainsAllEntries() {
         // ARRANGE
         when(configService.getFilestoreHealthcheckReportMaxEntries()).thenReturn(2);
         givenS3Keys("a", "b", "c");
@@ -131,8 +131,30 @@ class FileStoreHealthCheckServiceTest {
         FileStoreDiffReport report = captor.getValue();
         assertThat(report.dbOnlyTotal()).isEqualTo(3);
         assertThat(report.s3OnlyTotal()).isEqualTo(3);
-        assertThat(report.dbOnly()).hasSize(2);
-        assertThat(report.s3Only()).hasSize(2);
+        assertThat(report.dbOnly()).containsExactlyInAnyOrder("d", "e", "f");
+        assertThat(report.s3Only()).containsExactlyInAnyOrder("a", "b", "c");
+    }
+
+    @Test
+    void runForCurrentTenant_whitelistPartiallyMatches_reportContainsIgnoredCounts() {
+        // ARRANGE
+        givenS3Keys("id-a", "s3-orphan", "s3-ignored-1", "s3-ignored-2");
+        when(fileDataRepo.findAllFileIdsInBucket()).thenReturn(List.of("id-a", "db-missing", "db-ignored"));
+        when(configService.getFilestoreHealthcheckWhitelistFile()).thenReturn(Optional.of(java.nio.file.Path.of("/w")));
+        when(whitelistLoader.load(any())).thenReturn(Set.of("s3-ignored-1", "s3-ignored-2", "db-ignored", "id-a"));
+
+        // ACT
+        sut.runForCurrentTenant();
+
+        // ASSERT
+        ArgumentCaptor<FileStoreDiffReport> captor = ArgumentCaptor.forClass(FileStoreDiffReport.class);
+        verify(mailService).sendReport(captor.capture(), any(), any());
+
+        FileStoreDiffReport report = captor.getValue();
+        assertThat(report.dbOnly()).containsExactly("db-missing");
+        assertThat(report.s3Only()).containsExactly("s3-orphan");
+        assertThat(report.dbOnlyIgnored()).isEqualTo(1);
+        assertThat(report.s3OnlyIgnored()).isEqualTo(2);
     }
 
     @Test

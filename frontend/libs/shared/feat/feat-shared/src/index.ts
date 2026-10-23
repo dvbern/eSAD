@@ -10,6 +10,7 @@ export * from './lib/benutzer/benutzer/benutzer.store';
 export * from './lib/benutzer/benutzer-details';
 export * from './lib/benutzer/auth-interceptor/auth-session-exipred.interceptor';
 export * from './lib/benutzer/agb/requireAccepted.agb-guard';
+export * from './lib/benutzer/oauth2-proxy-service/oauth2-proxy.service';
 export * from './lib/adresse/index';
 export * from './lib/adresse/adresse-util';
 export * from './lib/admin-shared/labels.store';

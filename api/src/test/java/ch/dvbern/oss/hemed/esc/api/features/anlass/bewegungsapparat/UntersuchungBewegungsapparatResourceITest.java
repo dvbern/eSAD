@@ -9,7 +9,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -43,7 +43,7 @@ class UntersuchungBewegungsapparatResourceITest extends AbstractITest {
     private final UntersuchungService untersuchungService;
     private final UntersuchungBewegungsapparatService untersuchungBewegungsapparatService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Override
     @BeforeEach
@@ -179,7 +179,7 @@ class UntersuchungBewegungsapparatResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungBewegungsapparat_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(arzt);
         Untersuchung untersuchung = Untersuchung.forAnonymerEintrag(anonymerEintrag);

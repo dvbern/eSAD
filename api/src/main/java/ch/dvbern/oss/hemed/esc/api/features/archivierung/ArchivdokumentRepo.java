@@ -132,7 +132,11 @@ public class ArchivdokumentRepo extends BaseRepo<Archivdokument> {
 
     @NonNull
     public List<ID<Dossier>> findKinderThatAreReadyToDelete(int monthsBeforeDeletion, int batchsize) {
-        OffsetDateTime cutoffDate = appClock.offsetDateTime().now().minusMonths(monthsBeforeDeletion);
+        // Zonenbewusst rechnen, damit der Stichtag ueber eine Sommer-/Winterzeitgrenze hinweg nicht um
+        // eine Stunde verschoben wird.
+        OffsetDateTime cutoffDate = appClock.zonedDateTime().now()
+            .minusMonths(monthsBeforeDeletion)
+            .toOffsetDateTime();
 
         return db.select(QDossier.dossier.id)
             .from(QDossier.dossier)

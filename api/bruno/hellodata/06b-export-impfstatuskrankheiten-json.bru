@@ -1,0 +1,68 @@
+meta {
+  name: 06b Export Impfstatus (JSON container)
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/hellodata/v1/json/impfstatuskrankheiten
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  test("response is JSON", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getHeader("content-type")).to.contain("application/json");
+  });
+
+  test("container object holds the rows in a data array", function() {
+    const body = res.getBody();
+
+    expect(body).to.be.an("object");
+    expect(body.data).to.be.an("array");
+  });
+
+  test("_meta closes the document and its rowCount matches", function() {
+    // Without _meta the response was truncated and the load counts as failed -
+    // after HTTP 200 no error can be reported any more. Note that _meta is the
+    // LAST member: rowCount is only known once the last row has been streamed.
+    const body = res.getBody();
+
+    expect(body._meta).to.not.equal(undefined);
+    expect(body._meta.status).to.equal("complete");
+    expect(body._meta.rowCount).to.equal(body.data.length);
+  });
+}
+
+docs {
+  Same data as `06a Export Impfstatus (NDJSON)`, framed as one ordinary JSON document
+  for consumers that cannot ingest NDJSON:
+
+      {"data":[ {...}, {...} ],"_meta":{"status":"complete","rowCount":2,...}}
+
+  The tenant is resolved from the hostname - so `baseUrl` must point at the
+  BE host.
+
+  The server streams this exactly like the NDJSON variant (the braces, commas and
+  the trailing `_meta` are written as the rows come off the cursor). What changes
+  is the client side: `JSON.parse` / `json.loads` has to buffer the whole document
+  before it sees the first row. That is why NDJSON stays the recommended format.
+
+  Checking that the server really streams (Bruno buffers the response, hence curl):
+
+      curl -N -w '\nstart=%{time_starttransfer}s total=%{time_total}s\n' \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Accept: application/json" \
+        https://local-esc-be.localhost:6443/api/hellodata/v1/json/impfstatuskrankheiten
+
+  If `time_starttransfer` is well below `time_total`, the cursor is live.
+}

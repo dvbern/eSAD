@@ -4,7 +4,7 @@ import { ISODateString, ISODateTimeString } from '@dvb/data-access-types';
 // which would making these tests useless.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { atStartOfDay, fromISODateTimeString, toISODateTimeString, truncateToDate } from './date-utils';
-import '@lukemorales/jest-type-matchers';
+import { expectTypeOf } from 'vitest';
 
 describe('date-utils', () => {
   // <editor-fold desc="fromISODateTimeString" defaultstate="collapsed">
@@ -37,7 +37,7 @@ describe('date-utils', () => {
 
         const actual = fromISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<Date>();
+        expectTypeOf(actual).toEqualTypeOf<Date>();
       });
 
       it('returns a nullable ISODateString for nullable input', () => {
@@ -45,7 +45,7 @@ describe('date-utils', () => {
 
         const actual = fromISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<Date | null>();
+        expectTypeOf(actual).toEqualTypeOf<Date | null>();
       });
 
       it('returns an undefinedable ISODateString for undefined input', () => {
@@ -53,7 +53,7 @@ describe('date-utils', () => {
 
         const actual = fromISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<Date | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<Date | undefined>();
       });
 
       it('returns null|undefined for null|undefined input', () => {
@@ -61,7 +61,7 @@ describe('date-utils', () => {
 
         const actual = fromISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<Date | null | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<Date | null | undefined>();
       });
     });
   });
@@ -93,7 +93,7 @@ describe('date-utils', () => {
 
         const actual = toISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString>();
       });
 
       it('returns a nullable ISODateTimeString for nullable input', () => {
@@ -101,7 +101,7 @@ describe('date-utils', () => {
 
         const actual = toISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString | null>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString | null>();
       });
 
       it('returns an undefinedable ISODateTimeString for undefined input', () => {
@@ -109,7 +109,7 @@ describe('date-utils', () => {
 
         const actual = toISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString | undefined>();
       });
 
       it('returns null|undefined for null|undefined input', () => {
@@ -117,7 +117,7 @@ describe('date-utils', () => {
 
         const actual = toISODateTimeString(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString | null | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString | null | undefined>();
       });
     });
   });
@@ -167,7 +167,7 @@ describe('date-utils', () => {
 
         const actual = truncateToDate(input);
 
-        expect(actual).toHaveStrictType<ISODateString>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateString>();
       });
 
       it('returns a nullable ISODateString for nullable input', () => {
@@ -175,7 +175,7 @@ describe('date-utils', () => {
 
         const actual = truncateToDate(input);
 
-        expect(actual).toHaveStrictType<ISODateString | null>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateString | null>();
       });
 
       it('returns an undefinedable ISODateString for undefined input', () => {
@@ -183,7 +183,7 @@ describe('date-utils', () => {
 
         const actual = truncateToDate(input);
 
-        expect(actual).toHaveStrictType<ISODateString | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateString | undefined>();
       });
 
       it('returns null|undefined for null|undefined input', () => {
@@ -191,7 +191,7 @@ describe('date-utils', () => {
 
         const actual = truncateToDate(input);
 
-        expect(actual).toHaveStrictType<ISODateString | null | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateString | null | undefined>();
       });
     });
   });
@@ -226,28 +226,28 @@ describe('date-utils', () => {
         const input: ISODateString = '2021-07-01' as any;
         const actual = atStartOfDay(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString>();
       });
 
       it('returns a nullable ISODateTimeString for nullable input', () => {
         const input: ISODateString | null = '2021-07-01' as any;
         const actual = atStartOfDay(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString | null>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString | null>();
       });
 
       it('returns an undefinedable ISODateTimeString for undefined input', () => {
         const input: ISODateString | undefined = '2021-07-01' as any;
         const actual = atStartOfDay(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString | undefined>();
       });
 
       it('returns null|undefined for null|undefined input', () => {
         const input: ISODateString | null | undefined = '2021-07-01' as any;
         const actual = atStartOfDay(input);
 
-        expect(actual).toHaveStrictType<ISODateTimeString | null | undefined>();
+        expectTypeOf(actual).toEqualTypeOf<ISODateTimeString | null | undefined>();
       });
     });
   });

@@ -1,0 +1,103 @@
+---
+# ALPHA CONFIG for the local BE tenant (oauth2-proxy --alpha-config).
+#
+# Why: only the alpha config can express `providers[].loginURLParameters`, which is what
+# lets the public info page pass `?kc_idp_hint=<alias>` through `/oauth2/start` to
+# Keycloak's authorize URL. The legacy oauth2-proxy.cfg had no equivalent - it silently
+# dropped the parameter, so the per-IdP buttons cannot be tested without this file.
+#
+# This mirrors the deployed setup (deployment-config/charts/oauth2-proxy/environments/*/
+# values-be.yaml), just with local values. It is the only config file the proxy reads:
+#   - everything the alpha schema models lives here: server/TLS, upstreams, the
+#     Authorization header injection and the whole provider block;
+#   - the runtime options the schema does not model (cookies, skips, email domains,
+#     whitelist, redirect_url, ...) are passed as CLI flags in docker-compose.yml, the
+#     same way the deployed chart passes them via `extraArgs`.
+# The alpha loader is strict: an unknown key here aborts the start.
+#
+# `${VAR}` is expanded by oauth2-proxy itself when it reads this file, so the client
+# secret stays in developer-local-settings/../api/.env (OAUTH2_PROXY_CLIENT_SECRET) and
+# is never duplicated here.
+
+# In alpha mode oauth2-proxy drops --http-address/--https-address and takes its
+# listeners from this block. Container port 443 is published as 6443 by docker-compose.
+server:
+  SecureBindAddress: 0.0.0.0:443
+  TLS:
+    Key:
+      fromFile: /var/run/secrets/serving-cert/local-esc-be.localhost.key
+    Cert:
+      fromFile: /var/run/secrets/serving-cert/local-esc-be.localhost.pem
+
+# replaces legacy: pass_authorization_header = true
+injectRequestHeaders:
+  - name: Authorization
+    values:
+      - claimSource:
+          claim: id_token
+          prefix: "Bearer "
+
+# replaces legacy: upstreams / ssl_upstream_insecure_skip_verify / upstream_timeout.
+# Order matters here (first match wins), so the API goes before the catch-all that
+# serves the Angular dev server (including /publicapp).
+upstreamConfig:
+  upstreams:
+    - id: api
+      path: /api/
+      uri: https://local-esc-be.localhost:8443
+      insecureSkipTLSVerify: true
+      timeout: 300s
+    - id: frontend
+      path: /
+      uri: https://local-esc-be.localhost:4200
+      insecureSkipTLSVerify: true
+      timeout: 300s
+
+# replaces legacy: provider / client_id / oidc_issuer_url /
+# insecure_oidc_skip_issuer_verification / insecure_oidc_allow_unverified_email /
+# code_challenge_method / backend_logout_url
+providers:
+  - id: keycloak
+    provider: oidc
+    clientID: esc-oauth2-proxy-local
+    clientSecret: "${OAUTH2_PROXY_CLIENT_SECRET}"
+    code_challenge_method: S256
+    backendLogoutURL: http://esc-keycloak:8080/realms/be/protocol/openid-connect/logout?client_id=esc-oauth2-proxy-local&id_token_hint={id_token}
+    oidcConfig:
+      issuerURL: http://esc-keycloak:8080/realms/be
+      # due to the back-channel connection to keycloak the issuer does not match
+      insecureSkipIssuerVerification: true
+      insecureAllowUnverifiedEmail: true
+    # Let the app pass ?kc_idp_hint=... through to Keycloak's authorize URL, locked to
+    # the known broker aliases - anything not listed here is dropped by the proxy (the
+    # user then simply gets the Keycloak login page, which is the intended fallback).
+    # The aliases must match LoginMethodIdpHintResolver byte-for-byte
+    # (api/.../shared/settings/LoginMethodIdpHintResolver.java, environment LOCAL).
+    # The list is kept identical for all three local tenants so a hint never silently
+    # disappears just because you switched the proxy you test against.
+    loginURLParameters:
+      - name: kc_idp_hint
+        allow:
+          # DVBERN_HEMED_ENTRA
+          - value: dvbern-hemed-entra-client
+          # BE_LOGIN (LOCAL/DEV alias; UAT: belogin-test, PROD: belogin)
+          - value: belogin-replica
+          - value: belogin-test
+          - value: belogin
+          # HIN
+          - value: hin-idp
+          # AGOV_ZH
+          - value: agov-zh-fachapp
+          # WINTERTHUR_ADFS (only relevant if you point this proxy at the win realm)
+          - value: WinterthurADFS
+          # BASEL_ENTRA (only relevant if you point this proxy at the bs realm)
+          - value: basel-entra
+          # The broker the local realm import actually creates
+          # (REALM_IDP_VACME_ALIAS in config/keycloak.env). Set that variable to
+          # dvbern-hemed-entra-client (and re-import: docker compose down -v) if you
+          # want the DVBERN_HEMED_ENTRA button to hit the local broker by its real alias
+          # instead of falling through to the realm's defaultProvider.
+          - value: vacme-dev
+          # PASSWORD sends an explicitly empty hint (kc_idp_hint=), which tells the
+          # Keycloak redirector to show the login page instead of jumping to an IdP.
+          - value: ""

@@ -6,7 +6,7 @@ describe('DirtyMarker', () => {
   describe('isDirtyMarker', () => {
     it('returns true if the components implements the interface', () => {
       const impl = ensureProps<DirtyMarker>({
-        isDirty: jest.fn(),
+        isDirty: vi.fn(),
       });
 
       const actual = isDirtyMarker(impl);
@@ -20,7 +20,7 @@ describe('DirtyMarker', () => {
       null,
       {},
       {dirtyMarker: 123},
-      {foo: () => jest.fn()},
+      {foo: () => vi.fn()},
     ])('returns false if the component does *not* implement the interface: %s', (input) => {
       const actual = isDirtyMarker(input);
 

@@ -18,22 +18,48 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.hellodata;
 
-import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
-import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
-import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
-import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSchuleJson;
-import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSchulenEnvelopeJson;
-import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSentinelJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import io.micrometer.core.annotation.Timed;
-import io.smallrye.common.annotation.Blocking;
-import io.smallrye.faulttolerance.api.RateLimit;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
+
+import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
+import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
+import ch.dvbern.dvbstarter.shared.openapi.OpenApiConst.Tags;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataAnlaesseEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataAnlassJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataAufgabeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataAufgabenEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataBenutzerJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataBenutzereEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataDossierJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataDossiersEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataImpfstatusEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataImpfstatusKrankheitJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataImpfstoffJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataImpfstoffeEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataImpfungInternJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataImpfungenInternEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataLabelJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataLabelsEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataNotizJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataNotizenEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataKlasseJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataKlassenEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataEinladungJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataEinladungenEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSchuleJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSchulenEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSentinelJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.untersuchungen.HelloDataUntersuchungenEnvelopeJson;
+import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.untersuchungen.HelloDataUntersuchungenJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+
+import io.micrometer.core.annotation.Timed;
+import io.smallrye.common.annotation.Blocking;
+import io.smallrye.faulttolerance.api.RateLimit;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -88,11 +114,19 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Timed("HelloDataResourceMS")
 public class HelloDataResource {
 
-    private static final String NDJSON_RESPONSE_DESCRIPTION = """
+    private static final String NDJSON_SCHULEN_RESPONSE_DESCRIPTION = """
         NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
         with no enclosing array and no commas. The schema describes a single line.
 
         Every data line matches HelloDataSchuleJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_UNTERSUCHUNGEN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataUntersuchungenJson. The final line is a \
         HelloDataSentinelJson: if it is missing, the response was truncated and the load \
         must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
 
@@ -109,6 +143,94 @@ public class HelloDataResource {
         Note that consuming this with a whole-document parser buffers the entire export on the \
         client. Prefer the NDJSON variant if your tooling can read it.""";
 
+    private static final String NDJSON_IMPFSTOFFE_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataImpfstoffJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_LABELS_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataLabelJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_BENUTZER_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataBenutzerJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_NOTIZEN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataNotizJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_AUFGABEN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataAufgabeJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_KLASSEN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataKlasseJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_ANLAESSE_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataAnlassJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_DOSSIERS_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataDossierJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_EINLADUNGEN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataEinladungJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_IMPFSTATUSKRANKHEITEN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataImpfstatusKrankheitJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
+    private static final String NDJSON_IMPFUNGENINTERN_RESPONSE_DESCRIPTION = """
+        NDJSON (newline delimited JSON): one JSON object per line, separated by \\n, \
+        with no enclosing array and no commas. The schema describes a single line.
+
+        Every data line matches HelloDataImpfungInternJson. The final line is a \
+        HelloDataSentinelJson: if it is missing, the response was truncated and the load \
+        must be treated as failed - after HTTP 200 no error can be signalled by status code.""";
+
     private final HelloDataExportService helloDataExportService;
 
     @GET
@@ -119,7 +241,7 @@ public class HelloDataResource {
     @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
     @APIResponse(
         responseCode = "200",
-        description = NDJSON_RESPONSE_DESCRIPTION,
+        description = NDJSON_SCHULEN_RESPONSE_DESCRIPTION,
         content = @Content(
             mediaType = NdjsonWriter.MEDIA_TYPE,
             // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
@@ -153,6 +275,491 @@ public class HelloDataResource {
     )
     public Response exportSchulenAsJson() {
         return streamed(helloDataExportService::writeSchulenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/einladungen")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_EINLADUNGEN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataEinladungJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportEinladungen() {
+        return ndjson(helloDataExportService::writeEinladungen);
+    }
+
+    /**
+     * The same export as {@link #exportEinladungen()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/einladungen")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataEinladungenEnvelopeJson.class))
+    )
+    public Response exportEinladungenAsJson() {
+        return streamed(helloDataExportService::writeEinladungenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/impfstoffe")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_IMPFSTOFFE_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataImpfstoffJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportImpfstoffe() {
+        return ndjson(helloDataExportService::writeImpfstoffe);
+    }
+
+    /**
+     * The same export as {@link #exportImpfstoffe()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/impfstoffe")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataImpfstoffeEnvelopeJson.class))
+    )
+    public Response exportImpfstoffeAsJson() {
+        return streamed(helloDataExportService::writeImpfstoffeAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/labels")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_LABELS_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataLabelJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportLabels() {
+        return ndjson(helloDataExportService::writeLabels);
+    }
+
+    /**
+     * The same export as {@link #exportLabels()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/labels")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataLabelsEnvelopeJson.class))
+    )
+    public Response exportLabelsAsJson() {
+        return streamed(helloDataExportService::writeLabelsAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/benutzer")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_BENUTZER_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataBenutzerJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportBenutzer() {
+        return ndjson(helloDataExportService::writeBenutzer);
+    }
+
+    /**
+     * The same export as {@link #exportBenutzer()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/benutzer")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataBenutzereEnvelopeJson.class))
+    )
+    public Response exportBenutzerAsJson() {
+        return streamed(helloDataExportService::writeBenutzerAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/notizen")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_NOTIZEN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataNotizJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportNotizen() {
+        return ndjson(helloDataExportService::writeNotizen);
+    }
+
+    /**
+     * The same export as {@link #exportNotizen()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/notizen")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataNotizenEnvelopeJson.class))
+    )
+    public Response exportNotizenAsJson() {
+        return streamed(helloDataExportService::writeNotizenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/aufgaben")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_AUFGABEN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataAufgabeJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportAufgaben() {
+        return ndjson(helloDataExportService::writeAufgaben);
+    }
+
+    /**
+     * The same export as {@link #exportAufgaben()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/aufgaben")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataAufgabenEnvelopeJson.class))
+    )
+    public Response exportAufgabenAsJson() {
+        return streamed(helloDataExportService::writeAufgabenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/klassen")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_KLASSEN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataKlasseJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportKlassen() {
+        return ndjson(helloDataExportService::writeKlassen);
+    }
+
+    /**
+     * The same export as {@link #exportKlassen()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/klassen")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataKlassenEnvelopeJson.class))
+    )
+    public Response exportKlassenAsJson() {
+        return streamed(helloDataExportService::writeKlassenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/impfstatuskrankheiten")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_IMPFSTATUSKRANKHEITEN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            schema = @Schema(
+                oneOf = { HelloDataImpfstatusKrankheitJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportImpfstatusKrankheiten() {
+        return ndjson(helloDataExportService::writeImpfstatusKrankheiten);
+    }
+
+    @GET
+    @Path("/json/impfstatuskrankheiten")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataImpfstatusEnvelopeJson.class))
+    )
+    public Response exportImpfstatusKrankheitenAsJson() {
+        return streamed(helloDataExportService::writeImpfstatusKrankheitenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/impfungenintern")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_IMPFUNGENINTERN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            schema = @Schema(
+                oneOf = { HelloDataImpfungInternJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportImpfungenIntern() {
+        return ndjson(helloDataExportService::writeImpfungenIntern);
+    }
+
+    @GET
+    @Path("/json/impfungenintern")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataImpfungenInternEnvelopeJson.class))
+    )
+    public Response exportImpfungenInternAsJson() {
+        return streamed(helloDataExportService::writeImpfungenInternAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/anlaesse")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_ANLAESSE_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataAnlassJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportAnlaesse() {
+        return ndjson(helloDataExportService::writeAnlaesse);
+    }
+
+    /**
+     * The same export as {@link #exportAnlaesse()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/anlaesse")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataAnlaesseEnvelopeJson.class))
+    )
+    public Response exportAnlaesseAsJson() {
+        return streamed(helloDataExportService::writeAnlaesseAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/dossiers")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_DOSSIERS_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataDossierJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportDossiers() {
+        return ndjson(helloDataExportService::writeDossiers);
+    }
+
+    /**
+     * The same export as {@link #exportDossiers()}, framed as one JSON document instead of
+     * NDJSON. Kept as a separate path rather than an {@code Accept} variant - see the class
+     * documentation for why.
+     */
+    @GET
+    @Path("/json/dossiers")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataDossiersEnvelopeJson.class))
+    )
+    public Response exportDossiersAsJson() {
+        return streamed(helloDataExportService::writeDossiersAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
+    }
+
+    @GET
+    @Path("/ndjson/untersuchungen")
+    @Produces(NdjsonWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = NDJSON_UNTERSUCHUNGEN_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = NdjsonWriter.MEDIA_TYPE,
+            // Each line is either a data row or the closing sentinel. OpenAPI has no NDJSON
+            // framing, so the schema describes a single line and the description the framing.
+            schema = @Schema(
+                oneOf = { HelloDataUntersuchungenJson.class, HelloDataSentinelJson.class }))
+    )
+    public Response exportUntersuchungen() {
+        return ndjson(helloDataExportService::writeUntersuchungen);
+    }
+
+    @GET
+    @Path("/json/untersuchungen")
+    @Produces(JsonEnvelopeWriter.MEDIA_TYPE)
+    @Blocking
+    @RateLimit(RateLimitConst.HELLODATA_EXPORT_LIMIT)
+    @RolesAllowed({ BerechtigungName.HELLODATA_EXPORT_LESEN })
+    @APIResponse(
+        responseCode = "200",
+        description = JSON_RESPONSE_DESCRIPTION,
+        content = @Content(
+            mediaType = JsonEnvelopeWriter.MEDIA_TYPE,
+            schema = @Schema(implementation = HelloDataUntersuchungenEnvelopeJson.class))
+    )
+    public Response exportUntersuchungenAsJson() {
+        return streamed(helloDataExportService::writeUntersuchungenAsJson, JsonEnvelopeWriter.MEDIA_TYPE);
     }
 
     /**

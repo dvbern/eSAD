@@ -4,18 +4,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -44,6 +46,9 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.oidc.Claim;
+import io.quarkus.test.security.oidc.OidcSecurity;
 import io.restassured.http.ContentType;
 import io.restassured.response.ResponseBody;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +72,9 @@ import static org.mockito.Mockito.when;
 @RequiredArgsConstructor
 class BenutzerResourceITest {
 
+    private static final String VORERFASST_KEYCLOAK_ID = "5d0c3f1e-8a2b-4c7d-9e6f-1a2b3c4d5e6f";
+    private static final String VORERFASST_EMAIL = "anna.muster.vorerfasst@example.com";
+
     @TestHTTPEndpoint(BenutzerResource.class)
     @TestHTTPResource
     URL url = null;
@@ -75,7 +83,7 @@ class BenutzerResourceITest {
     private final BenutzerService benutzerService;
     private final BenutzerRepo benutzerRepo;
     private final OrganisationService organisationService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final BenutzerResourceHelper benutzerResourceHelper;
     private final FixtureService fixtureService;
     private final AuthorizerService authorizerService;
@@ -231,6 +239,42 @@ class BenutzerResourceITest {
             .extracting(BenutzerSaveJsonSpec::getEmail)
             .isNotNull()
             .isEqualTo(TestAsAdminBS.USERNAME);
+    }
+
+    @Test
+    @TestSecurity(user = VORERFASST_EMAIL)
+    @OidcSecurity(
+        claims = {
+            @Claim(key = "sub", value = VORERFASST_KEYCLOAK_ID),
+            @Claim(key = "tenant", value = "BE"),
+            @Claim(key = "family_name", value = "Muster"),
+            @Claim(key = "given_name", value = "Anna"),
+            @Claim(key = "preferred_username", value = VORERFASST_EMAIL),
+            @Claim(key = "email", value = VORERFASST_EMAIL),
+        }
+    )
+    void getMyBenutzerData_links_the_vorerfassten_Benutzer_on_the_first_login() {
+        // ARRANGE: registered in the admin GUI before the first login, so without KeycloakId and with the email in
+        // lowercase, like Keycloak delivers it
+        Benutzer vorerfassterBenutzer = fixtureService.createVorerfasstenBenutzer(
+            TenantEnum.BE,
+            EmailAddress.fromString(VORERFASST_EMAIL)
+        );
+
+        // ACT
+        PrincipalJsonSpec principalJson = api.benutzerResourceGetMyBenutzerData()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_OK)
+            .extract().as(PrincipalJsonSpec.class);
+
+        // ASSERT
+        assertThat(principalJson.getBenutzerJson())
+            .extracting(BenutzerJsonSpec::getId)
+            .isEqualTo(vorerfassterBenutzer.getId().getId());
+        assertThat(benutzerService.getById(vorerfassterBenutzer.getId()).getKeycloakId())
+            .isEqualTo(VORERFASST_KEYCLOAK_ID);
     }
 
     @TestAsAdminBS
@@ -525,6 +569,43 @@ class BenutzerResourceITest {
 
     @Test
     @TestAsSupportBS
+    void createBenutzer_stores_the_email_in_lowercase() {
+        // ARRANGE
+        String uniquePrefix = UUID.randomUUID() + ".";
+        Organisation organisation = organisationService.getZentraleOrganisation();
+
+        // Wir wollen eine ZentraleOrganisation mit Benutzerverwaltung simulieren
+        TenantSettingsService tenantSettingsServiceMock = mock(TenantSettingsService.class);
+        TenantSetting tenantSettingOverride = TenantSettingBuilder.create(tenantSettingBuilder -> tenantSettingBuilder
+            .withBenutzerverwaltungInternFeature(FeatureEnabledSetting.ENABLED)
+            .withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED)
+        );
+        when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
+        QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
+
+        // as an admin may type it, whereas Keycloak delivers the email in lowercase at login
+        BenutzerSaveJsonSpec saveJson = BenutzerBuilder.createJaxSpec(
+            builder -> builder
+                .withOrganisationRollen(organisation, List.of(FachRolle.SCHOOL_NURSE))
+                .withEmail(EmailAddress.fromString(uniquePrefix + "Anna.Muster@MailBucket.DVBern.ch"))
+        ).getData();
+
+        // ACT
+        BenutzerJsonSpec result = api.benutzerResourceCreateBenutzer()
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(BenutzerJsonSpec.class);
+
+        // ASSERT
+        assertThat(benutzerService.getById(ID.parse(result.getId(), Benutzer.class)).getEmail())
+            .isEqualTo(EmailAddress.fromString(uniquePrefix + "anna.muster@mailbucket.dvbern.ch"));
+    }
+
+    @Test
+    @TestAsSupportBS
     void createBenutzerAsSupport_fails_if_tenantSetting_is_disabled() {
         // ARRANGE
         EmailAddress benutzerEmail = EmailAddress.fromString("create-fails@mailbucket.dvbern.ch");
@@ -558,7 +639,7 @@ class BenutzerResourceITest {
     @TestAsSupportBS
     void updateBenutzerAsSupport_update_fachrolle_fails_if_tenantSetting_is_disabled() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         Organisation organisation = organisationService.getZentraleOrganisation();
 
         List<FachRolle> originalFachRollen = List.of(FachRolle.SCHULAERZTIN);

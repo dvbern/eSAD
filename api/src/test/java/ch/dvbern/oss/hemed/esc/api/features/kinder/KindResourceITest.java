@@ -26,8 +26,8 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
@@ -47,6 +47,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.KinderApiSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.api.KontaktpersonKindApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppFailureErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DossierJsonSpec;
@@ -82,6 +83,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KindResourceITest extends AbstractITest {
 
     private final KinderApiSpec api = KinderApiSpec.kinder(RequestSpecUtil.quarkusSpec());
+    private final KontaktpersonKindApiSpec kontaktpersonKindApi = KontaktpersonKindApiSpec.kontaktpersonKind(RequestSpecUtil.quarkusSpec());
 
     private final FixtureService fixtureService;
     private final KindService kindService;
@@ -90,7 +92,7 @@ class KindResourceITest extends AbstractITest {
     private final KlasseService klasseService;
     private final DossierService dossierService;
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final ArchivdokumentService archivdokumentService;
 
     // Without this, the test has to be adapted every year on 01. August
@@ -300,9 +302,9 @@ class KindResourceITest extends AbstractITest {
                 .withName("Wirth", "Anna"));
         kontaktPersonKindService.persist(mutter2);
         // ACT
-        KontaktPersonKindListJsonSpec result = api
-            .kindResourceFindAktivKindKontaktPersonen()
-            .kindIdPath(kind1.getId().getId())
+        KontaktPersonKindListJsonSpec result = kontaktpersonKindApi
+            .kontaktPersonKindResourceFindAktivByKind()
+            .kindIDPath(kind1.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -344,9 +346,9 @@ class KindResourceITest extends AbstractITest {
         kontaktPersonKindService.persist(kontaktPersonKindInaktiv);
 
         // ACT
-        KontaktPersonKindListJsonSpec result = api
-            .kindResourceFindAktivKindKontaktPersonen()
-            .kindIdPath(kind.getId().getId())
+        KontaktPersonKindListJsonSpec result = kontaktpersonKindApi
+            .kontaktPersonKindResourceFindAktivByKind()
+            .kindIDPath(kind.getId().getId())
             .execute(ResponseBody::prettyPeek)
             .then()
             .assertThat()
@@ -624,6 +626,37 @@ class KindResourceITest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
+    void updateKind_deactivateViaPersonendaten_should_work() {
+        // ARRANGE
+        Kind existingKind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
+
+        KindJsonSpec updatedKindJson = KindBuilder.createJaxSpec(
+            builder -> builder
+                .withID(existingKind.getId())
+                .withName("Deaktiviert", "Person")
+                .withSozialversicherungsNummer(SozialversicherungsNummerTestGenerator.INSTANCE.getNextSozialversicherungsnummer())
+                .withKindAktivStatus(EntityAktivStatus.INAKTIV),
+            appClock.offsetDateTime().now().toLocalDate());
+
+        // ACT
+        KindSaveResultJsonSpec result = api
+            .kindResourceUpdateKindAndVerantwortlichePersonen()
+            .kindIdPath(existingKind.getId().getId())
+            .body(updatedKindJson.getData())
+            .kindSaveModeQuery(KindSaveModeDuplikatSpec.CHECK)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(KindSaveResultJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getKindJson()).isNotNull();
+        assertThat(result.getKindJson().getData().getKindAktivStatus()).isEqualTo(EntityAktivStatusSpec.INAKTIV);
+    }
+
+    @Test
+    @TestAsAdminBS
     void updateKind_throws_if_kindIsInactive() {
         // ARRANGE
         Kind existingKind = fixtureService.createInactiveKind();
@@ -696,6 +729,33 @@ class KindResourceITest extends AbstractITest {
             .extract().as(KindJsonSpec.class);
 
         assertThat(jsonSpec.getData().getKindAktivStatus()).isEqualTo(desiredStatus);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void changeKindAktivStatus_should_work_for_kind_with_inactive_klasse() {
+        // ARRANGE
+        Schule schule = schuleService.persist(SchuleBuilder.defaultSchule());
+        Klasse inactiveKlasse = klasseService.persist(KlasseBuilder.create(builder -> builder
+            .forSchule(schule)
+            .withEntityAktivStatus(EntityAktivStatus.INAKTIV)));
+        Kind existingKind = kindService.persistWithoutDuplicateCheck(KindBuilder.create(builder -> builder
+            .withKlasse(inactiveKlasse)));
+        EntityAktivStatusSaveJsonSpec saveJson = new EntityAktivStatusSaveJsonSpec(EntityAktivStatusSpec.INAKTIV);
+
+        // ACT
+        KindJsonSpec result = api.kindResourceUpdateKindAktivStatus()
+            .kindIdPath(existingKind.getId().getId())
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract()
+            .as(KindJsonSpec.class);
+
+        // ASSERT
+        assertThat(result.getData().getKindAktivStatus()).isEqualTo(EntityAktivStatusSpec.INAKTIV);
     }
 
     @Test
@@ -1085,7 +1145,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsAdminBE
     void updateSchuleAndKlasse_setsSchuleAndKlasseOnKindWithoutDossier() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Schule schule = schuleService.persist(SchuleBuilder.defaultSchule());
@@ -1118,7 +1178,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsAdminBE
     void updateSchuleAndKlasse_clearsSchuleAndKlasse() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Schule schule = schuleService.persist(SchuleBuilder.defaultSchule());
         Klasse klasse = klasseService.persist(KlasseBuilder.create(builder -> builder.forSchule(schule)));
@@ -1154,7 +1214,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsAdminBE
     void updateSchuleAndKlasse_schuleDifferentFromSchuleInKlasse_shouldUseSchuleFromKlasse() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Kind kind = kindService.persistWithoutDuplicateCheck(KindBuilder.defaultKind());
         Schule otherSchule = schuleService.persist(SchuleBuilder.create(builder -> builder
@@ -1190,7 +1250,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsAdminBE
     void updateSchuleAndKlasse_throws_if_kind_is_inactive() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Kind kind = fixtureService.createInactiveKind();
         Schule schule = schuleService.persist(SchuleBuilder.defaultSchule());
@@ -1219,7 +1279,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsAdminBE
     void updateSchuleAndKlasse_withDossier_noSchuleChange_doesNotResetVerantwortliche() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Schule schule = schuleService.persist(SchuleBuilder.defaultSchule());
         Klasse oldKlasse = klasseService.persist(KlasseBuilder.create(builder -> builder.forSchule(schule)));
@@ -1261,7 +1321,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void updateSchuleAndKlasse_withDossier_schuleChanged_triggersHandlingOfVerantwortliche() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         Benutzer newArzt = fixtureService.createBenutzerWithOrganisation();
 
@@ -1304,7 +1364,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void updateSchuleAndKlasse_throws_if_user_not_zustaendig() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // Dossier wird einem anderen Arzt einer anderen Organisation zugewiesen,
         // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig
@@ -1339,7 +1399,7 @@ class KindResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void updateKind_throws_if_user_not_zustaendig() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // Dossier gehoert einem Arzt einer anderen Organisation,
         // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig

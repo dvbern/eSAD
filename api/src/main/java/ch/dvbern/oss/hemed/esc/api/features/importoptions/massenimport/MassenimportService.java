@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
@@ -34,6 +36,7 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.MassenimportRollbackExc
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
+import ch.dvbern.dvbstarter.shared.runas.RunAs;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ExternalImportInfo;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
@@ -52,17 +55,16 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Adresse;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
-import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
+
 import io.vertx.mutiny.core.eventbus.EventBus;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -91,7 +93,7 @@ public class MassenimportService {
     private final KontaktPersonKindService kontaktPersonKindService;
     private final BenutzerService benutzerService;
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     static final String MASSENIMPORT_EVENT = "massenimport-event";
     private static final String MASSENIMPORT_TEMPLATE = "/files/massenimport/massenimport_standard.xlsx";
     private static final String MASSENIMPORT_TEMPLATE_FILENAME = "massenimport_standard_vorlage.xlsx";
@@ -139,12 +141,13 @@ public class MassenimportService {
                 klasseID,
                 standardImport,
                 benutzer,
-                tenantProducer.produceTenant()
+                tenantContext.get()
             ));
 
     }
 
     @Transactional(TxType.REQUIRED)
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void processMassenimportFileForSchuleAndKlasse(
         @NonNull Sheet sheet,
         @NonNull ID<Schule> schuleID,

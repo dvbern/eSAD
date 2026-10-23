@@ -8,7 +8,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -39,7 +39,7 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
     private final UntersuchungService untersuchungService;
     private final UntersuchungGroesseGewichtService untersuchungGroesseGewichtService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Test
     @TestAsAdminBS
@@ -142,7 +142,7 @@ class UntersuchungGroesseGewichtResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungGroesseGewicht_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);

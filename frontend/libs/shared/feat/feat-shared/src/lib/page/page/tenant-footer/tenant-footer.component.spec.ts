@@ -41,7 +41,7 @@ describe('TenantFooterComponent', () => {
 
     const img: HTMLImageElement | null = fixture.nativeElement.querySelector('img');
     expect(img).not.toBeNull();
-    expect(img?.getAttribute('src')).toBe('/img/logo-WIN.svg');
+    expect(img?.getAttribute('src')).toBe('img/logo-WIN.svg');
     expect(img?.classList.contains('win')).toBe(true);
   });
 
@@ -51,7 +51,7 @@ describe('TenantFooterComponent', () => {
 
     const img: HTMLImageElement | null = fixture.nativeElement.querySelector('img');
     expect(img).not.toBeNull();
-    expect(img?.getAttribute('src')).toBe('/img/logo-BE.svg');
+    expect(img?.getAttribute('src')).toBe('img/logo-BE.svg');
     expect(img?.classList.contains('win')).toBe(false);
   });
 
@@ -61,7 +61,7 @@ describe('TenantFooterComponent', () => {
 
     const img: HTMLImageElement | null = fixture.nativeElement.querySelector('img');
     expect(img).not.toBeNull();
-    expect(img?.getAttribute('src')).toBe('/img/logo-BS.svg');
+    expect(img?.getAttribute('src')).toBe('img/logo-BS.svg');
     expect(img?.classList.contains('win')).toBe(false);
   });
 });

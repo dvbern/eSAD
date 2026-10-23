@@ -2,6 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.features.kinddeactivation;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -42,11 +43,14 @@ public class KindDeactivationRepo {
         int manualKinderDeactivationAge,
         int batchsize
     ) {
-        OffsetDateTime cutoffDateTime = appClock.offsetDateTime().now().minusMonths(monthsUnused);
-        LocalDate cutoffDate = appClock.offsetDateTime().now().minusMonths(monthsUnused).toLocalDate();
-        LocalDate manuallyCreatedKindAgeCutoff =
-            appClock.offsetDateTime().now().minusYears(manualKinderDeactivationAge).toLocalDate();
+        // Timestamp zonenbewusst rechnen: OffsetDateTime.minusMonths() behielte den heutigen Offset bei,
+        // wodurch der Stichtag ueber eine Sommer-/Winterzeitgrenze hinweg um eine Stunde verschoben wuerde.
+        ZonedDateTime now = appClock.zonedDateTime().now();
+        OffsetDateTime cutoffDateTime = now.minusMonths(monthsUnused).toOffsetDateTime();
 
+        LocalDate today = now.toLocalDate();
+        LocalDate cutoffDate = today.minusMonths(monthsUnused);
+        LocalDate manuallyCreatedKindAgeCutoff = today.minusYears(manualKinderDeactivationAge);
         List<UUID> kinderWithoutDossier = db.select(QKind.kind.id)
             .from(QKind.kind)
             .leftJoin(QDossier.dossier).on(QDossier.dossier.kind.eq(QKind.kind))

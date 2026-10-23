@@ -12,14 +12,14 @@ describe('confirmOnDirty', () => {
   };
 
   class MockDirtyGuardService implements Partial<DirtyGuardService> {
-    askForNavigationOverride = jest.fn().mockRejectedValue('not initialized');
+    askForNavigationOverride = vi.fn().mockRejectedValue('not initialized');
   }
 
   const mockService: MockDirtyGuardService = new MockDirtyGuardService();
 
   describe('for a pristine component', () => {
     beforeEach(() => {
-      mockService.askForNavigationOverride = jest.fn().mockRejectedValue('should not have been called');
+      mockService.askForNavigationOverride = vi.fn().mockRejectedValue('should not have been called');
 
       TestBed.configureTestingModule({
         providers: [
@@ -55,7 +55,7 @@ describe('confirmOnDirty', () => {
     });
 
     it.each([true, false])('returns the service outcome (user allows navigation): %p', async navigationAllowed => {
-      mockService.askForNavigationOverride = jest.fn().mockResolvedValue(navigationAllowed);
+      mockService.askForNavigationOverride = vi.fn().mockResolvedValue(navigationAllowed);
 
       const guard = confirmOnDirty();
       const outcome = await TestBed.runInInjectionContext(() =>

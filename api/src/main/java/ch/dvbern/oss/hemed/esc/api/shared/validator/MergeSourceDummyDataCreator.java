@@ -56,6 +56,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResulta
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBemerkungFragebogen;
@@ -441,6 +442,14 @@ public final class MergeSourceDummyDataCreator {
         untersuchung.setUntersuchungMassnahmen(new UntersuchungMassnahmen());
         untersuchung.setUntersuchungGroesseGewicht(getTestUntersuchungGroesseGewicht());
         untersuchung.setUntersuchungArztBeurteilung(getMinimalTestUntersuchungArztBeurteilung());
+
+        UntersuchungImpfungen untersuchungImpfungen = UntersuchungImpfungen.forUntersuchung(untersuchung);
+        untersuchungImpfungen.setImpfausweisNichtVorhanden(true);
+        UntersuchungImpfungenMassnahmen untersuchungImpfungenMassnahmen = new UntersuchungImpfungenMassnahmen();
+        untersuchungImpfungenMassnahmen.setEmpfehlung(EnumSet.of(ImpfungenMassnahmenEmpfehlung.IMPFUNG_BEIM_HAUSARZT));
+        untersuchungImpfungen.setUntersuchungImpfungenMassnahmen(untersuchungImpfungenMassnahmen);
+        untersuchung.setUntersuchungImpfungen(untersuchungImpfungen);
+
         return untersuchung;
     }
 
@@ -563,6 +572,7 @@ public final class MergeSourceDummyDataCreator {
             true,                           // showFragebogen
             true,                           // showAnmeldungBestaetigung
             true,                           // showImpfeinveständnis
+            true,                           // showAnlassPrintImpfen
             true,                           // showDatenPersonendaten
             true,                           // showDatenPersonendatenEsadId
             RequirementSetting.OPTIONAL,    // datenUntersuchung

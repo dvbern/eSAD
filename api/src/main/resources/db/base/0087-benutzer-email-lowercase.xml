@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <!-- Lowercases the Benutzer emails and adds a check constraint that keeps them lowercase.
+       BenutzerEmailLowercaseMigrationITest reads the SQL from here and runs it.
+       A changeSet runs in one transaction, so either both are applied or neither. -->
+  <changeSet author="anst" id="1790697304576-1">
+    <sql>
+      -- Keycloak delivers the email in lowercase at login, so a Benutzer is only found if its email is stored in
+      -- lowercase. Lowercases the emails that are not lowercase yet. Keycloak never delivers these, so their Benutzer
+      -- could not log in with them anyway. Emails already in lowercase stay unchanged.
+      -- Benutzer whose emails differ only in case would end up with the same email. Of these, the Benutzer whose email
+      -- is already lowercase keeps it, otherwise the oldest one gets it. Each of the others gets the first 8
+      -- characters of its id added before the @, e.g. anna.muster+3f2a9c1e@example.com, which keeps the email unique.
+      -- The part before the @ is shortened, so that it stays within the 64 characters a valid email allows there.
+      UPDATE benutzer
+      SET email = CASE
+          WHEN ranked.rank_in_group = 1
+            THEN lower(benutzer.email)
+          ELSE left(substring(lower(benutzer.email) FROM '^(.*)@[^@]*$'), 55)
+            || '+'
+            || left(CAST(benutzer.id AS VARCHAR), 8)
+            || substring(lower(benutzer.email) FROM '(@[^@]*)$')
+        END
+      FROM (
+        SELECT id,
+          row_number() OVER (
+            PARTITION BY lower(email)
+            ORDER BY (email = lower(email)) DESC, timestamperstellt, id
+          ) AS rank_in_group
+        FROM benutzer
+      ) AS ranked
+      WHERE ranked.id = benutzer.id
+        AND benutzer.email != lower(benutzer.email);
+
+      -- Keeps the emails in lowercase from now on. Together with uc_benutzer_email, no two Benutzer can have emails
+      -- that differ only in case.
+      ALTER TABLE benutzer
+        ADD CONSTRAINT chk_benutzer_email_lowercase CHECK (email = lower(email));
+    </sql>
+  </changeSet>
+</databaseChangeLog>

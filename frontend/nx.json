@@ -10,9 +10,7 @@
       "!{projectRoot}/eslint.config.js",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
       "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/jest.config.[jt]s",
-      "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s"
+      "!{projectRoot}/vitest.config.*"
     ],
     "sharedGlobals": ["{workspaceRoot}/.gitlab-ci.yml"]
   },
@@ -34,18 +32,9 @@
         "{workspaceRoot}/tools/eslint-rules/**/*"
       ]
     },
-    "@nx/jest:jest": {
+    "@nx/vitest:test": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-      "options": {
-        "passWithNoTests": true,
-        "codeCoverage": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true
-        }
-      }
+      "inputs": ["default", "^production"]
     },
     "e2e-ci--**/*": {
       "dependsOn": ["^build"]
@@ -67,6 +56,16 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@nx/angular:unit-test": {
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
+      "options": {
+        "watch": false,
+        "coverage": true,
+        "coverageReporters": ["lcov"]
+      }
     }
   },
   "plugins": [
@@ -88,11 +87,11 @@
       "e2eTestRunner": "playwright",
       "linter": "eslint",
       "style": "scss",
-      "unitTestRunner": "jest"
+      "unitTestRunner": "vitest-angular"
     },
     "@nx/angular:library": {
       "linter": "eslint",
-      "unitTestRunner": "jest",
+      "unitTestRunner": "vitest-angular",
       "strict": false
     },
     "@nx/angular:component": {

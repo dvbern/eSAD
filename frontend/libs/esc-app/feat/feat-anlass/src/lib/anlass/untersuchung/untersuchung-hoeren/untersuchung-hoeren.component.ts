@@ -5,6 +5,8 @@ import {DirtyMarker} from '@dvb/util-angular';
 import {hasHoerenEditBerechtigung, isNotNullish} from '@dvb/util-shared';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../anlass.store';
+import {UntersuchungHoerenAudiogrammStore} from './untersuchung-hoeren-audiogramm/untersuchung-hoeren-audiogramm.store';
+import {UntersuchungHoerenOtoskopieStore} from './untersuchung-hoeren-otoskopie/untersuchung-hoeren-otoskopie.store';
 import {
   UntersuchungHoerenAudiogrammComponent,
 } from './untersuchung-hoeren-audiogramm/untersuchung-hoeren-audiogramm.component';
@@ -31,6 +33,8 @@ export class UntersuchungHoerenComponent implements DirtyMarker {
 
   readonly anlassStore = inject(AnlassStore);
   readonly benutzerStore = inject(BenutzerStore);
+  readonly audiogrammStore = inject(UntersuchungHoerenAudiogrammStore);
+  readonly otoskopieStore = inject(UntersuchungHoerenOtoskopieStore);
 
   anlassConfig = computed(() => {
     if (this.anlassStore.selectedEntity() !== undefined) {
@@ -41,6 +45,19 @@ export class UntersuchungHoerenComponent implements DirtyMarker {
 
   canEdit = computed(() => this.benutzerStore.createHasRequiredRoleSig(hasHoerenEditBerechtigung())()
     && this.anlassStore.canUserEditAnlassInCurrentState());
+
+  /**
+   * Whether the defaults of every form this Anlass shows have been fetched - before that, loadDefaults()
+   * has nothing to apply and the click would be lost (see defaultsLoaded in withDefaultValues).
+   */
+  defaultsLoaded = computed(() => {
+    const anlassConfig = this.anlassConfig();
+    if (!anlassConfig) {
+      return false;
+    }
+    return (!anlassConfig.showTabHoerenAudiogramm || isNotNullish(this.audiogrammStore.defaultHoerenAudiogrammInitial()))
+      && (!anlassConfig.showTabHoerenOtoskopie || isNotNullish(this.otoskopieStore.defaultHoerenOtoskopieInitial()));
+  });
 
   loadDefaults(): void {
     if (this.anlassConfig()?.showTabHoerenAudiogramm) {

@@ -4,18 +4,23 @@
 
 $-weight-bold: font.value('S4', weight);
 
+// Without an explicit buttonColor the toggle stays transparent
+:host(.svui_collapsible-menu--transparent) ::ng-deep .dropdown-toggle {
+  border: none;
+  background: none;
+}
+
 :host {
   display: inline-block;
 
   ::ng-deep {
 
     .dropdown-toggle {
-      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: none;
     }
+
 
     // ICON dropdown
     .dropdown-toggle.svui_icon-button {
@@ -39,7 +44,7 @@ $-weight-bold: font.value('S4', weight);
 
         content: "";
         color: var(--svui-nav-link-color);
-        background-image: url(/icons/ng-bootstrap-dropdown/heroChevronDownSolid_blue.svg);
+        background-image: url(../../../../assets/icons/ng-bootstrap-dropdown/heroChevronDownSolid_blue.svg);
         width: 16px;
         height: 16px;
         margin-left: 8px;

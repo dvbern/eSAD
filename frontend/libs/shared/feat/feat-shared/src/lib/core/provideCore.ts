@@ -10,7 +10,7 @@ import {
   inject,
   LOCALE_ID,
   provideAppInitializer,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {
@@ -55,7 +55,7 @@ export function provideCore(appRoutes: Route[]): ApplicationConfig['providers'] 
   return [
     provideAppErrorHandler(),
     provideAnimationsAsync(),
-    provideZoneChangeDetection({eventCoalescing: true, runCoalescing: true}),
+    provideZonelessChangeDetection(),
     provideRouter(
       appRoutes,
       // withDebugTracing(),
@@ -118,10 +118,10 @@ export function provideCore(appRoutes: Route[]): ApplicationConfig['providers'] 
       useFactory: () => inject(LanguageStore).activeLocale(),
     },
 
-    // Custom Icons
+    // Custom Icons (relative URL, so that the <base href> is respected)
     provideNgIconLoader(name => {
       const http = inject(HttpClient);
-      return http.get(`/icons/${name}.svg`,
+      return http.get(`icons/${name}.svg`,
         {responseType: 'text'},
       );
     }, withCaching()),

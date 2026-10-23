@@ -20,7 +20,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -31,7 +31,7 @@ public final class AnonymerEintragMapper {
 
     private final AnonymerEintragService anonymerEintragService;
     private final AnlassMapper anlassMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public AnonymerEintragJson getById(@NonNull ID<AnonymerEintrag> anonymerEintragID) {
@@ -65,7 +65,7 @@ public final class AnonymerEintragMapper {
         return new AnonymerEintragJson(
             anonymerEintrag.getId(),
             anonymerEintrag.getHash(),
-            AnlassMapper.toJson(anonymerEintrag.getAnlass(), tenantProducer.produceTenant())
+            AnlassMapper.toJson(anonymerEintrag.getAnlass(), tenantContext.get())
         );
     }
 

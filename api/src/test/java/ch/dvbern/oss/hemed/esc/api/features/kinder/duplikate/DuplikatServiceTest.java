@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
@@ -17,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 @QuarkusTest
 @RequiredArgsConstructor
-class DuplikatServiceTest {
+class DuplikatServiceTest extends AbstractITest {
 
     private final FixtureService fixtureService;
     private final DuplikatService duplikatService;
@@ -29,8 +30,10 @@ class DuplikatServiceTest {
     private static Kind existing5 = null;
 
     @SuppressWarnings("NonThreadSafeLazyInitialization")
+    @Override
     @BeforeEach
-    void setUp() {
+    public void setUp() {
+        super.setUp();
         if (existing1 == null) {
             existing1 = fixtureService.createKind("MaxOnlyUsedInThisTestclass", "Mustermann", LocalDate.of(2000, 1, 1), Geschlecht.MAENNLICH);
         }

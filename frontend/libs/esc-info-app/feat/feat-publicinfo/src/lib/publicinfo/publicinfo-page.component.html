@@ -3,16 +3,75 @@
            [showFooter]="true"
 >
   <div class="container mt-4">
-    <p>Hello World!</p>
+    @if (!checking() && !authenticated()) {
+      <p>{{ 'publicinfo.lead' | transloco }}</p>
 
-    <div class="mt-4 pt-4 border-top">
-      Test subpage
-      <button svuiIconOnlyButton="primary"
-              type="button"
-              [tooltip]="'global.tooltip.icon.next' | transloco"
-              [icon]="'next'"
-              [routerLink]="'/quiz'">
-        </button>
-    </div>
+      <div class="publicinfo__login-buttons d-flex flex-column gap-2">
+        @for (option of idpLoginOptions(); track option.idpHint) {
+          @let logo = logoOf(option);
+          <button svuiButton="primary"
+                  type="button"
+                  class="publicinfo__login-button"
+                  [attr.data-login-method]="option.method"
+                  (click)="onSelect(option)">
+            <!--
+              The logo and the label are wrapped so that this page owns their alignment: the flex row
+              of the shared button lives in its own view and cannot be styled from here. HIN wants the
+              pair centred as a unit, AGOV wants it left-aligned.
+            -->
+            <span class="publicinfo__login-button-content">
+              @if (logo) {
+                <img class="publicinfo__login-button-logo"
+                     [ngSrc]="logo.src"
+                     [width]="logo.width"
+                     [height]="logo.height"
+                     alt=""
+                     aria-hidden="true">
+              }
+              <span class="publicinfo__login-button-label">
+                {{ option.method | translatedEnumViewValuePipe:'LoginMethod' }}
+              </span>
+            </span>
+          </button>
+        }
+      </div>
+
+      @let passwordOption = passwordLoginOption();
+      @if (passwordOption) {
+        <!--
+          Username/password is not an identity provider but the fallback for everyone without one, so
+          it gets its own block below the IdPs instead of a fourth equal-looking button.
+        -->
+        <div class="publicinfo__password">
+          @if (idpLoginOptions().length > 0) {
+            <div class="publicinfo__separator">{{ 'publicinfo.or' | transloco }}</div>
+          }
+          <!--
+            Stacked, not side by side: the button then stretches across the column just like the IdP
+            buttons above it, so all login entry points share one width.
+          -->
+          <div class="d-flex flex-column gap-2">
+            <span id="publicinfo-password-lead">{{ 'publicinfo.password.lead' | transloco }}</span>
+            <!-- the caption is just "Login", so the sentence above it has to name what is logged in -->
+            <button svuiButton="secondary"
+                    type="button"
+                    [attr.data-login-method]="passwordOption.method"
+                    aria-describedby="publicinfo-password-lead"
+                    (click)="onSelect(passwordOption)">
+              <!-- same wrapper as the IdP buttons, so the caption is centred in the full-width button -->
+              <span class="publicinfo__login-button-content">
+                {{ 'publicinfo.password.action' | transloco }}
+              </span>
+            </button>
+          </div>
+        </div>
+      }
+
+      <div class="mt-4 pt-4 border-top">
+        <a [href]="'publicinfo.helpUrl' | transloco" target="_blank" rel="noopener noreferrer">
+          {{ 'publicinfo.help' | transloco }}
+        </a>
+      </div>
+    }
   </div>
 </feat-page>

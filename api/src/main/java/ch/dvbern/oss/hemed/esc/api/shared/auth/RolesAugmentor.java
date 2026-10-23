@@ -56,7 +56,7 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
     private final TenantSettingsService tenantSettingsService;
     private final BenutzerService benutzerService;
     private final ConfigService configService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Override
     @NonNull
@@ -72,7 +72,7 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         // rollen from the db or not
         RoutingContext routingContext = HttpSecurityUtils.getRoutingContextAttribute(attributes);
         // We resolve and remember the tenatn here (resolved from url). It must be published to the request-scoped
-        // TenantProducer inside augmentWithRoles, which activates the request context.
+        // TenantContext inside augmentWithRoles, which activates the request context.
         // Trying to do this here using the @RequestScoped producer would fail with ContextNotActiveException whenever
         // augmentation runs before the request context exists - which is exactly what happens with proactive authentication.
         TenantEnum tenantFromUrl = routingContext == null
@@ -97,8 +97,10 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
     @NonNull
     @ActivateRequestContext
     SecurityIdentity augmentWithRoles(@NonNull SecurityIdentity identity, @Nullable TenantEnum tenantFromUrl) {
+        // Deliberate exception to "only PerTenantRunnerService switches tenants": this publishes the tenant of the
+        // current HTTP request (from its URL) to the request context that belongs to exactly this request.
         if (tenantFromUrl != null) {
-            tenantProducer.setCurrentTenant(tenantFromUrl);
+            tenantContext.setCurrentTenant(tenantFromUrl);
         }
         JsonWebToken jsonWebToken = (JsonWebToken) identity.getPrincipal();
         String preferedUserName = jsonWebToken.getClaim(Claims.preferred_username);
@@ -178,7 +180,7 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
         if (tenantClaim != null) {
             // handle supporter case
             if (DVBSupportRoleUtil.isDVBSupport(tenantClaim)) {
-                TenantEnum tenantFromUrl = tenantProducer.produceTenant();
+                TenantEnum tenantFromUrl = tenantContext.getOrNull();
                 berechtigungen = assignDVBSupportBerechtigungenForTenant(email, tenantFromUrl);
             }
             // handle standard case

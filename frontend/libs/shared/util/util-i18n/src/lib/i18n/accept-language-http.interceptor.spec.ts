@@ -50,18 +50,18 @@ describe('acceptLanguageInterceptorFn', () => {
   });
 
   it('should remove duplicates even if they have quality values', () => {
-    languageStoreMock.activeLocale.set('en');
+    languageStoreMock.activeLocale.set('de');
 
     // Mock navigator.languages with something that might contain quality values or matches
     Object.defineProperty(navigator, 'languages', {
-      value: ['en-US', 'en;q=0.9', 'de'],
+      value: ['de-CH', 'de;q=0.9', 'en'],
       configurable: true
     });
 
     httpClient.get('/api/test').subscribe();
 
     const req = httpMock.expectOne('/api/test');
-    expect(req.request.headers.get('Accept-Language')).toBe('en, en-US, de');
+    expect(req.request.headers.get('Accept-Language')).toBe('de, de-CH, en');
     req.flush({});
   });
 

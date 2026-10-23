@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import ch.dvbern.dvbstarter.infrastructure.db.DbConst;
-import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppAuthException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -22,20 +21,19 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.DVBSupportRoleUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.RolesAugmentor;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
+
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Validate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.eclipse.microprofile.jwt.Claims;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import static ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage.noUserLoggedIn;
 
@@ -44,10 +42,9 @@ import static ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMes
 @Slf4j
 public class BenutzerService {
 
-    private final JsonWebToken jsonWebToken;
     private final BenutzerRepo benutzerRepo;
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final FachrollenService fachrollenService;
     private final TenantSettingsService tenantSettingsService;
     private final CurrentIdentityAssociation association;
@@ -100,8 +97,12 @@ public class BenutzerService {
     @NonNull
     public Benutzer updateBenutzerFromJWt(
         @NonNull ID<Benutzer> existingUserId,
-        @NonNull JsonWebTokenDataDTO webTokenData) {
-        Benutzer existingUser = this.getById(existingUserId);
+        @NonNull JsonWebTokenDataDTO webTokenData
+    ) {
+        // Every request of a Benutzer syncs the token into this row, so parallel requests of the same
+        // Benutzer read-modify-write it at the same time. Without the lock they lose the version check
+        // at commit time and roll back the whole request instead of just their (idempotent) sync.
+        Benutzer existingUser = benutzerRepo.getByIdLockedQuery(existingUserId);
 
         // Username ist die Email. Falls die KeycloakId sich geändert hat, loggen, aber nicht abbrechen.
         if (existingUser.getKeycloakId() == null || !existingUser.getKeycloakId()
@@ -187,7 +188,7 @@ public class BenutzerService {
             // Wir lesen alle Berechtigungen, welche der Benutzer irgendwo hat (unabhängig von
             // der Organisation), damit wir diese in Quarkus setzen können
             Set<Berechtigung> desiredBerechtigungenFromFachrolle = FachRolle.collectAllBerechtigungen(
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 benutzer.getFachRollenCombined().toArray(RolesAugmentor.EMPTY_FACHROLLEN));
             return desiredBerechtigungenFromFachrolle.stream().toList();
         }

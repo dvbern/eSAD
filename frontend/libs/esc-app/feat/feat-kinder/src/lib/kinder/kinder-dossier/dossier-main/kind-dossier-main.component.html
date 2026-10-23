@@ -145,7 +145,7 @@
     <!-- Nationalitaet/ Sprache -->
     <svui-tile>
       <svui-icon [useCase]="'flag'"></svui-icon>
-      <span>{{ "Land." + kind()?.data?.nationalitaet | transloco }}</span>
+      <span>{{ "Land." + (kind()?.data?.nationalitaet ?? null) | transloco }}</span>
       <span>{{ kind()?.data?.erstsprache }}</span>
     </svui-tile>
 

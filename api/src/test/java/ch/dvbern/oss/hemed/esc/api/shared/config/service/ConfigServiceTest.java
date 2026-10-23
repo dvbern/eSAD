@@ -1,9 +1,11 @@
 package ch.dvbern.oss.hemed.esc.api.shared.config.service;
 
+import java.time.Duration;
+
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,13 +18,13 @@ import static org.mockito.Mockito.when;
 
 class ConfigServiceTest {
 
-    private final TenantProducer tenantProducer = mock(TenantProducer.class);
+    private final TenantContext tenantContext = mock(TenantContext.class);
     private final ConfigService configService = Mockito.mock(ConfigService.class, Mockito.CALLS_REAL_METHODS);
 
     @BeforeEach
     void setUp() {
-        Mockito.reset(configService, tenantProducer);
-        Mockito.doReturn(tenantProducer).when(configService).getTenantProducer();
+        Mockito.reset(configService, tenantContext);
+        Mockito.doReturn(tenantContext).when(configService).getTenantContext();
     }
 
     @Test
@@ -130,13 +132,24 @@ class ConfigServiceTest {
         Mockito.doReturn("bucket-be").when(configService).getS3BucketNameBE();
 
         // ACT & ASSERT
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BS);
+        when(tenantContext.get()).thenReturn(TenantEnum.BS);
         Assertions.assertThat(configService.getS3BucketName()).isEqualTo("bucket-bs");
 
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.WIN);
+        when(tenantContext.get()).thenReturn(TenantEnum.WIN);
         Assertions.assertThat(configService.getS3BucketName()).isEqualTo("bucket-win");
 
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BE);
+        when(tenantContext.get()).thenReturn(TenantEnum.BE);
         Assertions.assertThat(configService.getS3BucketName()).isEqualTo("bucket-be");
+    }
+
+    @Test
+    void getS3DeleteTimeout_returns_configured_timeout() {
+        // ARRANGE
+        Duration timeout = Duration.ofSeconds(5);
+        configService.s3DeleteTimeout = timeout;
+
+        // ACT & ASSERT
+        Assertions.assertThat(configService.getS3DeleteTimeout())
+            .isEqualTo(timeout);
     }
 }

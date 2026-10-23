@@ -85,6 +85,16 @@
     </svui-single-checkbox-wrapper>
   </svui-form-group>
 
+  <svui-form-group [label]="'anlassconfig.label.ausdrucke' | transloco"
+                   [direction]="'horizontal'"
+                   [size]="'full'"
+                   [viewValue]="">
+    <svui-single-checkbox-wrapper [label]="'anlassconfig.label.showAnlassPrintImpfen' | transloco">
+      <input type="checkbox" svuiCheckbox [formControl]="form.group.controls.showAnlassPrintImpfen"
+             data-testid="checkbox-show-anlass-print-impfen"/>
+    </svui-single-checkbox-wrapper>
+  </svui-form-group>
+
   <!-- Hilfetext bei neuen Configs -->
   @if(store.selectedIsNew()) {
     <span class="svui_form-layout--full">

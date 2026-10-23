@@ -122,6 +122,11 @@
   <include file="db/base/0083-add-tenant-header-in-exports-feature.xml"/>
   <include file="db/be/0037-disable-tenant-header-in-exports-be.xml"/>
   <include file="db/base/0084-groesse-gewicht-perzentile-single-multi-value.xml"/>
+  <include file="db/base/0085-tenant-settings-login-methods.xml"/>
+  <include file="db/be/0038-audit-retention-batchjobconfig-be.xml"/>
+  <include file="db/base/0086-add-anlassconfig-show-anlass-print-impfen.xml"/>
+  <include file="db/base/0087-benutzer-email-lowercase.xml"/>
+  <include file="db/be/0040-update-anlassconfig-be-local-20261023.xml"/>
 
   <!-- The following scripts only run in the 'test' context -->
   <include file="db-test/0001-insert-test-benutzer-support.xml" context="@test"/>

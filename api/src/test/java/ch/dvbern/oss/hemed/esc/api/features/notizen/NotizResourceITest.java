@@ -32,7 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.LabelMapper;
 import ch.dvbern.oss.hemed.esc.api.features.labels.LabelService;
 import ch.dvbern.oss.hemed.esc.api.features.labels.types.LabelTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -95,7 +95,7 @@ class NotizResourceITest extends AbstractITest {
     private final LabelService labelService;
     private final EinladungService einladungService;
     private final ObjectMapper objectMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     private Benutzer verantwortlicher;
     private ID<Dossier> dossierId;
@@ -288,7 +288,7 @@ class NotizResourceITest extends AbstractITest {
     @TestAsAdminBE
     void findAllBerechtigtNotizen_should_fail_for_dezentral_tenant() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // ACT
         api

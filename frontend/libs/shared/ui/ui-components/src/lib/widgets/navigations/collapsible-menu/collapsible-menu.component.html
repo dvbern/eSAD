@@ -2,7 +2,7 @@
      container="body"><!-- container=body avoids being cut when we are inside an overflow:auto -->
   @switch (menuStyle()) {
     @case ('ICON') {
-      <button svuiIconOnlyButton="secondary"
+      <button [svuiIconOnlyButton]="effectiveButtonColor()"
               ngbDropdownToggle
               type="button"
               [tooltip]="label()"

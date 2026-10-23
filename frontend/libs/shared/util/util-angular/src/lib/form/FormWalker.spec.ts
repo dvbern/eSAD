@@ -42,6 +42,17 @@ describe('FormWalker', () => {
     }
   }
 
+  // constructor.name depends on how @angular/forms was bundled (Jest reported "FormControl2")
+  function controlType(control: AbstractControl): string {
+    if (control instanceof FormArray) {
+      return 'FormArray';
+    }
+    if (control instanceof FormGroup) {
+      return 'FormGroup';
+    }
+    return 'FormControl';
+  }
+
   it('should visit all controls depth-first/top-down in order', () => {
     const visitor = new FormWalker().walkDepthFirst({
       root: group,
@@ -49,23 +60,23 @@ describe('FormWalker', () => {
       visitor: new ToArrayVisitor(),
     });
 
-    expect(visitor.visited.map(v => `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${v.control.constructor.name}`)).toEqual(
+    expect(visitor.visited.map(v => `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${controlType(v.control)}`)).toEqual(
       [
         '                                FormGroup',
-        'first                first      FormControl2',
-        'name                 name       FormControl2',
-        'age                  age        FormControl2',
+        'first                first      FormControl',
+        'name                 name       FormControl',
+        'age                  age        FormControl',
         'address              address    FormGroup',
-        'address.street       street     FormControl2',
-        'address.city         city       FormControl2',
+        'address.street       street     FormControl',
+        'address.city         city       FormControl',
         'phones               phones     FormArray',
         'phones[0]            0          FormGroup',
-        'phones[0].type       type       FormControl2',
-        'phones[0].number     number     FormControl2',
+        'phones[0].type       type       FormControl',
+        'phones[0].number     number     FormControl',
         'phones[1]            1          FormGroup',
-        'phones[1].type       type       FormControl2',
-        'phones[1].number     number     FormControl2',
-        'last                 last       FormControl2',
+        'phones[1].type       type       FormControl',
+        'phones[1].number     number     FormControl',
+        'last                 last       FormControl',
       ],
     );
   });
@@ -77,22 +88,22 @@ describe('FormWalker', () => {
       visitor: new ToArrayVisitor(),
     });
 
-    expect(visitor.visited.map(v => `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${v.control.constructor.name}`)).toEqual(
+    expect(visitor.visited.map(v => `${v.path.padEnd(20)} ${v.name.padEnd(10)} ${controlType(v.control)}`)).toEqual(
       [
-        'first                first      FormControl2',
-        'name                 name       FormControl2',
-        'age                  age        FormControl2',
-        'address.street       street     FormControl2',
-        'address.city         city       FormControl2',
+        'first                first      FormControl',
+        'name                 name       FormControl',
+        'age                  age        FormControl',
+        'address.street       street     FormControl',
+        'address.city         city       FormControl',
         'address              address    FormGroup',
-        'phones[0].type       type       FormControl2',
-        'phones[0].number     number     FormControl2',
+        'phones[0].type       type       FormControl',
+        'phones[0].number     number     FormControl',
         'phones[0]            0          FormGroup',
-        'phones[1].type       type       FormControl2',
-        'phones[1].number     number     FormControl2',
+        'phones[1].type       type       FormControl',
+        'phones[1].number     number     FormControl',
         'phones[1]            1          FormGroup',
         'phones               phones     FormArray',
-        'last                 last       FormControl2',
+        'last                 last       FormControl',
         '                                FormGroup',
       ],
     );

@@ -23,6 +23,7 @@ import {
   EinladungStatus,
   FeatureEnabledSetting,
   LandingPageOption,
+  LoginMethod,
   TenantSettingSaveJson
 } from '@dvb/data-access-backend';
 import {ISODateString} from '@dvb/data-access-types';
@@ -134,6 +135,7 @@ function makeForm(config: Config) {
     defaultLandingPage: fb.control<LandingPageOption>(LandingPageOption.DASHBOARD, Validators.required),
     gueltigAbWachstumskurvePch: fb.control<ISODateString | undefined>(undefined, Validators.required),
     einladungStatusValues: fb.control<EinladungStatus[]>([], Validators.required),
+    loginMethods: fb.control<LoginMethod[]>([], AppValidators.loginMethodsRequired()),
     features: featuresGroup,
   });
 }
@@ -235,6 +237,7 @@ export class TenantSettingsForm extends BaseForm<ReturnType<typeof makeForm>, Te
         }
       },
       einladungStatusValues: value.einladungStatusValues,
+      loginMethods: value.loginMethods,
       gueltigAbWachstumskurvePch: requireValue(value.gueltigAbWachstumskurvePch),
       customerAdminEmails: this.cleanCustomerAdminEmails(requireFilledIn(trimToUndefined(value.customerAdminEmails))),
       supportEmail: requireFilledIn(trimToUndefined(value.supportEmail)),

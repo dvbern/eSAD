@@ -397,7 +397,7 @@ export class KindDossierMainComponent {
       if (result) {
         this.dossierStore.downloadKinderdossierReport({
           kindId: dossier.kind.id,
-          variation: result.kinderdossierPrintVariant,
+          variant: result.kinderdossierPrintVariant,
         });
       }
     }

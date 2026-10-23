@@ -21,7 +21,6 @@ package ch.dvbern.oss.hemed.esc.api.features.importoptions.escada;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,11 +32,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
-import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.csv.EscadaCSVMapperService;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.csv.EscadaCsvDTO;
@@ -64,21 +61,13 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExterna
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalSyncService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportPlanDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
-import io.quarkus.vertx.ConsumeEvent;
-import io.smallrye.mutiny.Uni;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -87,7 +76,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createInputStreamFromPath;
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createReaderFromInputStream;
@@ -102,7 +90,7 @@ public class EscadaService {
     public static final String ESCADA_SYNC_EVENT_ADDRESS = "escada-sync-event-address";
     private final AppClock appClock;
     private final EscadaCsvService escadaCsvService;
-    private final EscadaSyncEventRepo escadaSyncEventRepo;
+    private final EscadaSyncEventService escadaSyncEventService;
     private final ConfigService configService;
     private final FileStoreService fileStoreService;
     private final FileValidationService fileValidationService;
@@ -117,7 +105,6 @@ public class EscadaService {
     private final KontaktPersonKindExternalSyncService kontaktPersonKindExternalSyncService;
     private final KontaktPersonKindExternalRepo kontaktPersonKindExternalRepo;
     private final EscadaMailService escadaMailService;
-    private final TenantProducer tenantProducer;
 
     @NonNull
     @Transactional(TxType.NOT_SUPPORTED)
@@ -125,18 +112,18 @@ public class EscadaService {
         // check the filetype
         fileValidationService.requireFiletypeIsAllowed(fileUpload, FileTyp.ESCADA_SYNC);
         // store the sync data in a file
-        EscadaSyncEvent escadaSyncEvent = this.saveEscadaSyncData(fileUpload);
+        EscadaSyncEvent escadaSyncEvent = escadaSyncEventService.saveEscadaSyncData(fileUpload);
         InputStream is = createInputStreamFromPath(fileUpload.filePath());
         return handleEscadaCSVUpload(is, escadaSyncEvent);
     }
 
-    @ActivateRequestContext
-    @ConsumeEvent(value = ESCADA_SYNC_EVENT_ADDRESS, blocking = true)
+    /**
+     * Called by {@link EscadaSyncEventRunnerService} inside the request context of the tenant BS.
+     */
     @Transactional(TxType.NOT_SUPPORTED)
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void handleEscadaSyncEvent(@NonNull EscadaSyncEvent escadaSyncEvent) {
         try {
-            tenantProducer.setCurrentTenant(TenantEnum.BS); // Escada Import ist fix für BS
             var bytes = fileStoreService.getFileBytesSync(escadaSyncEvent.getFileData()
                 .getFileInfoBucket()
                 .getFileIdInBucket());
@@ -363,31 +350,6 @@ public class EscadaService {
         } else {
             LOG.info("ESCADA-CSV-Import SUCCESSFUL");
         }
-    }
-
-    @NonNull
-    protected EscadaSyncEvent saveEscadaSyncData(@NonNull FileUpload fileUpload) {
-        // prepare the file info Embeddable
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
-        // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
-        PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Uploaded escada csv file  to S3: {}", putObjectResponse);
-
-        LocalDate today = appClock.getToday();
-        final String originalFileName = fileInfo.getFileName().getFileName();
-        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
-            List.of(),
-            today,
-            "Escada-Sync",
-            FileTyp.ESCADA_SYNC,
-            originalFileName);
-
-        FileData fileData = new FileData(FileTyp.ESCADA_SYNC, calculatedFileName, fileInfo);
-
-        EscadaSyncEvent event = new EscadaSyncEvent(fileData);
-        this.escadaSyncEventRepo.persist(event);
-        return event;
     }
 
     @NonNull

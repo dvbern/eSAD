@@ -4,6 +4,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMarker;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -69,6 +70,9 @@ class NamingTest {
             .and(Predicates.simpleNameEndingWith("Service")
                 .or(Predicates.simpleNameEndingWith("ServiceImpl"))
             )
+            // deliberately @ApplicationScoped, must not live in the request context it manages
+            .and()
+            .doNotHaveFullyQualifiedName(PerTenantRunnerService.class.getName())
             .should()
             .beAnnotatedWith(Service.class)
             .orShould().beAnnotatedWith(NoTransactionService.class);

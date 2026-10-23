@@ -1,16 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.shared.fileio.healthcheck;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -29,7 +27,7 @@ public class FileStoreHealthCheckService {
 
     private final S3AsyncClient s3;
     private final ConfigService configService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final FileDataRepo fileDataRepo;
     private final TenantSettingsService tenantSettingsService;
     private final FileStoreDiffWhitelistLoader whitelistLoader;
@@ -37,7 +35,7 @@ public class FileStoreHealthCheckService {
 
     @Transactional(TxType.NOT_SUPPORTED)
     public void runForCurrentTenant() {
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         LOG.info("ESC-FILESTORE-HEALTHCHECK[{}]: starting", tenant);
         String bucket = configService.getS3BucketName();
         Set<String> s3Keys = listAllS3Keys(bucket);
@@ -58,8 +56,10 @@ public class FileStoreHealthCheckService {
             configService.getFilestoreHealthcheckWhitelistFile().orElse(null)
         );
 
-        Set<String> dbOnlyFull = minus(dbKeys, s3Keys, whitelist);
-        Set<String> s3OnlyFull = minus(s3Keys, dbKeys, whitelist);
+        Set<String> dbOnlyUnfiltered = minus(dbKeys, s3Keys);
+        Set<String> s3OnlyUnfiltered = minus(s3Keys, dbKeys);
+        Set<String> dbOnlyFull = minus(dbOnlyUnfiltered, whitelist);
+        Set<String> s3OnlyFull = minus(s3OnlyUnfiltered, whitelist);
         int dbOnlyTotal = dbOnlyFull.size();
         int s3OnlyTotal = s3OnlyFull.size();
 
@@ -72,12 +72,11 @@ public class FileStoreHealthCheckService {
             "ESC-FILESTORE-HEALTHCHECK[{}]: drift detected: {} in DB only, {} in S3 only",
             tenantLabel, dbOnlyTotal, s3OnlyTotal);
 
-        int max = configService.getFilestoreHealthcheckReportMaxEntries();
         FileStoreDiffReport report = new FileStoreDiffReport(
-            truncate(dbOnlyFull, max),
-            truncate(s3OnlyFull, max),
-            dbOnlyTotal,
-            s3OnlyTotal
+            dbOnlyFull,
+            s3OnlyFull,
+            dbOnlyUnfiltered.size() - dbOnlyTotal,
+            s3OnlyUnfiltered.size() - s3OnlyTotal
         );
         fileStoreHealthCheckMailService.sendReport(report, tenantLabel, recipients);
     }
@@ -101,18 +100,9 @@ public class FileStoreHealthCheckService {
     }
 
     @NonNull
-    private Set<String> minus(@NonNull Set<String> base, @NonNull Set<String> toRemove, @NonNull Set<String> whitelist) {
+    private Set<String> minus(@NonNull Set<String> base, @NonNull Set<String> toRemove) {
         Set<String> result = new HashSet<>(base);
         result.removeAll(toRemove);
-        result.removeAll(whitelist);
         return result;
-    }
-
-    @NonNull
-    private Set<String> truncate(@NonNull Set<String> set, int max) {
-        if (set.size() <= max) {
-            return set;
-        }
-        return set.stream().sorted().limit(max).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

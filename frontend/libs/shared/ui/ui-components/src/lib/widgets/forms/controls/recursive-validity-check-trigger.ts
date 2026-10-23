@@ -25,7 +25,9 @@ export class RecursiveValidityCheckTrigger {
       .pipe(takeUntilDestroyed(this.destoryRef))
       .subscribe({
         next: () => {
-          this.changeDetectorRef.detectChanges();
+          // markForCheck instead of detectChanges: trigger() is called from ngDoCheck,
+          // detectChanges would re-enter change detection on the view being checked
+          this.changeDetectorRef.markForCheck();
         },
         error: (error: unknown) =>
           console.error('Error in RecursiveValidityCheckTrigger', error),

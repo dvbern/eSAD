@@ -1,5 +1,20 @@
 package ch.dvbern.oss.hemed.esc.api.shared.printer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import ch.dvbern.dvbstarter.shared.EdokidIdTestGenerator;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
@@ -53,6 +68,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.VerwendetTafelRes
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
@@ -70,13 +86,14 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPlanungPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPlanungPrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.AnlassUntersuchungPrintDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintDTO;
-import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierUntersuchungImpfungenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrinter;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierUntersuchungImpfungenUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
@@ -107,6 +124,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungLaeusekontrolleB
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungMassnahmenBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungSehenBeurteilungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungTriageBuilder;
+
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
@@ -121,24 +139,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.EnumSource.Mode;
-import org.mockito.Mockito;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("TestMethodWithoutAssertion")
 @Slf4j
@@ -146,9 +151,9 @@ class PrinterTest {
 
     private static final String OUTPUT_PATH = Paths.get(FileUtils.getTempDirectoryPath(), "esc", "pdf").toString();
 
-    private final FileStoreService fileStoreServiceMock = Mockito.mock(FileStoreService.class);
-    private final TenantSettingsService tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
-    private final ConfigService configServiceMock = Mockito.mock(ConfigService.class);
+    private final FileStoreService fileStoreServiceMock = mock(FileStoreService.class);
+    private final TenantSettingsService tenantSettingsServiceMock = mock(TenantSettingsService.class);
+    private final ConfigService configServiceMock = mock(ConfigService.class);
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -160,9 +165,9 @@ class PrinterTest {
 
     @BeforeEach
     void setUpBeforeEach() {
-        Mockito.when(tenantSettingsServiceMock.getTenantSetting())
+        when(tenantSettingsServiceMock.getTenantSetting())
             .thenReturn(TenantSettingBuilder.defaultTenantSetting());
-        Mockito.when(tenantSettingsServiceMock.isTenantHeaderInExportsEnabled()).thenReturn(true);
+        when(tenantSettingsServiceMock.isTenantHeaderInExportsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -235,8 +240,8 @@ class PrinterTest {
             FileOutputStream outputStream = getFileOutputStream("Kinderdossier-full", tenantEnum)) {
 
             if (pdfInput != null && pictureInput != null) {
-                Mockito.when(fileStoreServiceMock.getFileBytesSync("picture")).thenReturn(pictureInput.readAllBytes());
-                Mockito.when(fileStoreServiceMock.getFileBytesSync("pdf")).thenReturn(pdfInput.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync("picture")).thenReturn(pictureInput.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync("pdf")).thenReturn(pdfInput.readAllBytes());
             }
 
             Kind kind = KindBuilder.defaultKind();
@@ -786,6 +791,13 @@ class PrinterTest {
         return text.toString();
     }
 
+    @NonNull
+    private static Impfstoff impfstoff(@NonNull String name, @NonNull Krankheit... krankheiten) {
+        return ImpfstoffBuilder.create(builder -> builder
+            .withName(name)
+            .forKrankheiten(krankheiten));
+    }
+
     @ParameterizedTest
     @EnumSource(TenantEnum.class)
     void notizen_kinderdossier_with_files(TenantEnum tenantEnum) {
@@ -794,8 +806,8 @@ class PrinterTest {
             FileOutputStream outputStream = getFileOutputStream("Kinderdossier-notizen", tenantEnum)) {
 
             if (pdfInput != null && pictureInput != null) {
-                Mockito.when(fileStoreServiceMock.getFileBytesSync("picture")).thenReturn(pictureInput.readAllBytes());
-                Mockito.when(fileStoreServiceMock.getFileBytesSync("pdf")).thenReturn(pdfInput.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync("picture")).thenReturn(pictureInput.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync("pdf")).thenReturn(pdfInput.readAllBytes());
             }
 
             Kind kind = KindBuilder.defaultKind();
@@ -884,7 +896,16 @@ class PrinterTest {
                 .withAnlass(anlass));
 
             AnlassPlanungPrintDTO anlassPrintDTO =
-                new AnlassPlanungPrintDTO(anlass, List.of(einladung), LocalDate.now(), tenantEnum, AppLanguages.DE, null);
+                new AnlassPlanungPrintDTO(
+                    anlass,
+                    List.of(einladung),
+                    LocalDate.now(),
+                    tenantEnum,
+                    AppLanguages.DE,
+                    null,
+                    AnlassPrintVariant.ALLGEMEIN,
+                    null
+                );
 
             AnlassPlanungPrinter.print(
                 anlassPrintDTO,
@@ -911,7 +932,16 @@ class PrinterTest {
             Einladung einladung = EinladungBuilder.create(builder -> builder.withAnlass(anlass));
 
             AnlassPlanungPrintDTO anlassPrintDTO =
-                new AnlassPlanungPrintDTO(anlass, List.of(einladung), LocalDate.now(), tenantEnum, AppLanguages.DE, null);
+                new AnlassPlanungPrintDTO(
+                    anlass,
+                    List.of(einladung),
+                    LocalDate.now(),
+                    tenantEnum,
+                    AppLanguages.DE,
+                    null,
+                    AnlassPrintVariant.ALLGEMEIN,
+                    null
+                );
 
             AnlassPlanungPrinter.print(
                 anlassPrintDTO,
@@ -923,6 +953,241 @@ class PrinterTest {
             LOG.error("Error while writing to file", e);
             throw e;
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anlaesse_printer_impfen_variant(TenantEnum tenantEnum) throws IOException {
+        // ARRANGE
+        Anlass anlass = AnlassBuilder.defaultAnlass(LocalDate.of(2020, 1, 1));
+
+        Einladung einladungWithGeplant = EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                    .withName("Mustermann", "Annemaria"))))));
+
+        Einladung einladungWithoutGeplant = EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                    .withName("Schmidt", "Benjamin"))))));
+
+        List<Einladung> einladungen = List.of(einladungWithGeplant, einladungWithoutGeplant);
+        Map<Einladung, List<Impfstoff>> geplanteImpfstoffeByEinladung = Map.of(
+            // deliberately in alphabetical order (as in the mockup) to verify that the output is sorted by the
+            // specified order of the Krankheiten instead
+            einladungWithGeplant,
+            List.of(
+                impfstoff("Boostrix", Krankheit.DIPHTERIE, Krankheit.TETANUS, Krankheit.PERTUSSIS),
+                impfstoff("FSME-Immun CC", Krankheit.FSME),
+                impfstoff("Gardasil 9", Krankheit.HPV),
+                impfstoff("Hbvaxpro", Krankheit.HEPATITIS_B)
+            ),
+            einladungWithoutGeplant,
+            List.of()
+        );
+
+        AnlassPlanungPrintDTO anlassPrintDTO = new AnlassPlanungPrintDTO(
+            anlass,
+            einladungen,
+            LocalDate.now(),
+            tenantEnum,
+            AppLanguages.DE,
+            null,
+            AnlassPrintVariant.IMPFEN,
+            geplanteImpfstoffeByEinladung
+        );
+
+        // ACT: render into memory (for assertions) and to a file (for visual inspection like the
+        // other printer tests).
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                byteArrayOutputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock
+            );
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+        try (FileOutputStream outputStream = getFileOutputStream("anlass-print-impfen", tenantEnum)) {
+            outputStream.write(pdfBytes);
+        }
+
+        // ASSERT
+        assertThat(pdfBytes)
+            .isNotEmpty();
+        String pdfText = extractPdfText(pdfBytes);
+
+        // Table headers: exactly the 4 expected columns, no "Klassenstufe" column anymore.
+        assertThat(pdfText)
+            .contains("Geburtsdatum")
+            .contains("Geplante Impfungen")
+            .doesNotContain("Klassenstufe");
+
+        // Each table row is extracted as one line. Kind with planned Impfungen: the Impfstoffe are listed by
+        // name, comma-separated, in the specified order of their Krankheiten (Diphtherie, Hepatitis B, FSME, HPV)
+        // instead of the alphabetical input order. Kind without planned Impfungen: the row ends after the
+        // Geburtsdatum. The Krankheiten themselves are not printed.
+        assertThat(pdfText)
+            .containsPattern("(?m)^Mustermann Annemaria \\S+ Boostrix, Hbvaxpro, FSME-Immun CC, Gardasil 9\\s*$")
+            .containsPattern("(?m)^Schmidt Benjamin \\S+\\s*$")
+            .doesNotContain("Diphtherie");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anlaesse_printer_impfen_variant_renders_empty_cell_without_geplante_Impfstoffe(TenantEnum tenantEnum)
+        throws IOException {
+        // ARRANGE: geplanteImpfstoffeByEinladung == null (e.g. variant IMPFEN without the map being built)
+        Anlass anlass = AnlassBuilder.defaultAnlass(LocalDate.of(2020, 1, 1));
+        Einladung einladung = EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                    .withName("Mustermann", "Annemaria"))))));
+
+        AnlassPlanungPrintDTO anlassPrintDTO = new AnlassPlanungPrintDTO(
+            anlass,
+            List.of(einladung),
+            LocalDate.now(),
+            tenantEnum,
+            AppLanguages.DE,
+            null,
+            AnlassPrintVariant.IMPFEN,
+            null
+        );
+
+        // ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                byteArrayOutputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock
+            );
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT: no exception, table headers present, Mustermann's row has an empty "Geplante Impfungen" cell
+        assertThat(pdfBytes)
+            .isNotEmpty();
+        String pdfText = extractPdfText(pdfBytes);
+        assertThat(pdfText)
+            .contains("Geplante Impfungen")
+            .containsPattern("(?m)^Mustermann Annemaria \\S+\\s*$");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anlaesse_printer_impfen_variant_prints_Hib_Impfstoff_only_where_planned(TenantEnum tenantEnum)
+        throws IOException {
+        // ARRANGE: a Hib-only Impfstoff is planned for one Kind, a DTP Impfstoff for the other
+        Anlass anlass = AnlassBuilder.defaultAnlass(LocalDate.of(2020, 1, 1));
+        Einladung einladungWithHib = EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                    .withName("Mustermann", "Annemaria"))))));
+        Einladung einladungWithoutHib = EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                    .withName("Schmidt", "Benjamin"))))));
+        Map<Einladung, List<Impfstoff>> geplanteImpfstoffeByEinladung = Map.of(
+            einladungWithHib,
+            List.of(impfstoff("Hiberix", Krankheit.HAEMOPHILUS_INFLUENZAE)),
+            einladungWithoutHib,
+            List.of(impfstoff("Boostrix", Krankheit.DIPHTERIE, Krankheit.TETANUS, Krankheit.PERTUSSIS))
+        );
+
+        AnlassPlanungPrintDTO anlassPrintDTO = new AnlassPlanungPrintDTO(
+            anlass,
+            List.of(einladungWithHib, einladungWithoutHib),
+            LocalDate.now(),
+            tenantEnum,
+            AppLanguages.DE,
+            null,
+            AnlassPrintVariant.IMPFEN,
+            geplanteImpfstoffeByEinladung
+        );
+
+        // ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                byteArrayOutputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock
+            );
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT: the Hib-only Impfstoff is printed exactly once, in the row of the Kind it is planned for,
+        // and is not added to the Impfungen of the other Kind
+        String pdfText = extractPdfText(pdfBytes);
+        assertThat(pdfText)
+            .containsOnlyOnce("Hiberix")
+            .containsPattern("(?m)^Mustermann Annemaria \\S+ Hiberix\\s*$")
+            .containsPattern("(?m)^Schmidt Benjamin \\S+ Boostrix\\s*$");
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TenantEnum.class, names = "DEFAULT", mode = Mode.EXCLUDE)
+    void anlaesse_printer_impfen_variant_deduplicates_duplicate_geplante_Impfstoffe(TenantEnum tenantEnum)
+        throws IOException {
+        // ARRANGE: the same Impfstoff is planned multiple times for the same Kind
+        Anlass anlass = AnlassBuilder.defaultAnlass(LocalDate.of(2020, 1, 1));
+        Einladung einladung = EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(DossierBuilder.create(dossierBuilder -> dossierBuilder
+                .forKind(KindBuilder.create(kindBuilder -> kindBuilder
+                    .withName("Mustermann", "Annemaria"))))));
+
+        Impfstoff boostrix1 = impfstoff("Boostrix", Krankheit.DIPHTERIE, Krankheit.TETANUS, Krankheit.PERTUSSIS);
+        Impfstoff boostrix2 = impfstoff("Boostrix", Krankheit.DIPHTERIE, Krankheit.TETANUS, Krankheit.PERTUSSIS);
+        Impfstoff fsme = impfstoff("FSME-Immun CC", Krankheit.FSME);
+
+        Map<Einladung, List<Impfstoff>> geplanteImpfstoffeByEinladung = Map.of(
+            einladung,
+            List.of(boostrix1, fsme, boostrix2)
+        );
+
+        AnlassPlanungPrintDTO anlassPrintDTO = new AnlassPlanungPrintDTO(
+            anlass,
+            List.of(einladung),
+            LocalDate.now(),
+            tenantEnum,
+            AppLanguages.DE,
+            null,
+            AnlassPrintVariant.IMPFEN,
+            geplanteImpfstoffeByEinladung
+        );
+
+        // ACT
+        byte[] pdfBytes;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            AnlassPlanungPrinter.print(
+                anlassPrintDTO,
+                byteArrayOutputStream,
+                fileStoreServiceMock,
+                tenantSettingsServiceMock,
+                configServiceMock
+            );
+            pdfBytes = byteArrayOutputStream.toByteArray();
+        }
+
+        // ASSERT: Boostrix is listed only once despite being planned multiple times
+        String pdfText = extractPdfText(pdfBytes);
+        assertThat(pdfText)
+            .containsOnlyOnce("Boostrix")
+            .containsPattern("(?m)^Mustermann Annemaria \\S+ Boostrix, FSME-Immun CC\\s*$");
     }
 
     @ParameterizedTest
@@ -939,7 +1204,7 @@ class PrinterTest {
             FileData fileData = FileDataBuilder.defaultPdfFileData();
 
             if (inputStream != null) {
-                Mockito.when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
                 basePrinter.addFile(fileData, document);
             }
 
@@ -963,7 +1228,7 @@ class PrinterTest {
             FileData fileData = FileDataBuilder.defaultPdfFileData();
 
             if (inputStream != null) {
-                Mockito.when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
                 basePrinter.addFile(fileData, document);
             }
 
@@ -987,7 +1252,7 @@ class PrinterTest {
             FileData fileData = FileDataBuilder.defaultImgFileData();
 
             if (inputStream != null) {
-                Mockito.when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
+                when(fileStoreServiceMock.getFileBytesSync(any())).thenReturn(inputStream.readAllBytes());
                 basePrinter.addFile(fileData, document);
             }
 
@@ -1142,7 +1407,16 @@ class PrinterTest {
             List<Einladung> einladungen = List.of(einladung1, einladung2, einladung3, einladung4, einladung5);
 
             AnlassPlanungPrintDTO anlassPrintDTO =
-                new AnlassPlanungPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, null);
+                new AnlassPlanungPrintDTO(
+                    anlass,
+                    einladungen,
+                    LocalDate.now(),
+                    tenantEnum,
+                    AppLanguages.DE,
+                    null,
+                    AnlassPrintVariant.ALLGEMEIN,
+                    null
+                );
 
             AnlassPlanungPrinter.print(
                 anlassPrintDTO,
@@ -1204,7 +1478,16 @@ class PrinterTest {
             List<Nachkontrolle> nachkontrollen = List.of(nachkontrolle1, nachkontrolle2);
 
             AnlassPlanungPrintDTO anlassPrintDTO =
-                new AnlassPlanungPrintDTO(anlass, einladungen, LocalDate.now(), tenantEnum, AppLanguages.DE, nachkontrollen);
+                new AnlassPlanungPrintDTO(
+                    anlass,
+                    einladungen,
+                    LocalDate.now(),
+                    tenantEnum,
+                    AppLanguages.DE,
+                    nachkontrollen,
+                    AnlassPrintVariant.ALLGEMEIN,
+                    null
+                );
 
             AnlassPlanungPrinter.print(
                 anlassPrintDTO,

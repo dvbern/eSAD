@@ -1,9 +1,9 @@
 @if (store) {
 
    <h6>TableModel</h6>
-   <pre>tableConfig: {{itemTable?.tableConfig | json}}</pre>
-   <pre>paginationConfig: {{itemTable?.pagination() | json}}</pre>
-   <pre>filteredListSize: {{itemTable?.filteredListSize() | json}}</pre>
+   <pre>tableConfig: {{(itemTable?.tableConfig ?? null) | json}}</pre>
+   <pre>paginationConfig: {{(itemTable?.pagination() ?? null) | json}}</pre>
+   <pre>filteredListSize: {{(itemTable?.filteredListSize() ?? null) | json}}</pre>
 
 
   <form [formGroup]="form">

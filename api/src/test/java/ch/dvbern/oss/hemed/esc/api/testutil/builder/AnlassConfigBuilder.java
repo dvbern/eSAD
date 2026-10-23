@@ -72,6 +72,7 @@ public class AnlassConfigBuilder {
             true,                           // showFragebogen
             true,                           // showAnmeldungBestaetigung
             true,                           // showImpfeinverständnis
+            true,                           // showAnlassPrintImpfen
             true,                           // showDatenPersonendaten
             true,                           // showDatenPersonendatenEsadId
             RequirementSetting.OPTIONAL,    // datenUntersuchung
@@ -257,6 +258,7 @@ public class AnlassConfigBuilder {
             showBooleans,                   // showFragebogen
             showBooleans,                   // showAnmeldungBestaetigung
             showBooleans,                   // showImpfeinverständnis
+            showBooleans,                   // showAnlassPrintImpfen
             showBooleans,                   // showDatenPersonendaten
             showBooleans,                   // showDatenPersonendatenEsadId
             requirementSetting,             // datenUntersuchung
@@ -541,6 +543,13 @@ public class AnlassConfigBuilder {
     @CanIgnoreReturnValue
     public AnlassConfigBuilder withShowImpfeinverstaendnis(boolean showImpfeinverstaendnis) {
         this.anlassConfig.setShowImpfeinverstaendnis(showImpfeinverstaendnis);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public AnlassConfigBuilder withShowAnlassPrintImpfen(boolean showAnlassPrintImpfen) {
+        this.anlassConfig.setShowAnlassPrintImpfen(showAnlassPrintImpfen);
         return this;
     }
 

@@ -1,7 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.auth;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import jakarta.enterprise.context.RequestScoped;
@@ -63,7 +62,7 @@ public class AuthorizerService {
     private final DocumentQueueService documentQueueService;
     private final KindService kindService;
     private final ArchivdokumentService archivdokumentService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final TenantSettingsService tenantSettingsService;
     private final ConfigService configService;
     private final EinladungService einladungService;
@@ -75,7 +74,9 @@ public class AuthorizerService {
     // Request-Scope-Caches: Daten, die innerhalb eines Requests konstant sind,
     // werden hier lazy memoized, um in Listen-Endpoints (z.B. findAllAnlaesseBerechtigt)
     // das N+1-Pattern zu vermeiden.
-    // SICHERHEITSHINWEIS: Diese Caches werden invalidiert, wenn sich der Tenant oder der Principal (User) ändert.
+    // SICHERHEITSHINWEIS: Diese Caches werden invalidiert, wenn sich der Principal (User) ändert. Ein Wechsel des
+    // Tenants innerhalb eines Request-Contexts ist nicht erlaubt (siehe PerTenantRunnerService) und fuehrt zu
+    // einer Exception.
     @Nullable
     private Benutzer cachedCurrentBenutzer;
     @Nullable
@@ -89,7 +90,7 @@ public class AuthorizerService {
 
     @NonNull
     private Benutzer currentBenutzer() {
-        updateCachedTenantAndClearCacheIfNeeded(); // stellt sicher, dass der Tenant-Cache aktuell ist und ggf. invalidiert wurde
+        currentTenantAssertingCache(); // stellt sicher, dass der Cache zum aktuellen Tenant gehoert
 
         // Die SecurityIdentity wird bei jedem Wechsel (z.B. @RunAs via RunAsInterceptor oder Re-Augmentation)
         // komplett ersetzt. Ein Referenzvergleich (!=) ist daher korrekt
@@ -104,7 +105,7 @@ public class AuthorizerService {
     }
 
     private boolean isZentraleOrganisation() {
-        updateCachedTenantAndClearCacheIfNeeded();
+        currentTenantAssertingCache();
         if (cachedIsZentraleOrganisation == null) {
             cachedIsZentraleOrganisation = tenantSettingsService.getTenantSetting()
                 .getTenantSettingFeatures()
@@ -116,30 +117,24 @@ public class AuthorizerService {
 
     @NonNull
     private Organisation zentraleOrganisation() {
-        updateCachedTenantAndClearCacheIfNeeded();
+        currentTenantAssertingCache();
         if (cachedZentraleOrganisation == null) {
             cachedZentraleOrganisation = organisationService.getZentraleOrganisation();
         }
         return cachedZentraleOrganisation;
     }
 
-    @Nullable
+    @NonNull
     @CanIgnoreReturnValue
-    private TenantEnum updateCachedTenantAndClearCacheIfNeeded() {
-        TenantEnum currentTenant = tenantProducer.produceTenant();
-        if (cachedTenant != currentTenant) {
-            clearCache();
-            cachedTenant = currentTenant;
+    private TenantEnum currentTenantAssertingCache() {
+        TenantEnum tenant = cachedTenant;
+        if (tenant == null) {
+            tenant = tenantContext.get();
+            cachedTenant = tenant;
+        } else {
+            tenantContext.assertCurrentTenantIs(tenant, "AuthorizerService");
         }
-        return cachedTenant;
-    }
-
-    private void clearCache() {
-        cachedCurrentBenutzer = null;
-        cachedIdentity = null;
-        cachedIsZentraleOrganisation = null;
-        cachedZentraleOrganisation = null;
-        cachedTenant = null;
+        return tenant;
     }
 
     // ORGANISATION
@@ -625,7 +620,7 @@ public class AuthorizerService {
         @Nullable List<Berechtigung> additionalBerechtigungen
     ) {
         Benutzer currentBenutzer = currentBenutzer();
-        TenantEnum tenant = Objects.requireNonNull(updateCachedTenantAndClearCacheIfNeeded(), "Tenant was null in isInOrganisationWithBerechtigung");
+        TenantEnum tenant = currentTenantAssertingCache();
 
         boolean hasSystemBerechtigung = Optional.ofNullable(currentBenutzer.getSystemRollen())
             .map(rollen -> rollen.getBerechtigungen(tenant))

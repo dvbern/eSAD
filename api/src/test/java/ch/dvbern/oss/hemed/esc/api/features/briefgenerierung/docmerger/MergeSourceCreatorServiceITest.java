@@ -23,7 +23,7 @@ import ch.dvbern.oss.hemed.esc.api.features.arzt.Arzt;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.MergeSourceCreatorService;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger.RootMergeSource;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.ArztBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
@@ -40,11 +40,11 @@ class MergeSourceCreatorServiceITest {
 
     private final FixtureService fixtureService;
     private final MergeSourceCreatorService mergeSourceCreatorService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @BeforeEach
     void setUp() {
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
     }
 
     @Test

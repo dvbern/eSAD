@@ -12,6 +12,7 @@
 **/.netrc
 **/.npmrc
 **/settings.xml
+**/e2e.env
 
 # 2) SSL/TLS certificates and private keys
 **/*.pem
@@ -88,14 +89,6 @@ docker-compose.override-*.yml
 # 8) Helm/Charts values that may contain secrets (adjust if safe in your org)
 charts/**/values*.yaml
 
-# 9)  archives and packaged artifacts
-*.zip
-*.war
-*.jar
-*.tar
-*.gz
-*.bz2
-*.7z
 
 
 # Storybook docker

@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
@@ -52,6 +53,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlic
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.OtoskopieResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheit;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
@@ -69,6 +71,7 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
@@ -111,7 +114,7 @@ class DocMergerTest {
 
     private static final String OUTPUT_PATH = Paths.get(FileUtils.getTempDirectoryPath(), "esc", "docmerge").toString();
 
-    private final TL tl = new TLProducer(() -> AppLanguages.DE, () -> TenantEnum.BS).forAppLanguage(AppLanguages.DE);
+    private final TL tl = new TLProducer(() -> AppLanguages.DE, TenantContext.forTenant(TenantEnum.BS)).forAppLanguage(AppLanguages.DE);
 
     @BeforeAll
     static void setUp() throws IOException {
@@ -139,10 +142,43 @@ class DocMergerTest {
             UntersuchungImpfungInternBuilder.create(builder -> builder.withDatumImpfung(LocalDate.now().minusWeeks(2)))
         );
 
+        Set<Krankheit> impfschutzKrankheiten = Set.of(
+            Krankheit.DIPHTERIE,
+            Krankheit.TETANUS,
+            Krankheit.PERTUSSIS,
+            Krankheit.POLIO,
+            Krankheit.MASERN,
+            Krankheit.MUMPS,
+            Krankheit.ROETELN,
+            Krankheit.HEPATITIS_B,
+            Krankheit.VARIZELLEN
+        );
+        Set<Krankheit> impfempfehlungKrankheiten = Set.of(
+            Krankheit.FSME,
+            Krankheit.HPV,
+            Krankheit.MENINGOKOKKEN_B
+        );
+        Set<Krankheit> impfentscheidKrankheiten = Set.of(
+            Krankheit.FSME,
+            Krankheit.HPV
+        );
+
         List<UntersuchungImpfstatusKrankheit> untersuchungImpfstatus = Arrays.stream(Krankheit.values())
-            .map(krankheit -> UntersuchungImpfstatusKrankheitBuilder.create(builder -> builder.forKrankheit(krankheit)
-                .withAnzahlImpfungen(5)
-                .withDatumLetzteImpfung(LocalDate.now())))
+            .map(krankheit -> UntersuchungImpfstatusKrankheitBuilder.create(builder -> {
+                builder.forKrankheit(krankheit)
+                    .withAnzahlImpfungen(5)
+                    .withDatumLetzteImpfung(LocalDate.now());
+
+                builder.withImpfschutzGegeben(
+                    impfschutzKrankheiten.contains(krankheit)
+                        ? ImpfschutzGegeben.JA
+                        : ImpfschutzGegeben.NEIN
+                );
+
+                builder.withImpfempfehlung(impfempfehlungKrankheiten.contains(krankheit));
+
+                builder.withImpfentscheid(impfentscheidKrankheiten.contains(krankheit));
+            }))
             .toList();
 
         Benutzer currentBenutzer = BenutzerBuilder.create(builder -> builder.withVorname("Current"));
@@ -151,8 +187,11 @@ class DocMergerTest {
             .withName("Arzt")
             .withVorame("Armin"));
 
+        Untersuchung untersuchung = MergeSourceDummyDataCreator.getTestUntersuchung();
+        Objects.requireNonNull(untersuchung.getUntersuchungArztBeurteilung()).setBlutdruck(Blutdruck.AUFFAELLIG);
+
         Einladung einladung = EinladungBuilder.create(build -> build.withDossier(dossier)
-            .withUntersuchung(MergeSourceDummyDataCreator.getTestUntersuchung()));
+            .withUntersuchung(untersuchung));
 
         RootMergeSource mergeSource = MergeSourceCreatorService.toRootMergeSourceWithAnlass(
             dossier,
@@ -426,6 +465,45 @@ class DocMergerTest {
             null,
             null,
             untersuchungArztBeurteilung,
+            AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
+
+        testRootMergeSource(
+            "anlass.untersuchungArzt.blutdruckAuffaellig",
+            untersuchungArztBeurteilung.getBlutdruck() == Blutdruck.AUFFAELLIG
+                ? "Bitte kontrollieren Sie in nächster Zeit den Blutdruck bei Ihrem Hausarzt/Ihrer Hausärztin."
+                : "",
+            UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
+            null,
+            null,
+            null,
+            null,
+            untersuchungArztBeurteilung,
+            AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
+    }
+
+    @Test
+    void testImpfausweisNichtVorhandenAndMassnahmeImpfungBeimHausarzt() throws DocTemplateException {
+        testRootMergeSource(
+            "anlass.impfung.impfausweisNichtVorhanden",
+            "Ihr Kind hat keinen Impfausweis abgegeben oder es gibt Unklarheiten.",
+            UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
+            null,
+            null,
+            null,
+            null,
+            null,
+            AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
+
+        testRootMergeSource(
+            "anlass.impfung.massnahmeImpfungBeimHausarzt",
+            "Wir empfehlen: Für noch fehlende Impfungen vereinbaren Sie einen Termin bei Ihrem Hausarzt / Ihrer"
+                + " Hausärztin.",
+            UntersuchungMassnahmenBuilder.defaultUntersuchungMassnahmen(LocalDate.now()),
+            null,
+            null,
+            null,
+            null,
+            null,
             AnlassConfigBuilder.allSameRequirementSetting(RequirementSetting.OPTIONAL));
     }
 

@@ -14,7 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.document360.json.Document360CodeRequestJson;
 import ch.dvbern.oss.hemed.esc.api.features.document360.json.Document360CodeResponseJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 
@@ -56,23 +56,23 @@ public class Document360Service {
     private final ConfigService configService;
     private final BenutzerService benutzerService;
     private final Document360Client document360Client;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     public Document360Service(
         ConfigService configService,
         BenutzerService benutzerService,
-        TenantProducer tenantProducer,
+        TenantContext tenantContext,
         @RestClient Document360Client document360Client
     ) {
         this.configService = configService;
         this.benutzerService = benutzerService;
-        this.tenantProducer = tenantProducer;
+        this.tenantContext = tenantContext;
         this.document360Client = document360Client;
     }
 
     public @NonNull URI authenticateAndGetRedirectUri() {
         Benutzer currentBenutzer = benutzerService.getCurrentBenutzerOrThrowException();
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
 
         String code = requestCode(currentBenutzer, tenant);
 

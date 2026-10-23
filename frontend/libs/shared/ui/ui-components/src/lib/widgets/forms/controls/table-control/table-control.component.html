@@ -3,7 +3,7 @@
     {{ rowHeader() + ' ' + columnHeader() }}
   </label>
 
-  @if (required) {
+  @if (required()) {
     <svui-required class="svui_table-control__required-marker"/>
   }
 

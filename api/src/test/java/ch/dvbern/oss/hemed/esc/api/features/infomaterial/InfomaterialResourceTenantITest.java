@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.InfomaterialBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
@@ -36,7 +36,7 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     private final InfomaterialApiSpec api = InfomaterialApiSpec.infomaterial(RequestSpecUtil.quarkusSpec());
 
     private final InfomaterialService infomaterialService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     private int numBaselBeforeCreate;
     private int numBernBeforeCreate;
@@ -66,7 +66,7 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     @Order(20)
     void create_info_ad_admin_be() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
+        tenantContext.setCurrentTenant(TenantEnum.BE); // Default ist BS
         this.numBernBeforeCreate = infomaterialService.findAll().size();
         // ACT
         InfomaterialJsonSpec result = createAndRunInfomaterialRequest(TenantEnum.BE);
@@ -98,7 +98,7 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     @Order(40)
     void read_info_as_admin_be() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
+        tenantContext.setCurrentTenant(TenantEnum.BE); // Default ist BS
         // ACT
         InfomaterialListJsonSpec result = api
             .infomaterialResourceFindAllInfomaterialien()
@@ -146,7 +146,7 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     @Order(70)
     void read_info_as_admin_bern_returns_still_1() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE); // Default ist BS
+        tenantContext.setCurrentTenant(TenantEnum.BE); // Default ist BS
         // ACT
         InfomaterialListJsonSpec result = api
             .infomaterialResourceFindAllInfomaterialien()
@@ -163,7 +163,7 @@ class InfomaterialResourceTenantITest extends AbstractITest {
     @NonNull
     private InfomaterialJsonSpec createAndRunInfomaterialRequest(@NonNull TenantEnum tenantEnum) {
         // ARRANGE
-        tenantProducer.setCurrentTenant(tenantEnum);
+        tenantContext.setCurrentTenant(tenantEnum);
         var payload = InfomaterialBuilder.createSaveJaxSpec(
             builder -> builder
                 .withRandomName("Test")

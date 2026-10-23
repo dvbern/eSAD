@@ -27,7 +27,7 @@ export class KinderDossierExportModalComponent {
 
   form = new KinderDossierExportForm(inject(NonNullableFormBuilder));
 
-  protected readonly exportVariation = Object.values(KinderdossierPrintVariant);
+  protected readonly exportVariants = Object.values(KinderdossierPrintVariant);
 
   abbrechen(): void {
     this.activeModal.dismiss('cancel');

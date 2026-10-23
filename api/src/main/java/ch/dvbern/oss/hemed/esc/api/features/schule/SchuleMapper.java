@@ -18,7 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.klasseexternal.EscadaK
 import ch.dvbern.oss.hemed.esc.api.features.schule.quartier.QuartierMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import ch.dvbern.oss.hemed.esc.api.shared.person.AdresseMapper;
@@ -38,7 +38,7 @@ public final class SchuleMapper {
     private final QuartierMapper quartierMapper;
     private final ZustaendigePersonService zustaendigePersonService;
     private final KlasseService klasseService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public static SchuleJson toJson(@NonNull Schule schule, @NonNull List<EscadaKlasseStufe> klassenstufen, @NonNull TenantEnum tenant) {
@@ -134,7 +134,7 @@ public final class SchuleMapper {
 
     @NonNull
     public List<SchuleJson> findAll() {
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         return schuleService.findAll().stream()
             .map((Schule schule) -> toJson(
                 schule,
@@ -156,13 +156,13 @@ public final class SchuleMapper {
         return toJson(
             schuleService.getById(schuleId),
             klasseService.extractEscadaKlassenStufen(schuleId),
-            tenantProducer.produceTenant());
+            tenantContext.get());
     }
 
     @NonNull
     public SchuleJson create(@NonNull SchuleSaveJson saveJson) {
         Schule entity = schuleService.persist(toEntityForCreate(saveJson));
-        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()), tenantProducer.produceTenant());
+        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()), tenantContext.get());
     }
 
     @NonNull
@@ -174,7 +174,7 @@ public final class SchuleMapper {
         zustaendigePersonService.verantwortlicherChangedOnSchuleAsync(existingSchule, args);
         Schule updatedSchule = toEntity(existingSchule, saveJson);
         Schule entity = schuleService.persistWithOptimisticLocking(updatedSchule, saveJson.getVersion());
-        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()), tenantProducer.produceTenant());
+        return toJson(entity, klasseService.extractEscadaKlassenStufen(entity.getId()), tenantContext.get());
     }
 
     public SchuleJson changeSchuleAktivStatus(
@@ -188,7 +188,7 @@ public final class SchuleMapper {
         schule.disableOptimisticLockingCheck();
         schule.setSchuleAktivStatus(saveJson.getEntityAktivStatus());
 
-        return toJson(this.schuleService.persist(schule), klasseService.extractEscadaKlassenStufen(schuleId), tenantProducer.produceTenant());
+        return toJson(this.schuleService.persist(schule), klasseService.extractEscadaKlassenStufen(schuleId), tenantContext.get());
     }
 
     public void remove(@NonNull ID<Schule> schuleId) {

@@ -11,7 +11,7 @@ describe('path-utils', () => {
   beforeEach(async () => {
     tree = createTreeWithEmptyWorkspace({ layout: 'apps-libs' });
 
-    jest.spyOn(process, 'cwd').mockReturnValue(tree.root + '/libs/foobar');
+    vi.spyOn(process, 'cwd').mockReturnValue(tree.root + '/libs/foobar');
   });
 
   if (os.platform() === 'win32') {

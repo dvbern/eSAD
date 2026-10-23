@@ -20,13 +20,17 @@ package ch.dvbern.oss.hemed.esc.api.shared.printer.anlass;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
@@ -37,6 +41,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.layout.Document;
@@ -70,7 +75,7 @@ public final class AnlassPlanungPrinter {
         basePrinter.addHeader(document, tenantSettingsService.isTenantHeaderInExportsEnabled());
 
         // Anlass-Titel
-        var tl = new TLProducer(dto::getLanguage, dto::getTenant).forAppLanguage(dto.getLanguage());
+        var tl = new TLProducer(dto::getLanguage, TenantContext.forTenant(dto.getTenant())).forAppLanguage(dto.getLanguage());
         basePrinter.addH1Title(anlass.getFullAnlassTitel(tl), document);
 
         // Footer
@@ -95,13 +100,18 @@ public final class AnlassPlanungPrinter {
         // Add information about the Anlass
         addAnlassInformationen(anlass, basePrinter, document);
 
-        // Add list of invited kinder
-        boolean printEsadId = tenantSettingsService.getTenantSetting()
-            .getTenantSettingFeatures()
-            .getEsadIdFeature()
-            .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+        if (dto.getVariant() == AnlassPrintVariant.IMPFEN) {
+            // Add list of invited kinder with their geplante Impfstoffe
+            addImpfMatrix(dto.getEinladungen(), dto.getGeplanteImpfstoffeByEinladung(), basePrinter, document);
+        } else {
+            // Add list of invited kinder
+            boolean printEsadId = tenantSettingsService.getTenantSetting()
+                .getTenantSettingFeatures()
+                .getEsadIdFeature()
+                .isEnabledForDeploymentEnvironment(configService.getEnvironment());
 
-        addEingeladeneKinder(dto.getEinladungen(), dto.getNachkontrollen(), basePrinter, document, printEsadId);
+            addEingeladeneKinder(dto.getEinladungen(), dto.getNachkontrollen(), basePrinter, document, printEsadId);
+        }
 
         document.close();
     }
@@ -271,5 +281,58 @@ public final class AnlassPlanungPrinter {
             return false;
         }
         return !notiz.getFiles().isEmpty();
+    }
+
+    private static void addImpfMatrix(
+        @NonNull List<Einladung> einladungen,
+        @Nullable Map<Einladung, List<Impfstoff>> geplanteImpfstoffeByEinladung,
+        @NonNull BasePrinter basePrinter,
+        @NonNull Document document
+    ) {
+        basePrinter.addH2Title(I18nMessage.of("printer.anlass.eingeladene.kinder"), document);
+
+        // Create table headers
+        List<I18nMessage> headers = new ArrayList<>();
+        headers.add(I18nMessage.of("printer.anlass.kind.name"));
+        headers.add(I18nMessage.of("printer.anlass.kind.vorname"));
+        headers.add(I18nMessage.of("printer.anlass.kind.geburtsdatum"));
+        headers.add(I18nMessage.of("printer.anlass.kind.geplanteImpfungen"));
+
+        // Create table rows
+        List<List<String>> rows = new ArrayList<>();
+        for (Einladung einladung : einladungen) {
+            Kind kind = einladung.getDossier().getKind();
+            List<Impfstoff> geplanteImpfstoffe = geplanteImpfstoffeByEinladung != null
+                ? geplanteImpfstoffeByEinladung.getOrDefault(einladung, List.of())
+                : List.of();
+
+            List<String> row = new ArrayList<>();
+            row.add(
+                PrintUtil.replaceWhitespaceWithNonBreakingSpace(PrintUtil.truncate(kind.getName(), MAX_NAME_LENGTH))
+            );
+            row.add(
+                PrintUtil.replaceWhitespaceWithNonBreakingSpace(PrintUtil.truncate(kind.getVorname(), MAX_NAME_LENGTH))
+            );
+            row.add(PrintUtil.trimToPlaceholder(kind.getGeburtsdatum()));
+            row.add(buildGeplanteImpfungenText(geplanteImpfstoffe));
+            rows.add(row);
+        }
+
+        float[] columnWidths = { 22, 21, 13, 44 };
+        basePrinter.addTable(headers, rows, document, true, 7.0f, columnWidths);
+    }
+
+    /**
+     * Builds a comma-separated list of the names of the Impfstoffe for which a vaccination is planned, ordered by
+     * the Krankheiten they protect against as defined by {@link AnlassImpfenKrankheitOrder#IMPFSTOFF_COMPARATOR}.
+     * Returns an empty string if no vaccination is planned.
+     */
+    @NonNull
+    private static String buildGeplanteImpfungenText(@NonNull Collection<Impfstoff> geplanteImpfstoffe) {
+        return geplanteImpfstoffe.stream()
+            .sorted(AnlassImpfenKrankheitOrder.IMPFSTOFF_COMPARATOR)
+            .map(Impfstoff::getName)
+            .distinct()
+            .collect(Collectors.joining(", "));
     }
 }

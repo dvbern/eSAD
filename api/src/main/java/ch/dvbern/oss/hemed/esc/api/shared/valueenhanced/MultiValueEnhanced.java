@@ -1,7 +1,6 @@
 package ch.dvbern.oss.hemed.esc.api.shared.valueenhanced;
 
 import java.io.Serial;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
@@ -61,19 +60,9 @@ public class MultiValueEnhanced<E extends Enum<E>> extends AbstractValueEnhanced
         return value;
     }
 
-    @Nullable
+    @NonNull
     public EnumSet<E> getEnumValues(@NonNull Class<E> enumClass) {
-        if (value == null || value.trim().isEmpty()) {
-            return EnumSet.noneOf(enumClass);
-        }
-        String enumPart = extractPart(value, ENUM_VALUES_DELIMITER);
-        if (enumPart == null) {
-            return EnumSet.noneOf(enumClass);
-        }
-        return Arrays.stream(enumPart.split(ENUM_DELIMITER))
-            .map(String::trim)
-            .map(s -> Enum.valueOf(enumClass, s))
-            .collect(Collectors.toCollection(() -> EnumSet.noneOf(enumClass)));
+        return extractEnumValues(value, enumClass);
     }
 
     @NonNull

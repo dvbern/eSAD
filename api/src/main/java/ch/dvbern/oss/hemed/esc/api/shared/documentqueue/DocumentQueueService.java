@@ -206,9 +206,11 @@ public class DocumentQueueService {
         FileUpload fileUpload = FileUtil.fileToFileUpload(filePath, cleanFileName.toString());
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, documentQueue.getType());
 
-        fileStoreService.uploadToS3Async(fileUpload, fileInfo)
-            .await()
-            .atMost(configService.getS3UploadTimeout());
+        // deleted again if storing the result does not commit
+        fileStoreService.uploadToS3BoundToTransaction(
+            fileUpload,
+            fileInfo
+        );
 
         FileData filedata = new FileData(documentQueue.getType(), cleanFileName, fileInfo);
         fileDataRepo.persist(filedata);

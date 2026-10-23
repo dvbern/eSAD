@@ -5,6 +5,8 @@
 Dockerfile text eol=lf
 *.sh       text eol=lf
 *.pem      -text
+# Quarkus writes openapi.json with the OS line separator (CRLF on Windows)
+api/openapi-schema/** text eol=lf
 
 # Windows-Newlines required
 *.bat      text eol=crlf

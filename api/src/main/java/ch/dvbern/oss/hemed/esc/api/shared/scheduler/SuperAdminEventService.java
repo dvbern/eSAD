@@ -19,12 +19,8 @@
 package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
-import ch.dvbern.dvbstarter.shared.runas.RunAs;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import io.quarkus.vertx.ConsumeEvent;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -38,16 +34,20 @@ public class SuperAdminEventService {
 
     public static final String DUPLIKAT_RECALCULATION_EVENT = "duplikat_recalculation_event";
 
-    private final TenantProducer tenantProducer;
+    private final PerTenantRunnerService perTenantRunnerService;
     private final SuperAdminRunnerService superAdminRunnerService;
 
-    @ActivateRequestContext
+    /**
+     * Runs in a request context of its own for the given tenant. The identity is set by the {@code @RunAs} on
+     * {@link SuperAdminRunnerService#runReloadDuplikateJob(boolean)}, i.e. inside that context.
+     */
     @ConsumeEvent(value = DUPLIKAT_RECALCULATION_EVENT, blocking = true)
     @Transactional(TxType.NOT_SUPPORTED)
-    @RunAs(username = "dev-esc@dvbern.ch", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void handleDuplikatRecalculationEvent(@NonNull TenantEnum tenantEnum) {
         LOG.info("ESC-RELOAD_DUPLIKATE: Triggered through event ");
-        tenantProducer.setCurrentTenant(tenantEnum);
-        superAdminRunnerService.runReloadDuplikateJob(true);
+        perTenantRunnerService.runForTenant(
+            tenantEnum,
+            () -> superAdminRunnerService.runReloadDuplikateJob(true)
+        );
     }
 }

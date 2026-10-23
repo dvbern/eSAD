@@ -5,6 +5,7 @@ import {globalConstants} from '@dvb/feat-shared';
 import {Nullish} from '@dvb/util-shared';
 import {patchState, signalStore, withState} from '@ngrx/signals';
 import {ResettableForm, setupApplyDefaultValuesEffect, withDefaultValues} from './default-values.util';
+import type {Mock} from 'vitest';
 
 interface TestDto {
   version?: number;
@@ -22,13 +23,13 @@ class TestForm implements ResettableForm<TestDto> {
     name: new FormControl<string | null>(null),
   });
 
-  resetForm = jest.fn((value?: TestDto | Nullish) => {
+  resetForm = vi.fn((value?: TestDto | Nullish) => {
     if (value) {
       this.group.patchValue({name: value.name});
     }
   });
 
-  setDisabled = jest.fn((disabled: boolean) => {
+  setDisabled = vi.fn((disabled: boolean) => {
     if (disabled) {
       this.group.disable();
     } else {
@@ -37,12 +38,13 @@ class TestForm implements ResettableForm<TestDto> {
   });
 }
 
-interface TestState {
+type TestState = {
   entity: TestEntity | undefined;
-}
+};
 
 describe('withDefaultValues', () => {
   const TestStore = signalStore(
+    {protectedState: false},
     withState<TestState>({ entity: undefined }),
     withDefaultValues<TestDto, TestEntity, TestState>({
       getCurrentEntity: (store) => store.entity(),
@@ -66,6 +68,15 @@ describe('withDefaultValues', () => {
   it('should do nothing on applyDefault when defaultInitial is undefined', () => {
     store.applyDefault();
     expect(store.defaultToApply()).toBeUndefined();
+  });
+
+  it('should report the defaults as loaded only once they have been fetched', () => {
+    expect(store.defaultsLoaded()).toBe(false);
+
+    // an Anlass without configured defaults still gets an object, just with empty values
+    patchState(store, { defaultInitial: { version: 0, name: null } });
+
+    expect(store.defaultsLoaded()).toBe(true);
   });
 
   it('should apply defaults with version from entity.data.version', () => {
@@ -112,6 +123,7 @@ describe('withDefaultValues', () => {
       version?: number;
     }
     const RootVersionStore = signalStore(
+      {protectedState: false},
       withState<{ entity: RootVersionEntity | undefined }>({ entity: undefined }),
       withDefaultValues<TestDto, RootVersionEntity, { entity: RootVersionEntity | undefined }>({
         getCurrentEntity: (s) => s.entity(),
@@ -133,8 +145,9 @@ describe('withDefaultValues', () => {
 
   it('should fallback to globalConstants.entityPrePersistVersion when no config is passed', () => {
     const NoConfigStore = signalStore(
+      {protectedState: false},
       withState({ dummy: '' }),
-      withDefaultValues<TestDto>(),
+      withDefaultValues<TestDto, Nullish>(),
     );
     const noConfigStore = new NoConfigStore();
     patchState(noConfigStore, {
@@ -152,12 +165,12 @@ describe('withDefaultValues', () => {
 
 describe('setupApplyDefaultValuesEffect', () => {
   let form: TestForm;
-  let resetApplyDefault: jest.Mock;
+  let resetApplyDefault: Mock;
 
   beforeEach(() => {
     form = new TestForm();
-    resetApplyDefault = jest.fn();
-    jest.spyOn(form.group, 'markAsDirty');
+    resetApplyDefault = vi.fn();
+    vi.spyOn(form.group, 'markAsDirty');
   });
 
   it('should not do anything when defaultValuesToApply is nullish', () => {
@@ -206,7 +219,7 @@ describe('setupApplyDefaultValuesEffect', () => {
     const testDto: TestDto = {version: 0, name: 'Dr. Test'};
     const defaultValuesSignal = signal<TestDto | Nullish>(testDto);
     const canEditSignal = signal(true);
-    const onAfterApply = jest.fn();
+    const onAfterApply = vi.fn();
 
     TestBed.runInInjectionContext(() => {
       setupApplyDefaultValuesEffect({
@@ -274,8 +287,8 @@ describe('setupApplyDefaultValuesEffect', () => {
       group = new FormGroup({
         name: new FormControl<string | null>(null),
       });
-      resetForm = jest.fn();
-      setDisabled = jest.fn();
+      resetForm = vi.fn();
+      setDisabled = vi.fn();
     }
 
     const versionlessForm = new VersionlessForm();

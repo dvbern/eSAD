@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.archivierung;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import jakarta.enterprise.context.RequestScoped;
@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @RequiredArgsConstructor
 public class ArchivierungRuleProducer {
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final ConfigService configService;
     private final TenantSettingsService tenantSettingsService;
     private final ArchivierungRuleByAgeService archivierungRuleByAgeService;
@@ -29,7 +29,7 @@ public class ArchivierungRuleProducer {
             .getArchivierungFeature()
             .isEnabledForDeploymentEnvironment(configService.getEnvironment());
         if (archivierungsFeatureEnabled) {
-            TenantEnum tenantEnum = tenantProducer.produceTenant();
+            TenantEnum tenantEnum = tenantContext.get();
             return switch (tenantEnum) {
                 case BS, WIN -> throw new IllegalStateException("ArchivierungRuleService not defined for tenant: " + tenantEnum + ", but TenantSetting is enabled");
                 case BE -> archivierungRuleByAgeService;

@@ -1,22 +1,25 @@
+// The font files are referenced relative to this file so that the Angular builder bundles them
+// and emits base-href-relative URLs. Root-relative URLs (e.g. '/fonts/...') would ignore the
+// <base href> and break for apps deployed under a sub-path (e.g. esc-info-app under /publicapp/).
 
 // REGULAR: 400
 @font-face {
   font-family: 'Roboto Condensed';
   font-style: normal;
   font-weight: 400;
-  src: url('/fonts/RobotoCondensed-Regular.ttf') format('truetype');
+  src: url('../assets/fonts/RobotoCondensed-Regular.ttf') format('truetype');
 }
 // BOLD: 700
 @font-face {
   font-family: 'Roboto Condensed';
   font-style: normal;
   font-weight: 700;
-  src: url('/fonts/RobotoCondensed-Bold.ttf') format('truetype');
+  src: url('../assets/fonts/RobotoCondensed-Bold.ttf') format('truetype');
 }
 // ITALIC: 400
 @font-face {
   font-family: 'Roboto Condensed';
   font-style: italic;
   font-weight: 400;
-  src: url('/fonts/RobotoCondensed-Italic.ttf') format('truetype');
+  src: url('../assets/fonts/RobotoCondensed-Italic.ttf') format('truetype');
 }

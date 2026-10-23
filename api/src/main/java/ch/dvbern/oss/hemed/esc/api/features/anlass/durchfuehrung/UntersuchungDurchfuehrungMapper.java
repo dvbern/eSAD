@@ -19,7 +19,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenMap
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,7 +35,7 @@ public final class UntersuchungDurchfuehrungMapper {
     private final UntersuchungKindDatenMapper untersuchungKindDatenMapper;
 
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Nullable
     public static UntersuchungDurchfuehrungJson toJson(@Nullable UntersuchungDurchfuehrung durchfuehrung, @NonNull TenantEnum tenant) {
@@ -123,7 +123,7 @@ public final class UntersuchungDurchfuehrungMapper {
             untersuchungDurchfuehrung,
             defaultsForNextUntersuchung,
             appClock.offsetDateTime().now().toLocalDate(),
-            tenantProducer.produceTenant());
+            tenantContext.get());
     }
 
     @NonNull
@@ -136,7 +136,7 @@ public final class UntersuchungDurchfuehrungMapper {
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungDurchfuehrung durchfuehrung = untersuchung.getUntersuchungDurchfuehrung();
         UntersuchungDurchfuehrung entity = toEntity(untersuchung, durchfuehrung, saveJson);
-        return toJson(untersuchungDurchfuehrungService.persistWithOptimisticLocking(entity, saveJson.getVersion()), tenantProducer.produceTenant());
+        return toJson(untersuchungDurchfuehrungService.persistWithOptimisticLocking(entity, saveJson.getVersion()), tenantContext.get());
     }
 
     @NonNull

@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import ch.dvbern.oss.commons.i18nl10n.AppLanguage;
 import ch.dvbern.oss.commons.i18nl10n.Translator;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProvider;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
@@ -25,37 +25,37 @@ public class TLProducer {
 
     private final ConcurrentHashMap<LanguageTenantKey, ResourceBundle> bundleMap = new ConcurrentHashMap<>();
     private final AppLanguageProvider appLanguageProvider;
-    private final TenantProvider tenantProvider;
+    private final TenantContext tenantContext;
     private final String baseName;
 
     @Inject
     public TLProducer(
         AppLanguageProvider appLanguageProvider,
-        TenantProvider tenantProvider
+        TenantContext tenantContext
     ) {
         this(
             requireNonNull(appLanguageProvider),
-            requireNonNull(tenantProvider),
+            requireNonNull(tenantContext),
             "translations.translations"
         );
     }
 
     TLProducer(
         AppLanguageProvider appLanguageProvider,
-        TenantProvider tenantProvider,
+        TenantContext tenantContext,
         String baseName
     ) {
         this.appLanguageProvider = requireNonNull(appLanguageProvider);
-        this.tenantProvider = requireNonNull(tenantProvider);
+        this.tenantContext = requireNonNull(tenantContext);
         this.baseName = baseName;
     }
 
     public static TLProducer forTesting(
         AppLanguageProvider provider,
-        TenantProvider tenantProvider,
+        TenantContext tenantContext,
         String baseName
     ) {
-        return new TLProducer(provider, tenantProvider, baseName);
+        return new TLProducer(provider, tenantContext, baseName);
     }
 
     // should not need the @RequestScoped annotation!
@@ -106,7 +106,8 @@ public class TLProducer {
 
     @NonNull
     TenantEnum getTenant() {
-        TenantEnum tenant = tenantProvider.produceTenant();
+        // translations must also work without tenant (e.g. error responses for URLs without tenant)
+        TenantEnum tenant = tenantContext.getOrNull();
         if (tenant == null) {
             return TenantEnum.DEFAULT;
         }

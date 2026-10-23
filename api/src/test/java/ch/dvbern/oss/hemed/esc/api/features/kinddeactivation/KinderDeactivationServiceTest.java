@@ -20,12 +20,14 @@ package ch.dvbern.oss.hemed.esc.api.features.kinddeactivation;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.i18n.datetime.DateUtil;
@@ -51,6 +53,9 @@ import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -220,6 +225,82 @@ class KinderDeactivationServiceTest extends AbstractITest {
         Assertions.assertThat(foundKinderToDeactivate)
             .containsAll(externalKinderToDeactivate)
             .doesNotContainAnyElementsOf(externalKinderWithNewishNotiz);
+    }
+
+    /**
+     * Prueft den Stichtag ({@value #UNUSED_FOR_MOTHS} Monate zurueck) minutengenau ueber
+     * Sommer-/Winterzeitgrenzen hinweg. Der korrekte, zonenbewusst berechnete Stichtag hat dieselbe lokale
+     * Uhrzeit wie "jetzt"; die Notiz wird jeweils eine Minute davor bzw. danach erstellt.
+     * <p>
+     * Der Vergleich in der DB ist {@code timestampErstellt >= cutoff}: eine Notiz ab dem Stichtag verhindert
+     * die Deaktivierung, eine aeltere nicht.
+     * <p>
+     * Die fruehere, nicht zonenbewusste Berechnung ({@code OffsetDateTime.minusMonths()} behaelt den heutigen
+     * Offset bei) verschob den Stichtag um eine Stunde und kippte damit das Resultat - je nach Richtung des
+     * Zeitzonenwechsels in beide Richtungen.
+     */
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("dstScenarios")
+    @TestAsAdminBS
+    @TestTransaction
+    // rollback after test since we might introduce new anlass configs
+    void findKinderToDeactivate_should_not_depend_on_dst(
+        @SuppressWarnings("unused") String beschreibung,
+        LocalDate heute,
+        int notizMinutenRelativZumStichtag,
+        boolean sollDeaktiviertWerden
+    ) {
+        // ARRANGE
+        OffsetDateTime jetzt = atTestTime(heute);
+        OffsetDateTime stichtag = atTestTime(heute.minusMonths(UNUSED_FOR_MOTHS));
+        OffsetDateTime notizTimestamp = stichtag.plusMinutes(notizMinutenRelativZumStichtag);
+
+        Kind kind = createKindWithNotizAt(heute, notizTimestamp);
+        setTime(jetzt);
+
+        //ACT
+        List<ID<Kind>> foundKinderToDeactivate = kindDeactivationService
+            .findKinderToDeactivate(UNUSED_FOR_MOTHS, INACTIVATION_AGE, DEFAULT_BATCHSIZE_FOR_TESTING);
+
+        // ASSERT
+        if (sollDeaktiviertWerden) {
+            Assertions.assertThat(foundKinderToDeactivate)
+                .contains(kind.getId());
+        } else {
+            Assertions.assertThat(foundKinderToDeactivate)
+                .doesNotContain(kind.getId());
+        }
+    }
+
+    static Stream<Arguments> dstScenarios() {
+        // 2026-09-21 ist Sommerzeit (UTC+2), der Stichtag 2025-12-21 Winterzeit (UTC+1).
+        LocalDate sommerzeitMitStichtagInWinterzeit = LocalDate.of(2026, 9, 21);
+        // 2026-01-21 ist Winterzeit (UTC+1), der Stichtag 2025-04-21 Sommerzeit (UTC+2).
+        LocalDate winterzeitMitStichtagInSommerzeit = LocalDate.of(2026, 1, 21);
+        // 2026-06-21 und der Stichtag 2025-09-21 liegen beide in der Sommerzeit (UTC+2).
+        LocalDate ohneZeitzonenwechsel = LocalDate.of(2026, 6, 21);
+
+        return Stream.of(
+            // Die alte Berechnung schob den Stichtag hier eine Stunde zurueck: die Notiz lag dadurch
+            // faelschlicherweise nach dem Stichtag und das Kind wurde nicht deaktiviert.
+            Arguments.of("Sommer->Winter, Notiz eine Minute vor Stichtag",
+                sommerzeitMitStichtagInWinterzeit, -1, true),
+            Arguments.of("Sommer->Winter, Notiz eine Minute nach Stichtag",
+                sommerzeitMitStichtagInWinterzeit, 1, false),
+            Arguments.of("Winter->Sommer, Notiz eine Minute vor Stichtag",
+                winterzeitMitStichtagInSommerzeit, -1, true),
+            // Die alte Berechnung schob den Stichtag hier eine Stunde vor: die Notiz lag dadurch
+            // faelschlicherweise vor dem Stichtag und das Kind wurde faelschlicherweise deaktiviert.
+            Arguments.of("Winter->Sommer, Notiz eine Minute nach Stichtag",
+                winterzeitMitStichtagInSommerzeit, 1, false),
+            Arguments.of("Ohne Zeitzonenwechsel, Notiz eine Minute vor Stichtag",
+                ohneZeitzonenwechsel, -1, true),
+            // Genau auf dem Stichtag: der Vergleich ist >=, die Notiz verhindert die Deaktivierung.
+            Arguments.of("Ohne Zeitzonenwechsel, Notiz exakt auf Stichtag",
+                ohneZeitzonenwechsel, 0, false),
+            Arguments.of("Ohne Zeitzonenwechsel, Notiz eine Minute nach Stichtag",
+                ohneZeitzonenwechsel, 1, false)
+        );
     }
 
     @Test
@@ -439,6 +520,54 @@ class KinderDeactivationServiceTest extends AbstractITest {
                 kindExternInaktivMitDossierLangeNotiz.getId(),
                 kindExternInaktivMitDossierLangeNotizAndAnlass.getId()
             );
+    }
+
+    /**
+     * Fixe Testuhrzeit kurz nach Mitternacht: damit liegen Stichtag und Notiz am selben Tag und eine
+     * Verschiebung um eine Stunde ist am Resultat ablesbar.
+     */
+    @NonNull
+    private static OffsetDateTime atTestTime(@NonNull LocalDate datum) {
+        return datum
+            .atTime(LocalTime.of(0, 30))
+            .atZone(DateConst.ZONE_ID)
+            .toOffsetDateTime();
+    }
+
+    /**
+     * Erstellt ein extern inaktives Kind mit Dossier und genau einer Notiz zum uebergebenen Zeitpunkt.
+     * Alle uebrigen Kriterien (Alter, letzter Import) liegen weit vor dem Stichtag, damit einzig die Notiz
+     * ueber das Resultat entscheidet.
+     */
+    @NonNull
+    private Kind createKindWithNotizAt(
+        @NonNull LocalDate heute,
+        @NonNull OffsetDateTime notizTimestamp
+    ) {
+        Klasse klasse = fixtureService.createKlasse();
+        OffsetDateTime lastImport = heute.minusYears(1)
+            .atStartOfDay(DateConst.ZONE_ID)
+            .toOffsetDateTime();
+        Kind kind = KindBuilder.create(builder -> builder
+            .withKlasse(klasse)
+            .withGeburtsdatum(heute.minusYears(INACTIVATION_AGE + 1L))
+            .withExternalImportInfo(
+                UUID.randomUUID().toString(),
+                false,
+                lastImport,
+                lastImport,
+                ImportTyp.ESCADA)
+        );
+        kindService.persistWithoutDuplicateCheck(kind);
+
+        setTime(notizTimestamp);
+        Dossier dossier = dossierService.persist(
+            DossierBuilder.create(builder -> builder.forKind(kind))
+        );
+        fixtureService.createNotiz(dossier, Set.of(), NotizTyp.DEFAULT);
+        resetTime();
+
+        return kind;
     }
 
     private List<Kind> createKinder(

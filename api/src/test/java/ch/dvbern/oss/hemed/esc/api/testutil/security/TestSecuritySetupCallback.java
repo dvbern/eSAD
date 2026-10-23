@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import io.quarkus.arc.Arc;
 import io.quarkus.test.junit.callback.QuarkusTestBeforeTestExecutionCallback;
 import io.quarkus.test.junit.callback.QuarkusTestMethodContext;
@@ -42,8 +42,8 @@ public class TestSecuritySetupCallback implements QuarkusTestBeforeTestExecution
             return;
         }
         try {
-            TenantProducer tenantProducer = Arc.container().instance(TenantProducer.class).get();
-            tenantProducer.setCurrentTenant(TenantEnum.valueOf(tenant));
+            TenantContext tenantContext = Arc.container().instance(TenantContext.class).get();
+            tenantContext.setCurrentTenant(TenantEnum.valueOf(tenant));
         } catch (Exception e) {
             LOG.debug("Could not set tenant for benutzer {} in tenant {}: {}",
                 benutzerId, tenant, e.getMessage());

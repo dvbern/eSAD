@@ -27,6 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
 
 import io.micrometer.core.annotation.Timed;
@@ -66,10 +67,10 @@ public class PrinterResource {
     @Blocking
     public Response downloadKinderdossier(
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId,
-        @NotNull @NonNull @QueryParam("variation") KinderdossierPrintVariant variation
+        @NotNull @NonNull @QueryParam("variant") KinderdossierPrintVariant variant
     ) {
         authorizerService.requireKinderDownloadAuthorization(kindId);
-        PrintResultDTO printResultDTO = printerMapper.printKinderdossier(variation, kindId);
+        PrintResultDTO printResultDTO = printerMapper.printKinderdossier(variant, kindId);
 
         return FileDownloadUtil.buildFileResponse(
             ATTACHMENT,
@@ -91,7 +92,10 @@ public class PrinterResource {
     ) {
         Untersuchung untersuchung = anonymerEintragService.getUntersuchungForAnonymerEintragWithId(anonymerEintragId);
         Objects.requireNonNull(untersuchung);
-        authorizerService.requireReadAuthorizationUntersuchung(untersuchung, List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE ));
+        authorizerService.requireReadAuthorizationUntersuchung(
+            untersuchung,
+            List.of(Berechtigung.ANLASSPLANUNG_SCHREIBEN, Berechtigung.ANLASSPLANUNG_SCHREIBEN_LAEUSE)
+        );
         PrintResultDTO printResultDTO = printerMapper.printAnonymerEintrag(anonymerEintragId);
 
         return FileDownloadUtil.buildFileResponse(
@@ -132,13 +136,14 @@ public class PrinterResource {
     @RolesAllowed({ BerechtigungName.KOMPLETTER_EXPORT, BerechtigungName.ANLASSPLANUNG_SCHREIBEN })
     @Blocking
     public Response downloadAnlassPrint(
-        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId
+        @NotNull @NonNull @PathParam("anlassId") ID<Anlass> anlassId,
+        @NotNull @NonNull @QueryParam("variant") AnlassPrintVariant variant
     ) {
         // Das Anlass-Dokument enthaelt Daten aller eingeladenen Kinder, daher nur fuer Anlass-Zustaendige
         authorizerService.requireReadAuthorizationAnlass(
             anlassId,
             List.of(Berechtigung.KOMPLETTER_EXPORT, Berechtigung.ANLASSPLANUNG_SCHREIBEN));
-        PrintResultDTO printResultDTO = printerMapper.printAnlass(anlassId);
+        PrintResultDTO printResultDTO = printerMapper.printAnlass(anlassId, variant);
 
         return FileDownloadUtil.buildFileResponse(
             ATTACHMENT,

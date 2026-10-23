@@ -54,7 +54,10 @@
           @if (form.chargeOptions()) {
             @for (item of form.chargeOptions(); track item.label) {
               <ng-option [value]="item">
-                <span>{{ item.label }} </span>
+                <span>{{ item.label }}</span>
+                @if (item.inaktiv) {
+                  <span>{{ 'gloabl.suffixInaktiv' | transloco }}</span>
+                }
               </ng-option>
             }
           }

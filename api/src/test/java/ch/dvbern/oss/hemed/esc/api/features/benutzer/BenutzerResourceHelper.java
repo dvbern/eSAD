@@ -3,6 +3,8 @@ package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
@@ -12,7 +14,7 @@ import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenServi
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
@@ -25,9 +27,8 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EntityAktivStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FachRolleSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.OrganisationRollenJsonSpec;
+
 import io.restassured.response.ResponseBody;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -37,7 +38,7 @@ public class BenutzerResourceHelper {
 
     private final BenutzerApiSpec api = BenutzerApiSpec.benutzer(RequestSpecUtil.quarkusSpec());
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final FixtureService fixtureService;
     private final BenutzerService benutzerService;
     private final OrganisationService organisationService;
@@ -45,16 +46,16 @@ public class BenutzerResourceHelper {
 
     @NonNull
     public Benutzer createSchularztAsOrganisationsChef(@NonNull TenantEnum tenant) {
-        tenantProducer.setCurrentTenant(tenant);
+        tenantContext.setCurrentTenant(tenant);
         String randomName = TestUtil.getRandomString("OrganisationsChef");
-        EmailAddress benutzerEmail2 = EmailAddress.fromString(randomName + "@mailbucket.dvbern.ch");
+        EmailAddress benutzerEmail = toLowercaseEmailAddress(randomName);
         BenutzerSaveJsonSpec saveJson = new BenutzerSaveJsonSpec(
             null,
             randomName,
             randomName,
             randomName + ' ' + randomName,
-            benutzerEmail2.getAddress(),
-            benutzerEmail2.getAddress(),
+            benutzerEmail.getAddress(),
+            benutzerEmail.getAddress(),
             null,
             EntityAktivStatusSpec.AKTIV,
             List.of(new OrganisationRollenJsonSpec(
@@ -84,9 +85,9 @@ public class BenutzerResourceHelper {
      */
     @NonNull
     public Benutzer createSchularztAsOrganisationsChefDirectly(@NonNull TenantEnum tenant) {
-        tenantProducer.setCurrentTenant(tenant);
+        tenantContext.setCurrentTenant(tenant);
         String randomName = TestUtil.getRandomString("OrganisationsChef");
-        EmailAddress benutzerEmail = EmailAddress.fromString(randomName + "@mailbucket.dvbern.ch");
+        EmailAddress benutzerEmail = toLowercaseEmailAddress(randomName);
         Benutzer benutzer = BenutzerBuilder.create(builder -> builder
             .withEmail(benutzerEmail)
             .withVorname(randomName)
@@ -105,5 +106,10 @@ public class BenutzerResourceHelper {
         organisationRollenService.persist(organisationRollen);
 
         return fixtureService.readBenutzerWithBerechtigungen(benutzer.getId());
+    }
+
+    @NonNull
+    private EmailAddress toLowercaseEmailAddress(@NonNull String name) {
+        return EmailAddress.fromString((name + "@mailbucket.dvbern.ch").toLowerCase());
     }
 }

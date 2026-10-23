@@ -27,16 +27,18 @@ import java.util.Set;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
+
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ClientAccountConfig.SvcAccountClientInfo;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LoginMethod;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -56,7 +58,7 @@ public class ConfigService {
     public static final String UNKNOWN_TENANT = "Unknown tenant: ";
     public static final String NOT_CONFIGURED_FOR_TENANT = "Configuration not supported for tenant: ";
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @ConfigProperty(name = "app.deployment.app-project")
     String appProject;
@@ -151,6 +153,9 @@ public class ConfigService {
 
     @ConfigProperty(name = "esc.s3.upload-timeout-seconds", defaultValue = "30s")
     Duration s3UploadTimeout;
+
+    @ConfigProperty(name = "esc.s3.delete-timeout-seconds", defaultValue = "5s")
+    Duration s3DeleteTimeout;
 
     @Getter(AccessLevel.NONE)
     @ConfigProperty(name = "esc.s3.encryption-key.bs")
@@ -266,6 +271,12 @@ public class ConfigService {
     int archiveMonthsBeforeDeletion;
 
     /**
+     * Anzahl Jahre, während welchen die Envers-Historie aufbewahrt wird (Empfehlung FMH für Krankengeschichten).
+     */
+    @ConfigProperty(name = "app.archivierung.aud-retention.years", defaultValue = "20")
+    int audRetentionYears;
+
+    /**
      * Soft cap for the number of archive documents bundled into a single zip by the bulk download.
      * <p>
      * The zip is written to a temp file, so heap is not the limiting factor. However the transaction limit is 60s
@@ -306,6 +317,41 @@ public class ConfigService {
     /** Knowledge-base login URL that accepts {@code ?code=} after generateCode succeeds. */
     @ConfigProperty(name = "esc.document360.kb-login-url")
     URL document360KbLoginUrl;
+
+    /*
+     * Optional per-LoginMethod overrides of the Keycloak broker IdP alias (the kc_idp_hint value).
+     * Unset by default: the resolver then falls back to its own compiled-in alias constant.
+     * The property key follows esc.login-method.<LoginMethod.name()>.alias so it can be set per
+     * environment without a code change (env var: ESC_LOGIN_METHOD_<NAME>_ALIAS).
+     */
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.PASSWORD.alias")
+    Optional<String> loginMethodAliasPassword;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.AGOV_ZH.alias")
+    Optional<String> loginMethodAliasAgovZh;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.WINTERTHUR_ADFS.alias")
+    Optional<String> loginMethodAliasWinterthurAdfs;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.BASEL_ENTRA.alias")
+    Optional<String> loginMethodAliasBaselEntra;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.BE_LOGIN.alias")
+    Optional<String> loginMethodAliasBeLogin;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.HIN.alias")
+    Optional<String> loginMethodAliasHin;
+
+    @Getter(AccessLevel.NONE)
+    @ConfigProperty(name = "esc.login-method.DVBERN_HEMED_ENTRA.alias")
+    Optional<String> loginMethodAliasHemedEntra;
 
 
     public void validateNotProdAndDbResetFeatureEnabled() {
@@ -362,11 +408,30 @@ public class ConfigService {
     }
 
     /**
+     * The environment specific override of the Keycloak broker IdP alias ({@code kc_idp_hint}) for the
+     * given {@link LoginMethod}, read from {@code esc.login-method.<NAME>.alias} or {@code ESC_LOGIN_METHOD_<NAME>_ALIAS}
+     * Returns {@link Optional#empty()} if the property is not set - callers are expected to fall back
+     * to their own default alias then.
+     */
+    @NonNull
+    public Optional<String> getLoginMethodAlias(@NonNull LoginMethod loginMethod) {
+        return switch (loginMethod) {
+            case PASSWORD -> loginMethodAliasPassword;
+            case AGOV_ZH -> loginMethodAliasAgovZh;
+            case WINTERTHUR_ADFS -> loginMethodAliasWinterthurAdfs;
+            case BASEL_ENTRA -> loginMethodAliasBaselEntra;
+            case BE_LOGIN -> loginMethodAliasBeLogin;
+            case HIN -> loginMethodAliasHin;
+            case DVBERN_HEMED_ENTRA -> loginMethodAliasHemedEntra;
+        };
+    }
+
+    /**
      * this will return the Base64 encoded encryption key for the given tenant*
      */
     @NonNull
     public Optional<String> getS3EncryptionKey() {
-        TenantEnum tenantEnum = getTenantProducer().produceTenant();
+        TenantEnum tenantEnum = getTenantContext().get();
         return switch (tenantEnum) {
             case TenantEnum.BS -> s3EncryptionKeyBS;
             case TenantEnum.WIN -> s3EncryptionKeyWIN;
@@ -386,7 +451,7 @@ public class ConfigService {
 
     @NonNull
     public URL getPublicUrl() {
-        TenantEnum tenantEnum = getTenantProducer().produceTenant();
+        TenantEnum tenantEnum = getTenantContext().get();
         return switch (tenantEnum) {
             case TenantEnum.BS -> publicUrlBS;
             case TenantEnum.WIN -> publicUrlWIN;
@@ -402,7 +467,7 @@ public class ConfigService {
             return this.getS3BucketNameSingle();
         }
 
-        TenantEnum tenantEnum = getTenantProducer().produceTenant();
+        TenantEnum tenantEnum = getTenantContext().get();
         return switch (tenantEnum) {
             case TenantEnum.BS -> getS3BucketNameBS();
             case TenantEnum.WIN -> getS3BucketNameWIN();

@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.archivierung;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 class ArchivierungRuleProducerTest {
 
-    private TenantProducer tenantProducer;
+    private TenantContext tenantContext;
     private ConfigService configService;
     private TenantSettingsService tenantSettingsService;
     private ArchivierungRuleByAgeService archivierungRuleByAgeService;
@@ -32,14 +32,14 @@ class ArchivierungRuleProducerTest {
 
     @BeforeEach
     void setUp() {
-        tenantProducer = mock(TenantProducer.class);
+        tenantContext = mock(TenantContext.class);
         configService = mock(ConfigService.class);
         tenantSettingsService = mock(TenantSettingsService.class);
         archivierungRuleByAgeService = mock(ArchivierungRuleByAgeService.class);
         archivierungRuleNoopService = mock(ArchivierungRuleNoopService.class);
 
         service = new ArchivierungRuleProducer(
-            tenantProducer,
+            tenantContext,
             configService,
             tenantSettingsService,
             archivierungRuleByAgeService,
@@ -69,7 +69,7 @@ class ArchivierungRuleProducerTest {
     void testArchivierungRuleService_FeatureEnabled_TenantBE() {
         // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.ENABLED);
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BE);
+        when(tenantContext.get()).thenReturn(TenantEnum.BE);
 
         // ACT
         ArchivierungRuleService result = service.archivierungRuleService();
@@ -83,7 +83,7 @@ class ArchivierungRuleProducerTest {
     void testArchivierungRuleService_FeatureEnabled_TenantBS_WIN_ThrowsException(TenantEnum tenant) {
         // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.ENABLED);
-        when(tenantProducer.produceTenant()).thenReturn(tenant);
+        when(tenantContext.get()).thenReturn(tenant);
 
         // ACT & ASSERT
         assertThatThrownBy(() -> service.archivierungRuleService())
@@ -95,7 +95,7 @@ class ArchivierungRuleProducerTest {
     void testArchivierungRuleService_FeatureEnabled_DefaultTenant_ThrowsException() {
         // ARRANGE
         when(features.getArchivierungFeature()).thenReturn(FeatureEnabledSetting.ENABLED);
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.DEFAULT);
+        when(tenantContext.get()).thenReturn(TenantEnum.DEFAULT);
 
         // ACT & ASSERT
         assertThatThrownBy(() -> service.archivierungRuleService())

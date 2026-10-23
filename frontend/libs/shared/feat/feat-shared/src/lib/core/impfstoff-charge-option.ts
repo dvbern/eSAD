@@ -1,4 +1,4 @@
 export type ImpfstoffChargeOption = {
-  label: string
+  label: string,
+  inaktiv?: boolean
 };
-

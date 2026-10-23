@@ -1,10 +1,16 @@
 import { libraryGenerator } from '@nx/angular/generators';
 import { formatFiles, getProjects, Tree } from '@nx/devkit';
-import { dasherize } from '@nx/devkit/src/utils/string-utils';
+import { dasherize } from '@nx/devkit/internal';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as prompts from 'prompts';
+import * as promptsModule from 'prompts';
+import type promptsFunction from 'prompts';
 import { LibGeneratorSchema, YesNo } from './schema';
+
+// prompts is a CommonJS function export: Nx loads this plugin without ES module interop, so the namespace
+// import is the function itself; under ES module interop (tsc with node16, Vitest) it is the default export.
+const prompts = ((promptsModule as unknown as { default?: typeof promptsFunction }).default ??
+  promptsModule) as typeof promptsFunction;
 
 export type LibType = 'feat' | 'ui' | 'util' | 'data-access';
 export type LibScope = 'shared' | 'app-specific';

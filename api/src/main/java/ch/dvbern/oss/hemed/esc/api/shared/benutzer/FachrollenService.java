@@ -15,7 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
@@ -36,7 +36,7 @@ public class FachrollenService {
     private final ConfigService configService;
     private final TenantSettingsService tenantSettingsService;
     private final FachrollenMailService fachrollenMailService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     public void setFachrollenFromJWT(
         @NonNull EnumSet<FachRolle> fachrollen,
@@ -136,7 +136,7 @@ public class FachrollenService {
         }
 
         // Aktueller Benutzer muss in derselben Organisation die Berechtigung BENUTZER_BERECHTIGUNGEN_SCHREIBEN haben
-        TenantEnum currentTenant = tenantProducer.produceTenant();
+        TenantEnum currentTenant = tenantContext.get();
         boolean hasRequiredBerechtigung = getFachrollenInOrg(currentBenutzer, resolvedOrganisation)
             .stream()
             .anyMatch(fr -> fr.hasBerechtigung(Berechtigung.BENUTZER_BERECHTIGUNGEN_SCHREIBEN, currentTenant));

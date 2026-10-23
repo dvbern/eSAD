@@ -59,14 +59,7 @@ public class SingleValueEnhanced<E extends Enum<E>> extends AbstractValueEnhance
 
     @Nullable
     public E getEnumValue(@NonNull Class<E> enumClass) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-        String enumPart = extractPart(value, ENUM_VALUES_DELIMITER);
-        if (enumPart == null) {
-            return null;
-        }
-        return Enum.valueOf(enumClass, enumPart);
+        return extractEnumValue(value, enumClass);
     }
 
     @Nullable

@@ -18,7 +18,7 @@
  */
 
 import {truncateWithEllipses} from './truncate-with-ellipses';
-import {describe, expect} from '@jest/globals';
+import {describe, expect} from 'vitest';
 
 describe('barchart', () => {
 

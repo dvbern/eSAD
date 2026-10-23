@@ -97,6 +97,8 @@ public class MassenbriefGeneratorService {
                 kinderIdsSB.append(kindID.getUUID().toString()).append(',');
 
                 FileInfo fileInfo = result.getFileInfo();
+                // not bound to the transaction: no row points to these files, the finally block below deletes them
+                // after use
                 Uni<PutObjectResponse> putObjectResponseUni =
                     fileStoreService.uploadToS3Async(
                         fileInfo.getMediaType().toString(),
@@ -133,7 +135,7 @@ public class MassenbriefGeneratorService {
                         fileStoreService.deleteInS3Async(fileIdInBucket.getFileIdInBucket());
 
                     DeleteObjectResponse deleteResponse =
-                        deleteObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
+                        deleteObjectResponseUni.await().atMost(configService.getS3DeleteTimeout());
                     LOG.info("Deleted single file for Massenbrief from S3: {}", deleteResponse);
                 });
             }

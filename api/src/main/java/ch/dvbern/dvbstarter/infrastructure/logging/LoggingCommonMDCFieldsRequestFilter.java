@@ -1,7 +1,7 @@
 package ch.dvbern.dvbstarter.infrastructure.logging;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProvider;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import com.vdurmont.semver4j.Semver;
 import java.util.Optional;
 
@@ -41,7 +41,7 @@ public class LoggingCommonMDCFieldsRequestFilter implements ContainerRequestFilt
     ConfigService configService;
 
     @Inject
-    TenantProvider tenantProvider;
+    TenantContext tenantContext;
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
@@ -77,7 +77,8 @@ public class LoggingCommonMDCFieldsRequestFilter implements ContainerRequestFilt
     }
 
     String getTenant() {
-        TenantEnum tenant = tenantProvider.produceTenant();
+        // runs before the tenant is extracted from the URL; requests without tenant must still be logged
+        TenantEnum tenant = tenantContext.getOrNull();
         if(tenant != null) {
             return tenant.toString();
         }

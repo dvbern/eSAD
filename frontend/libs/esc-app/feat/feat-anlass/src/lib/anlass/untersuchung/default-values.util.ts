@@ -1,8 +1,8 @@
-import {effect, EffectRef, Injector, Signal} from '@angular/core';
+import {computed, effect, EffectRef, Injector, Signal} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {globalConstants} from '@dvb/feat-shared';
 import {isNotNullish, Nullish} from '@dvb/util-shared';
-import {patchState, signalStoreFeature, withMethods, withState} from '@ngrx/signals';
+import {patchState, signalStoreFeature, withComputed, withMethods, withState} from '@ngrx/signals';
 import {hasSomeNotNullishValueIgnoringVersion} from './untersuchung.util';
 
 export interface DefaultValuesState<TDto> {
@@ -35,6 +35,14 @@ export function withDefaultValues<
       defaultInitial: undefined,
       defaultToApply: undefined,
     }),
+    withComputed((store) => ({
+      /**
+       * Whether the defaults have been fetched. Until then applyDefault() has nothing to apply and
+       * returns without a trace, so the "Standardwerte" button has to stay disabled rather than
+       * swallow the click. A tab without configured defaults counts as loaded: there is nothing to wait for.
+       */
+      defaultsLoaded: computed(() => store.defaultInitial() !== undefined),
+    })),
     withMethods((store) => ({
       applyDefault(): void {
         const initial = store.defaultInitial();

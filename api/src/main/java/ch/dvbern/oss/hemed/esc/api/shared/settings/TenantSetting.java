@@ -15,6 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
 import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
 import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LoginMethod;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -104,6 +105,12 @@ public class TenantSetting extends AbstractEntity<TenantSetting> {
     @Column(nullable = false)
     private LocalDate gueltigAbWachstumskurvePch;
 
+    @Nullable
+    @Size(max = DbConst.DB_ENUM_LIST_LENGTH)
+    @Column(nullable = true, length = DbConst.DB_ENUM_LIST_LENGTH)
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private String loginMethods;
 
     public void setSupportedLanguages(@NonNull List<AppLanguages> supportedLanguages) {
         this.supportedLanguages = supportedLanguages.stream()
@@ -130,6 +137,15 @@ public class TenantSetting extends AbstractEntity<TenantSetting> {
 
     public void setEinladungStatusValues(@NonNull Collection<EinladungStatus> einladungStatusValues) {
         this.einladungStatusValues = EnumSetUtil.toString(einladungStatusValues);
+    }
+
+    @NonNull
+    public EnumSet<LoginMethod> getLoginMethods() {
+        return EnumSetUtil.fromString(LoginMethod.class, loginMethods);
+    }
+
+    public void setLoginMethods(@NonNull Collection<LoginMethod> loginMethods) {
+        this.loginMethods = EnumSetUtil.toString(loginMethods);
     }
 
 }

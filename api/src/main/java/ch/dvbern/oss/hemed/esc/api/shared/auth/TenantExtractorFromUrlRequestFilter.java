@@ -41,14 +41,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @UnlessBuildProfile("test") // run this in dev and prod, tests use TenantTestFilter
 public class TenantExtractorFromUrlRequestFilter implements ContainerRequestFilter {
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
         URI absolutePath = requestContext.getUriInfo().getAbsolutePath();
         TenantEnum tenantFromUrl = TenantExtractorFromUrlRequestFilter.getTenantFromUrl(absolutePath);
-        tenantProducer.setCurrentTenant(tenantFromUrl);
+        // without a tenant every access to tenant data fails loudly (no fallback to a default tenant)
+        if (tenantFromUrl != null) {
+            tenantContext.setCurrentTenant(tenantFromUrl);
+        }
     }
 
     @Nullable

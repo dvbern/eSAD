@@ -1,7 +1,14 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import {AgbResponsability, AppLanguages, EinladungStatus, FeatureEnabledSetting, LandingPageOption} from '@dvb/data-access-backend';
+import {
+  AgbResponsability,
+  AppLanguages,
+  EinladungStatus,
+  FeatureEnabledSetting,
+  LandingPageOption,
+  LoginMethod,
+} from '@dvb/data-access-backend';
 import { PageComponent, Path, TenantSettingsStore, TranslatedEnumViewValuePipe } from '@dvb/feat-shared';
 import {
   CardComponent,
@@ -61,6 +68,7 @@ export class TenantSettingsPageComponent {
   featureSettingOptions = Object.values(FeatureEnabledSetting);
   einladungStatusOptions = Object.values(EinladungStatus);
   landingPageOptions = Object.values(LandingPageOption);
+  loginMethodOptions = Object.values(LoginMethod);
 
   // Page state: this page is a plain settings editor, always in edit mode
   detailMode: DetailMode = DetailMode.EDIT;

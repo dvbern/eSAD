@@ -65,6 +65,16 @@ export class UntersuchungDoppelkontrolleImpfentscheidComponent {
   );
 
   doppelkontrolleSig = this.#untersuchungImpfungenStore.doppelkontrolle;
+
+  /**
+   * Whether a Visum can be sent. Before the Impfungen are loaded the store cannot build the request and a
+   * click would be lost without a trace, and a step sent while the previous one is still being saved carries
+   * a stale version and is rejected as changed by someone else.
+   */
+  readyToSave = computed(
+    () => this.#untersuchungImpfungenStore.versionUntersuchungImpfungen() !== undefined
+      && !this.#untersuchungImpfungenStore.saveImpfungenLoader.isLoading(),
+  );
   userExceptUserOfVisum1: Signal<BenutzerOptionJson[]> = computed(() => {
     return this.benutzerOptionsStore
       .entities()

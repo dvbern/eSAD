@@ -1,16 +1,14 @@
 package ch.dvbern.oss.hemed.esc.api.features.benutzer;
 
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.Organisation;
-import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -28,11 +26,10 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerOptionListJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.BenutzerSaveJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.PrincipalJsonSpec;
+
 import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -48,14 +45,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BenutzerResourceDezentralITest extends AbstractITest {
 
     @TestHTTPEndpoint(BenutzerResource.class)
-    @TestHTTPResource
-    URL url = null;
     private final BenutzerApiSpec api = BenutzerApiSpec.benutzer(RequestSpecUtil.quarkusSpec());
 
     private final BenutzerService benutzerService;
-    private final BenutzerRepo benutzerRepo;
-    private final OrganisationService organisationService;
-    private final TenantProducer tenantProducer;
     private final BenutzerResourceHelper benutzerResourceHelper;
     private final FixtureService fixtureService;
 

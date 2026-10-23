@@ -17,7 +17,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -51,13 +51,13 @@ class AnonymerEintragPrintServiceITest extends AbstractITest {
     private final AnonymerEintragPrintService anonymerEintragPrintService;
     private final UntersuchungService untersuchungService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Test
     @TestAsSchularztBE
     void printAnonymerEintrag_withUntersuchung_producesPdfWithHashFilename() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
         untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
@@ -82,7 +82,7 @@ class AnonymerEintragPrintServiceITest extends AbstractITest {
     @TestAsSchularztBE
     void printerResourceDownloadAnonymerEintrag_returnsPdf() {
         // ARRANGE: the REST endpoint requires an existing Untersuchung on the entry.
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
         untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);
@@ -105,7 +105,7 @@ class AnonymerEintragPrintServiceITest extends AbstractITest {
     @TestAsSchularztBE
     void printAnonymerEintrag_withoutUntersuchung_producesPdf() {
         // ARRANGE: an anonymous entry that has no Untersuchung yet must still print.
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
 

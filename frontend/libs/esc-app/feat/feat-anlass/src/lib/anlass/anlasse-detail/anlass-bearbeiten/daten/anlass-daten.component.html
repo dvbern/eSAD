@@ -215,26 +215,30 @@
     </ng-select>
   </svui-form-control>
 
-  <!-- Info Schularzt -->
-  <svui-form-control [label]="'anlass.detail.infoSchularzt' | transloco"
-                     [viewValue]="form.group.value.arztInfo">
+
+  <!-- Anlass Informationen -->
+  @if (tenantSettingsStore.anlassInformationenEnabled()) {
+    <!-- Info Schularzt -->
+    <svui-form-control [label]="'anlass.detail.infoSchularzt' | transloco"
+                       [viewValue]="form.group.value.arztInfo">
         <textarea svuiTextarea
                   [formControl]="form.group.controls.arztInfo"></textarea>
-  </svui-form-control>
+    </svui-form-control>
 
-  <!-- Info MPA -->
-  <svui-form-control [label]="'anlass.detail.infoMPA' | transloco"
-                     [viewValue]="form.group.value.mpaInfo">
+    <!-- Info MPA -->
+    <svui-form-control [label]="'anlass.detail.infoMPA' | transloco"
+                       [viewValue]="form.group.value.mpaInfo">
         <textarea svuiTextarea
                   [formControl]="form.group.controls.mpaInfo"></textarea>
-  </svui-form-control>
+    </svui-form-control>
 
-  <!-- Info Orthoptistin -->
-  <svui-form-control [label]="'anlass.detail.infoOrthoptistin' | transloco"
-                     [viewValue]="form.group.value.weiterePersonInfo">
+    <!-- Info Orthoptistin -->
+    <svui-form-control [label]="'anlass.detail.infoOrthoptistin' | transloco"
+                       [viewValue]="form.group.value.weiterePersonInfo">
         <textarea svuiTextarea
                   [formControl]="form.group.controls.weiterePersonInfo"></textarea>
-  </svui-form-control>
+    </svui-form-control>
+  }
 
   <!--messages for whole form -->
   <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>

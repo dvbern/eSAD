@@ -13,14 +13,11 @@ import ch.dvbern.oss.hemed.esc.api.features.labels.Label;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.*;
-import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.time.LocalDate;
@@ -37,7 +34,6 @@ public class AufgabeService {
 
     private final FileStoreService fileStoreService;
     private final FileValidationService fileValidationService;
-    private final ConfigService configService;
     private final CurrentUserService currentUserService;
     private final AppClock appClock;
     private final FileDataService fileDataService;
@@ -136,21 +132,19 @@ public class AufgabeService {
 
         aufgabeRepo.flush();
 
-        Uni<DeleteObjectResponse> deleteObjectResponseUni =
-            fileStoreService.deleteInS3Async(fileToRemove.getFileIdInBucket());
-
-        DeleteObjectResponse deleteResponse =
-            deleteObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Deleted file from S3: {}", deleteResponse);
+        // only once the removal is committed: deleting now would lose the file if the transaction still rolls back
+        fileStoreService.deleteInS3AfterCommit(fileToRemove.getFileIdInBucket());
     }
 
     @NonNull
     private FileInfo saveAufgabeAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
         // prepare the file info Embeddable
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.AUFGABEUPLOAD);
-        // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
-        PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
+        // upload the file to S3; it is deleted again if the transaction does not commit
+        PutObjectResponse putObjectResponse = fileStoreService.uploadToS3BoundToTransaction(
+            fileUpload,
+            fileInfo
+        );
         LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfo.getFileIdInBucket(), putObjectResponse);
 
         return fileInfo;

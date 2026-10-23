@@ -3,12 +3,9 @@ package ch.dvbern.oss.hemed.esc.api.features.importoptions.massenimport;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.MassenimportRollbackException;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
-import ch.dvbern.dvbstarter.shared.runas.RunAs;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.massenimport.dto.MassenimportAsyncParams;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService;
 import io.quarkus.vertx.ConsumeEvent;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.AllArgsConstructor;
@@ -21,16 +18,22 @@ import static ch.dvbern.oss.hemed.esc.api.features.importoptions.massenimport.Ma
 @AllArgsConstructor
 public class MassenimportRunnerService {
 
-    private final TenantProducer tenantProducer;
+    private final PerTenantRunnerService perTenantRunnerService;
     private final MassenimportService massenimportService;
     private final TL tl;
 
-    @ActivateRequestContext
+    /**
+     * Runs in a request context of its own for the tenant of the import. The identity is set by the
+     * {@code @RunAs} on {@link MassenimportService#processMassenimportFileForSchuleAndKlasse}, i.e. inside that
+     * context.
+     */
     @ConsumeEvent(value = MASSENIMPORT_EVENT, blocking = true)
     @Transactional(TxType.NOT_SUPPORTED)
-    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void handleEvent(MassenimportAsyncParams params) {
-        tenantProducer.setCurrentTenant(params.tenant());
+        perTenantRunnerService.runForTenant(params.tenant(), () -> processMassenimport(params));
+    }
+
+    private void processMassenimport(MassenimportAsyncParams params) {
         try {
             massenimportService.processMassenimportFileForSchuleAndKlasse(
                 params.sheet(),

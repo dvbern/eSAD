@@ -34,7 +34,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -100,7 +100,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
 	private final AufgabeService aufgabeService;
 	private final DossierService dossierService;
 	private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
 	@Override
 	@BeforeEach
@@ -1773,7 +1773,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungImpfungen_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
@@ -1816,7 +1816,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungMassnahmen_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
@@ -1858,7 +1858,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungImpfungenImpfstatus_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
@@ -1903,7 +1903,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungImpfungenDataMinimal_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
@@ -1952,7 +1952,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungImpfungenNurUnvollstaendige_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
@@ -1996,7 +1996,7 @@ class UntersuchungImpfungenResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void getUntersuchungImpfungenData_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);

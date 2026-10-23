@@ -116,6 +116,12 @@ public class AnlassConfig extends AbstractEntity<AnlassConfig> {
     @Column(nullable = false)
     private boolean showImpfeinverstaendnis;
 
+    // Ausdrucke
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean showAnlassPrintImpfen;
+
     // Daten
 
     @NotNull

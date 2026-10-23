@@ -1,0 +1,125 @@
+@use '../../../../../../shared/ui/ui-components/src/styles/core/border';
+@use '../../../../../../shared/ui/ui-components/src/styles/core/color/color-set-default' as color;
+@use '../../../../../../shared/ui/ui-components/src/styles/core/spacing';
+
+// Corporate design of the HIN, AGOV and Entra/Azure IdPs, mirrored from the Keycloak login theme
+// (sharedtheme/login/resources/css/hin-styles.css and agov-styles.css) so that this landing page
+// and the Keycloak login page show the same buttons.
+$hin-orange: #f39900;
+$hin-separator: rgba(255, 255, 255, 0.3);
+$agov-purple: #501eb6;
+$agov-purple-light: #e4dafa;
+$azure-radius: 4px;
+$hin-radius: 4px;
+$agov-radius: 12px;
+
+$max-button-width: 320px;
+
+.publicinfo__login-buttons,
+.publicinfo__password {
+  max-width: $max-button-width;
+}
+
+// "oder" between the IdP buttons and the username/password fallback: the label sits in the middle of
+// a hairline that fills the remaining width on both sides.
+.publicinfo__separator {
+  align-items: center;
+  color: color.$text-secondary;
+  display: flex;
+  gap: spacing.$base;
+  margin: 2 * spacing.$base 0;
+
+  &::before,
+  &::after {
+    background-color: color.$border;
+    content: '';
+    flex: 1;
+    height: border.$width-default;
+  }
+}
+
+.publicinfo__login-button {
+  // The shared button lays its content out as a flex row starting at the left edge. The wrapper doing
+  // that belongs to the button component's view, so the alignment is steered from our own content
+  // span instead: it stretches across the button and each brand decides where the pair sits.
+  &-content {
+    align-items: center;
+    display: flex;
+    flex: 1;
+  }
+
+  &-logo {
+    flex: none;
+    margin-right: spacing.$base;
+  }
+}
+
+// The username/password button spans the same column width as the IdP buttons above it, so its
+// caption is centred instead of clinging to the left edge of a wide button.
+button[data-login-method='PASSWORD'] .publicinfo__login-button-content {
+  justify-content: center;
+}
+
+// The brand colours have to beat `.btn.btn-primary:hover` from the shared bootstrap overrides, hence
+// the element + class + attribute selectors and the explicit state rules. The states only fade the
+// button (as `.idp-btn` does in the theme) instead of recolouring it - a brand colour has no
+// darker/lighter variant we are allowed to invent.
+@mixin brand-button($background, $text-color) {
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: $background;
+    border-color: $background;
+    color: $text-color;
+  }
+
+  &:hover,
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+// The HIN branding guideline shows a squarish button with barely rounded corners and the logo/label
+// pair centred as a unit, separated by a hairline.
+button.publicinfo__login-button[data-login-method='HIN'] {
+  @include brand-button($hin-orange, #fff);
+
+  border-radius: $hin-radius;
+  font-weight: 300;
+
+  .publicinfo__login-button-content {
+    justify-content: center;
+  }
+
+  // separator line between the logo and the label, as on the Keycloak login page
+  .publicinfo__login-button-logo {
+    border-right: 1px solid $hin-separator;
+    margin-right: 2 * spacing.$base;
+    padding-right: 2 * spacing.$base;
+  }
+}
+
+// AGOV in contrast asks for clearly rounded corners and a left-aligned logo/label pair.
+button.publicinfo__login-button[data-login-method='AGOV_ZH'], button.publicinfo__login-button[data-login-method='BE_LOGIN']{
+  @include brand-button($agov-purple-light, $agov-purple);
+
+  border-radius: $agov-radius;
+  font-weight: 600;
+  text-align: left;
+
+  // hairline outline so the light button keeps a visible boundary on the light page background
+  box-shadow: inset 0 0 0 1px $agov-purple;
+}
+
+// DVBERN_HEMED_ENTRA / Azure branding
+button.publicinfo__login-button[data-login-method='DVBERN_HEMED_ENTRA'] {
+  @include brand-button(#ffffff, color.$text);
+
+  border-radius: $azure-radius;
+  font-weight: 600;
+  text-align: left;
+
+  // hairline outline so the light button keeps a visible boundary on the light page background
+  box-shadow: inset 0 0 0 1px color.$border;
+}

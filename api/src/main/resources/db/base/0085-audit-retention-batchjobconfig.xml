@@ -1,0 +1,9 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+  <changeSet author="anst" id="1773311291276-2">
+    <sql>
+		INSERT INTO schedulerconfig (id, timestamperstellt, timestampmutiert, usererstellt, usermutiert, version, batchsize, disabled, schedulertyp)
+		VALUES ('7a3f8c11-9b4a-4c2e-8f6d-1e2a3b4c5d6e', current_timestamp, current_timestamp, 'liquibase', 'liquibase', 0, 1000, true, 'AUD_TABELLEN_BEREINIGEN');
+	</sql>
+  </changeSet>
+</databaseChangeLog>

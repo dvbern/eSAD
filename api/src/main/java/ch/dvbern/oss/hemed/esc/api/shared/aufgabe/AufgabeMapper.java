@@ -27,7 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeListJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.json.AufgabeSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
@@ -48,7 +48,7 @@ public class AufgabeMapper {
     private final KindService kindService;
     private final AnlassService anlassService;
     private final LabelMapper labelMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final TL tl;
 
     @NonNull
@@ -128,7 +128,7 @@ public class AufgabeMapper {
             .filter(hasReadAuthorizationAufgabe)
             .map(a -> AufgabeMapper.toJson(
                 a,
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 Objects.nonNull(a.getAnlass()) ? AnlassMapper.toOptionJson(a.getAnlass(), tl) : null
             ))
             .toList();
@@ -146,7 +146,7 @@ public class AufgabeMapper {
             .filter(hasReadAuthorizationAufgabe)
             .map(a -> AufgabeMapper.toJson(
                 a,
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 Objects.nonNull(a.getAnlass()) ? AnlassMapper.toOptionJson(a.getAnlass(), tl) : null
             ))
             .toList();
@@ -164,7 +164,7 @@ public class AufgabeMapper {
         requireAuthorization.accept(aufgabe);
         return toJson(
             aufgabe,
-            tenantProducer.produceTenant(),
+            tenantContext.get(),
             Objects.nonNull(aufgabe.getAnlass()) ? AnlassMapper.toOptionJson(aufgabe.getAnlass(), tl) : null
         );
     }
@@ -187,7 +187,7 @@ public class AufgabeMapper {
         Aufgabe persisted = aufgabeService.persist(entity);
         return toJson(
             persisted,
-            tenantProducer.produceTenant(),
+            tenantContext.get(),
             Objects.nonNull(persisted.getAnlass()) ? AnlassMapper.toOptionJson(persisted.getAnlass(), tl) : null
         );
     }
@@ -211,7 +211,7 @@ public class AufgabeMapper {
         Aufgabe persisted = aufgabeService.persistWithOptimisticLocking(entity, aufgabeJson.getVersion());
         return toJson(
             persisted,
-            tenantProducer.produceTenant(),
+            tenantContext.get(),
             Objects.nonNull(persisted.getAnlass()) ? AnlassMapper.toOptionJson(persisted.getAnlass(), tl) : null
         );
     }
@@ -262,7 +262,7 @@ public class AufgabeMapper {
         Aufgabe persisted = aufgabeService.persistAndFlush(updatedAufgabe);
         return toJson(
             persisted,
-            tenantProducer.produceTenant(),
+            tenantContext.get(),
             Objects.nonNull(persisted.getAnlass()) ? AnlassMapper.toOptionJson(persisted.getAnlass(), tl) : null
         );
     }
@@ -284,7 +284,7 @@ public class AufgabeMapper {
         aufgabeService.removeUploadedFile(existingAufgabe, fileIdToRemove, requireAuthorization);
         return toJson(
             existingAufgabe,
-            tenantProducer.produceTenant(),
+            tenantContext.get(),
             Objects.nonNull(existingAufgabe.getAnlass()) ?
                 AnlassMapper.toOptionJson(existingAufgabe.getAnlass(), tl) :
                 null
@@ -298,7 +298,7 @@ public class AufgabeMapper {
             .stream()
             .map(a -> AufgabeMapper.toJson(
                 a,
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 Objects.nonNull(a.getAnlass()) ? AnlassMapper.toOptionJson(a.getAnlass(), tl) : null
             ))
             .toList();

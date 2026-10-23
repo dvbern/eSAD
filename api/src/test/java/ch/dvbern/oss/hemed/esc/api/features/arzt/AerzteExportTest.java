@@ -31,6 +31,7 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.print.ArztExportService;
 import ch.dvbern.oss.hemed.esc.api.features.arzt.types.ExportMode;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.DocxAssert;
@@ -49,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RequiredArgsConstructor
 class AerzteExportTest {
-    private final TL tl = new TLProducer(() -> AppLanguages.DE, () -> TenantEnum.BS).forAppLanguage(AppLanguages.DE);
+    private final TL tl = new TLProducer(() -> AppLanguages.DE, TenantContext.forTenant(TenantEnum.BS)).forAppLanguage(AppLanguages.DE);
     private static final String OUTPUT_PATH =
         Paths.get(FileUtils.getTempDirectoryPath(), "esc", "aerztemerge").toString();
 

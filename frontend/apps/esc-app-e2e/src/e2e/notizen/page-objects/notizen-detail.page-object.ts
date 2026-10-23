@@ -13,5 +13,7 @@ export class NotizenDetailPageObject extends WithSubpaths<'impfausweis' | 'view'
   elements = {
     buttonAddFile: () => this.page.getByTestId('button-upload-file'),
     buttonConfirmAdd: () => this.page.getByTestId('button-confirm'),
+    stagedFiles: () => this.page.getByTestId('upload-staged-files'),
+    uploadedFilesTable: () => this.page.getByTestId('uploaded-files-table'),
   }
 }

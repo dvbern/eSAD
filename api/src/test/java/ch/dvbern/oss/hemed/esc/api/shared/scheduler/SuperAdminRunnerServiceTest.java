@@ -22,6 +22,7 @@ import ch.dvbern.oss.hemed.esc.api.features.archivierung.Archivdokument;
 import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentRepo;
 import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivierungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivierungTyp;
+import ch.dvbern.oss.hemed.esc.api.features.auditretention.AuditRetentionService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffCharge;
@@ -37,7 +38,7 @@ import ch.dvbern.oss.hemed.esc.api.features.spss.SpssReportType;
 import ch.dvbern.oss.hemed.esc.api.shared.archivierung.ArchivierungRuleProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.archivierung.ArchivierungRuleService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueue;
 import ch.dvbern.oss.hemed.esc.api.shared.documentqueue.DocumentQueueRepo;
@@ -65,6 +66,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.UntersuchungImpfungInternBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
+
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Uni;
@@ -78,13 +80,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,31 +106,30 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
     private final ImpfstoffChargeService impfstoffChargeService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
     private final ArchivdokumentRepo archivdokumentRepo;
-
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private MailDAO mailDAOMock;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-        TenantSettingsService tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
+        TenantSettingsService tenantSettingsServiceMock = mock(TenantSettingsService.class);
         QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
         TenantSetting tenantSettingOverride = TenantSettingBuilder.create(tenantSettingBuilder -> tenantSettingBuilder
             .withAdHocImpfstoffChargenFeature(FeatureEnabledSetting.ENABLED)
             .withSupportedLangagues(List.of(AppLanguages.DE, AppLanguages.FR))
             .withZentraleOrganisationFeature(FeatureEnabledSetting.ENABLED)
         );
-        Mockito.when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
-        Mockito.when(tenantSettingsServiceMock.isZentraleOrganisation()).thenReturn(true);
+        when(tenantSettingsServiceMock.getTenantSetting()).thenReturn(tenantSettingOverride);
+        when(tenantSettingsServiceMock.isZentraleOrganisation()).thenReturn(true);
 
-        ArchivierungRuleProducer archivierungRuleProducerMock = Mockito.mock(ArchivierungRuleProducer.class);
+        ArchivierungRuleProducer archivierungRuleProducerMock = mock(ArchivierungRuleProducer.class);
         QuarkusMock.installMockForType(archivierungRuleProducerMock, ArchivierungRuleProducer.class);
-        ArchivierungRuleService archivierungRuleServiceMock = Mockito.mock(ArchivierungRuleService.class);
-        Mockito.when(archivierungRuleProducerMock.archivierungRuleService()).thenReturn(archivierungRuleServiceMock);
+        ArchivierungRuleService archivierungRuleServiceMock = mock(ArchivierungRuleService.class);
+        when(archivierungRuleProducerMock.archivierungRuleService()).thenReturn(archivierungRuleServiceMock);
 
-        mailDAOMock = Mockito.mock(MailDAO.class);
-        Mockito.when(mailDAOMock.sendEmail(any(String.class), any(String.class), any(String.class)))
+        mailDAOMock = mock(MailDAO.class);
+        when(mailDAOMock.sendEmail(any(String.class), any(String.class), any(String.class)))
             .thenReturn(Uni.createFrom().voidItem());
         QuarkusMock.installMockForType(mailDAOMock, MailDAO.class);
     }
@@ -529,7 +530,7 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
     @TestAsAdminBE
     void runArchiveDocumentDownloadEmailReminderJob() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         when(mailDAOMock.sendEmail(any(String.class), any(String.class), any(String.class)))
             .thenReturn(Uni.createFrom().voidItem());
 
@@ -705,6 +706,48 @@ class SuperAdminRunnerServiceTest extends AbstractITest {
             dossier.getId(),
             DossierQueueTyp.ARCHIVIERUNG_DELETE,
             null);
+    }
+
+    @Test
+    @TestAsAdminBS
+    void runAuditRetentionCleanupJob_disabled_doesNothing() {
+        // ARRANGE
+        AuditRetentionService auditRetentionServiceMock = mock(AuditRetentionService.class);
+        QuarkusMock.installMockForType(auditRetentionServiceMock, AuditRetentionService.class);
+        SchedulerConfigService schedulerConfigServiceMock = mock(SchedulerConfigService.class);
+        QuarkusMock.installMockForType(schedulerConfigServiceMock, SchedulerConfigService.class);
+
+        SchedulerConfig config = new SchedulerConfig(SchedulerTyp.AUD_TABELLEN_BEREINIGEN, true, 100);
+        when(schedulerConfigServiceMock.getSchedulerConfig(SchedulerTyp.AUD_TABELLEN_BEREINIGEN)).thenReturn(config);
+
+        // ACT
+        superAdminRunnerService.runAuditRetentionCleanupJob(false);
+
+        // ASSERT
+        verify(auditRetentionServiceMock, never()).cleanupOldAuditRevisions(anyInt(), anyInt());
+    }
+
+    @Test
+    @TestAsAdminBS
+    void runAuditRetentionCleanupJob_enabled_cleansUpRevisions() {
+        // ARRANGE
+        AuditRetentionService auditRetentionServiceMock = mock(AuditRetentionService.class);
+        QuarkusMock.installMockForType(auditRetentionServiceMock, AuditRetentionService.class);
+        SchedulerConfigService schedulerConfigServiceMock = mock(SchedulerConfigService.class);
+        QuarkusMock.installMockForType(schedulerConfigServiceMock, SchedulerConfigService.class);
+
+        SchedulerConfig config = new SchedulerConfig(SchedulerTyp.AUD_TABELLEN_BEREINIGEN, false, 100);
+        when(schedulerConfigServiceMock.getSchedulerConfig(SchedulerTyp.AUD_TABELLEN_BEREINIGEN)).thenReturn(config);
+        when(auditRetentionServiceMock.cleanupOldAuditRevisions(20, 100)).thenReturn(new SchedulerProcessingResult(
+            100,
+            1,
+            1));
+
+        // ACT
+        superAdminRunnerService.runAuditRetentionCleanupJob(true);
+
+        // ASSERT
+        verify(auditRetentionServiceMock).cleanupOldAuditRevisions(20, 100);
     }
 
     private void mockTranslations(Map<AppLanguages, Map<String, String>> translationForLanguages) {

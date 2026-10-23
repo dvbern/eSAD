@@ -15,10 +15,16 @@
 package ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.docmerger;
 
 import lombok.Value;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Value
 public class UntersuchungArztDocMergerDTO {
+    @NonNull
     String blutdruckBewertung;
+    @NonNull
     String blutdruckWertSystolisch;
+    @NonNull
     String blutdruckWertDiastolisch;
+    @NonNull
+    String blutdruckAuffaellig;
 }

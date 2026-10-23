@@ -2,6 +2,7 @@ package ch.dvbern.dvbstarter.shared.types.id;
 
 import java.util.List;
 
+import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
-class IdOrderingTest {
+class IdOrderingTest extends AbstractITest {
 
     @Inject
     EntityManager em;

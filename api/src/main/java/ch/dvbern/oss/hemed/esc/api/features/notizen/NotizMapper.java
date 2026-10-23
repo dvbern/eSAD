@@ -16,7 +16,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListItemJson;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
@@ -40,7 +40,7 @@ public final class NotizMapper {
     private final DossierService dossierService;
     private final BenutzerService benutzerService;
     private final LabelMapper labelMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public static NotizJson toJson(@NonNull Notiz notiz, @NonNull TenantEnum tenant) {
@@ -102,7 +102,7 @@ public final class NotizMapper {
 
     @NonNull
     public NotizJson getById(@NonNull ID<Notiz> notizId) {
-        return NotizMapper.toJson(notizService.getById(notizId), tenantProducer.produceTenant());
+        return NotizMapper.toJson(notizService.getById(notizId), tenantContext.get());
     }
 
     @NonNull
@@ -114,7 +114,7 @@ public final class NotizMapper {
     ) {
         Notiz savedNotiz = notizService.persist(toEntityForCreate(notizJson, dossierId));
         hasAuthorizationNotiz.accept(savedNotiz);
-        return toJson(notizService.updateWithFiles(savedNotiz, fileUploads, notizJson.getVersion()), tenantProducer.produceTenant());
+        return toJson(notizService.updateWithFiles(savedNotiz, fileUploads, notizJson.getVersion()), tenantContext.get());
     }
 
     @NonNull
@@ -133,7 +133,7 @@ public final class NotizMapper {
                 kind,
                 existingNotiz));
         Notiz entity = toEntity(existingNotiz, saveJson);
-        return toJson(notizService.updateWithFiles(entity, fileUploads, saveJson.getVersion()), tenantProducer.produceTenant());
+        return toJson(notizService.updateWithFiles(entity, fileUploads, saveJson.getVersion()), tenantContext.get());
     }
 
     public void checkRemoveAllowed(@NonNull Notiz notiz) {
@@ -152,7 +152,7 @@ public final class NotizMapper {
     ) {
         Notiz notiz = notizService.getById(notizId);
         hasAuthorizationNotiz.accept(notiz);
-        return toJson(notiz, tenantProducer.produceTenant());
+        return toJson(notiz, tenantContext.get());
     }
 
     @NonNull
@@ -168,7 +168,7 @@ public final class NotizMapper {
         return notizService.findAllForKind(kindID).stream()
             // some Roles can only read Notizen with certain labels
             .filter(hasReadAuthorizationNotiz)
-            .map(n -> NotizMapper.toJson(n, tenantProducer.produceTenant()))
+            .map(n -> NotizMapper.toJson(n, tenantContext.get()))
             .toList();
     }
 
@@ -187,7 +187,7 @@ public final class NotizMapper {
                 kind,
                 new FileData()));
         Notiz updatedNotiz = notizService.addUploadedFileAndFlush(notizID, file);
-        return toJson(updatedNotiz, tenantProducer.produceTenant());
+        return toJson(updatedNotiz, tenantContext.get());
     }
 
     @NonNull
@@ -205,7 +205,7 @@ public final class NotizMapper {
                 kind,
                 new FileData()));
         notizService.removeUploadedFile(existingNotiz, fileIdToRemove);
-        return toJson(existingNotiz, tenantProducer.produceTenant());
+        return toJson(existingNotiz, tenantContext.get());
     }
 
     @NonNull

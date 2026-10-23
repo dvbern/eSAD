@@ -18,10 +18,12 @@
 
 package ch.dvbern.oss.hemed.esc.api.testutil.builder;
 
+import java.util.EnumSet;
 import java.util.function.Consumer;
 
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.json.UntersuchungImpfungenMassnahmenJson;
@@ -105,6 +107,13 @@ public class UntersuchungImpfungenMassnahmenBuilder {
     @CanIgnoreReturnValue
     public UntersuchungImpfungenMassnahmenBuilder withVormerkenFuerGruppenFolgetermin(boolean vormerken) {
         this.massnahmen.setVormerkenFuerGruppenFolgetermin(vormerken);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfungenMassnahmenBuilder withEmpfehlung(@Nullable EnumSet<ImpfungenMassnahmenEmpfehlung> empfehlung) {
+        this.massnahmen.setEmpfehlung(empfehlung);
         return this;
     }
 

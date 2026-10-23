@@ -1,162 +1,139 @@
 package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
 
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+/**
+ * The tenant iteration itself is covered by {@code PerTenantRunnerServiceTest}; here we only verify that every job
+ * is delegated to {@link PerTenantRunnerService#runForActiveTenants(Runnable)}.
+ */
+@DisplayNameGeneration(ReplaceUnderscores.class)
 class ScheduledTaskServiceTest {
 
     private SuperAdminRunnerService superAdminRunnerService;
-    private TenantProducer tenantProducer;
-    private ConfigService configService;
+    private PerTenantRunnerService perTenantRunnerService;
     private ScheduledTaskService service;
 
     @BeforeEach
     void setUp() {
         superAdminRunnerService = mock(SuperAdminRunnerService.class);
-        tenantProducer = mock(TenantProducer.class);
-        configService = mock(ConfigService.class);
-        service = new ScheduledTaskService(superAdminRunnerService, tenantProducer, configService);
-
-        // Default: only BE is active and enabled
-        for (TenantEnum tenant : TenantEnum.values()) {
-            boolean enabled = tenant == TenantEnum.BE;
-            when(configService.isTenantEnabledForCurrentEnvironment(tenant)).thenReturn(enabled);
-        }
+        perTenantRunnerService = mock(PerTenantRunnerService.class);
+        doAnswer(invocation -> {
+            invocation.<Runnable>getArgument(0)
+                .run();
+            return null;
+        }).when(perTenantRunnerService)
+            .runForActiveTenants(any());
+        service = new ScheduledTaskService(superAdminRunnerService, perTenantRunnerService);
     }
 
-    @Test
-    void testScheduleBenutzerInaktivierenJob() {
-        service.scheduleBenutzerInaktivierenJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runBenutzerInaktivierenJob(false);
+    static Stream<Arguments> jobs() {
+        return Stream.of(
+            job(
+                "BenutzerInaktivieren",
+                ScheduledTaskService::scheduleBenutzerInaktivierenJob,
+                runner -> runner.runBenutzerInaktivierenJob(false)
+            ),
+            job(
+                "KinderInaktivieren",
+                ScheduledTaskService::scheduleKinderInaktivierenJob,
+                runner -> runner.runKinderInaktivierenJob(false)
+            ),
+            job(
+                "ReloadDuplikate",
+                ScheduledTaskService::scheduleReloadDuplikateJob,
+                runner -> runner.runReloadDuplikateJob(false)
+            ),
+            job(
+                "DeactivateImpfstoffChargen",
+                ScheduledTaskService::scheduleDeactivateImpfstoffChargenJob,
+                runner -> runner.runDeactivateImpfstoffChargenJob(false)
+            ),
+            job(
+                "DeleteImpfstoffChargen",
+                ScheduledTaskService::scheduleDeleteImpfstoffChargenJob,
+                runner -> runner.runDeleteImpfstoffChargenJob(false)
+            ),
+            job(
+                "DocumentQueue",
+                ScheduledTaskService::scheduleDocumentQueueJob,
+                runner -> runner.runDocumentQueueJob(false)
+            ),
+            job(
+                "DocumentQueueCleanup",
+                ScheduledTaskService::scheduleDocumentQueueCleanupJob,
+                runner -> runner.runDocumentQueueCleanupJob(false)
+            ),
+            job(
+                "ArchiveDownloadEmailReminder",
+                ScheduledTaskService::scheduleArchiveDownloadEmailReminderJob,
+                runner -> runner.runArchiveDocumentDownloadEmailReminderJob(false)
+            ),
+            job(
+                "MarkForArchivierung",
+                ScheduledTaskService::scheduleMarkForArchivierungJob,
+                runner -> runner.runMarkForArchivierungJob(false)
+            ),
+            job(
+                "DossierQueueProcessing",
+                ScheduledTaskService::scheduleDossierQueueProcessingJob,
+                runner -> runner.runDossierQueueProcessingJob(false)
+            ),
+            job(
+                "DossierQueueCleanup",
+                ScheduledTaskService::scheduleDossierQueueCleanupJob,
+                runner -> runner.runDossierQueueCleanupJob(false)
+            ),
+            job(
+                "ArchiveDeleteKind",
+                ScheduledTaskService::scheduleArchiveDeleteKindJob,
+                runner -> runner.runArchiveDocumentKindDeleteJob(false)
+            ),
+            job(
+                "FileStoreHealthCheck",
+                ScheduledTaskService::scheduleFileStoreHealthCheckJob,
+                runner -> runner.runFileStoreHealthCheckJob(false)
+            ),
+            job(
+                "AuditRetentionCleanup",
+                ScheduledTaskService::scheduleAuditRetentionCleanupJob,
+                runner -> runner.runAuditRetentionCleanupJob(false)
+            )
+        );
     }
 
-    @Test
-    void testScheduleDocumentQueueJob() {
-        service.scheduleDocumentQueueJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runDocumentQueueJob(false);
+    @ParameterizedTest
+    @MethodSource("jobs")
+    void delegates_job_to_PerTenantRunnerService(
+        Consumer<ScheduledTaskService> schedule,
+        Consumer<SuperAdminRunnerService> expectedJob
+    ) {
+        schedule.accept(service);
+
+        verify(perTenantRunnerService, times(1))
+            .runForActiveTenants(any());
+        expectedJob.accept(verify(superAdminRunnerService, times(1)));
     }
 
-    @Test
-    void testScheduleKinderInaktivierenJob() {
-        service.scheduleKinderInaktivierenJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runKinderInaktivierenJob(false);
-    }
-
-    @Test
-    void testScheduleDocumentQueueCleanupJob() {
-        service.scheduleDocumentQueueCleanupJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runDocumentQueueCleanupJob(false);
-    }
-
-    @Test
-    void testScheduleReloadDuplikateJob() {
-        service.scheduleReloadDuplikateJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runReloadDuplikateJob(false);
-    }
-
-    @Test
-    void testScheduleDeactivateImpfstoffChargenJob() {
-        service.scheduleDeactivateImpfstoffChargenJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runDeactivateImpfstoffChargenJob(false);
-    }
-
-    @Test
-    void testScheduleDeleteImpfstoffChargenJob() {
-        service.scheduleDeleteImpfstoffChargenJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runDeleteImpfstoffChargenJob(false);
-    }
-
-    @Test
-    void testScheduleArchiveDownloadEmailReminder() {
-        service.scheduleArchiveDownloadEmailReminderJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runArchiveDocumentDownloadEmailReminderJob(false);
-    }
-
-    @Test
-    void testScheduleMarkForArchivierungDeleteJob() {
-        service.scheduleArchiveDeleteKindJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runArchiveDocumentKindDeleteJob(false);
-    }
-
-    @Test
-    void testScheduleDossierQueueProcessingJob() {
-        service.scheduleDossierQueueProcessingJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runDossierQueueProcessingJob(false);
-    }
-
-    @Test
-    void testScheduleDossierQueueCleanupJob() {
-        service.scheduleDossierQueueCleanupJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runDossierQueueCleanupJob(false);
-    }
-
-    @Test
-    void testScheduleMarkForArchivierungJob() {
-        service.scheduleMarkForArchivierungJob();
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runMarkForArchivierungJob(false);
-    }
-
-    @Test
-    void testRunForActiveTenants_MultipleTenants() {
-        // ARRANGE: Enable BE and BS
-        when(configService.isTenantEnabledForCurrentEnvironment(TenantEnum.BE)).thenReturn(true);
-        when(configService.isTenantEnabledForCurrentEnvironment(TenantEnum.BS)).thenReturn(true);
-        when(configService.isTenantEnabledForCurrentEnvironment(TenantEnum.WIN)).thenReturn(false);
-
-        // ACT
-        service.scheduleBenutzerInaktivierenJob();
-
-        // ASSERT
-        InOrder inOrder = inOrder(tenantProducer, superAdminRunnerService);
-
-        // Order is BS, WIN, BE in Enum? Let's check TenantEnum. BS(13), WIN(14), BE(15).
-        // Order: DEFAULT, BS, WIN, BE. DEFAULT.isAktiv() == false.
-
-        inOrder.verify(tenantProducer).setCurrentTenant(TenantEnum.BS);
-        inOrder.verify(superAdminRunnerService).runBenutzerInaktivierenJob(false);
-
-        inOrder.verify(tenantProducer).setCurrentTenant(TenantEnum.BE);
-        inOrder.verify(superAdminRunnerService).runBenutzerInaktivierenJob(false);
-
-        verify(tenantProducer, never()).setCurrentTenant(TenantEnum.WIN);
-        verify(tenantProducer, never()).setCurrentTenant(TenantEnum.DEFAULT);
-    }
-
-    @Test
-    void scheduleFileStoreHealthCheckJob_callsJobPerActiveTenant() {
-        service.scheduleFileStoreHealthCheckJob();
-
-        verifyJobWasCalledForEnabledTenants();
-        verify(superAdminRunnerService, atLeastOnce()).runFileStoreHealthCheckJob(false);
-    }
-
-    private void verifyJobWasCalledForEnabledTenants() {
-        verify(tenantProducer).setCurrentTenant(TenantEnum.BE);
-        verify(tenantProducer, never()).setCurrentTenant(TenantEnum.BS);
-        verify(tenantProducer, never()).setCurrentTenant(TenantEnum.WIN);
-        verify(tenantProducer, never()).setCurrentTenant(TenantEnum.DEFAULT);
+    private static Arguments job(
+        String name,
+        Consumer<ScheduledTaskService> schedule,
+        Consumer<SuperAdminRunnerService> expectedJob
+    ) {
+        return argumentSet(name, schedule, expectedJob);
     }
 }

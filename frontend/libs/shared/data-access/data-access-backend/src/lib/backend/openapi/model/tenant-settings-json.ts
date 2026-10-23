@@ -9,6 +9,7 @@
  */
 import { TenantEnum } from './tenant-enum';
 import { TenantSettingSaveJson } from './tenant-setting-save-json';
+import { LoginOptionJson } from './login-option-json';
 import { EntityInfoJson } from './entity-info-json';
 import { FachRolle } from './fach-rolle';
 import { BackendEntityId } from '@dvb/data-access-types';
@@ -21,6 +22,7 @@ export interface TenantSettingsJson {
     data: TenantSettingSaveJson;
     fachrollen: Array<FachRolle>;
     delegierbareFachrollen: Array<FachRolle>;
+    loginOptions: Array<LoginOptionJson>;
 }
 export namespace TenantSettingsJson {
 }

@@ -82,7 +82,7 @@ class ConfigTest {
         rule.check(ArchConst.APP_CLASSES);
     }
     @Test
-    void inject_configs_should_be_tyhrough_configservice() {
+    void inject_configs_should_be_through_configservice() {
         var rule = fields()
             .that()
             .areAnnotatedWith(ConfigProperty.class)

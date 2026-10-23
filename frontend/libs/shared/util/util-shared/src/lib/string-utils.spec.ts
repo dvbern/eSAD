@@ -1,6 +1,6 @@
 import {Nullish} from './nullish';
 import {isFilledIn, isNotBlank, joinNotBlank, requireFilledIn, requireNumber, trimToUndefined} from './string-utils';
-import '@lukemorales/jest-type-matchers';
+import {expectTypeOf} from 'vitest';
 
 describe('string-utils', () => {
   describe('isFilledIn', () => {
@@ -28,9 +28,9 @@ describe('string-utils', () => {
         const actual = isFilledIn(input);
         // noinspection IfStatementWithIdenticalBranchesJS
         if (actual) {
-          expect(input).toHaveStrictType<Foo>();
+          expectTypeOf(input).toEqualTypeOf<Foo>();
         } else {
-          expect(input).toHaveStrictType<never>();
+          expectTypeOf(input).toEqualTypeOf<never>();
         }
       });
 
@@ -40,9 +40,9 @@ describe('string-utils', () => {
         const actual = isFilledIn(input);
         // noinspection IfStatementWithIdenticalBranchesJS
         if (actual) {
-          expect(input).toHaveStrictType<Foo>();
+          expectTypeOf(input).toEqualTypeOf<Foo>();
         } else {
-          expect(input).toHaveStrictType<'' | Nullish>();
+          expectTypeOf(input).toEqualTypeOf<'' | Nullish>();
         }
       });
     });

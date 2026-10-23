@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
-import {IconOnlyButtonComponent} from '../../buttons';
+import {IconButtonType, IconOnlyButtonComponent} from '../../buttons';
 import {SpinnerComponent} from '../../icons/spinner';
 
 export type CollapsibleMenuStyle = 'ICON' | 'LINK';
@@ -14,12 +14,21 @@ export type CollapsibleMenuStyle = 'ICON' | 'LINK';
     NgbDropdownModule,
     IconOnlyButtonComponent,
     SpinnerComponent,
-  ]
+  ],
+  host: {
+    '[class.svui_collapsible-menu--transparent]': '!hasExplicitButtonColor()',
+  },
 })
 export class CollapsibleMenuComponent {
   collapsibleId = 'collapsibleId';
 
   menuStyle = input<CollapsibleMenuStyle>('ICON');
+  /**
+   * Without an explicit color the toggle is rendered with a transparent background.
+   */
+  buttonColor = input<IconButtonType | undefined>(undefined);
+  readonly hasExplicitButtonColor = computed(() => this.buttonColor() !== undefined);
+  readonly effectiveButtonColor = computed<IconButtonType>(() => this.buttonColor() ?? 'secondary');
   label = input.required<string>();
   readonly loading = input.required<boolean>();
 }

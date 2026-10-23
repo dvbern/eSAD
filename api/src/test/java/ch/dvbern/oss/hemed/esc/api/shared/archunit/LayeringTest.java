@@ -7,8 +7,10 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResourcePlain;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.NoTransactionService;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Repository;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
+import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.briefgenerierung.MassenbriefGeneratorService;
 import ch.dvbern.oss.hemed.esc.api.shared.archivierung.ArchivierungRuleProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.mapper.BaseMapper;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -233,6 +235,21 @@ class LayeringTest {
             .byClassesThat(are(RESOURCE).or(are(assignableTo(AuthorizerService.class))))
             .because("AuthorizerService should only be called from Resource layer (and may call itself)");
         rule.allowEmptyShould(true).check(APP_CLASSES);
+    }
+
+    @Test
+    void unbound_s3_methods_should_only_be_called_by_massenbrief_generator_service() {
+        var rule = methods().that()
+            .areDeclaredIn(FileStoreService.class)
+            .and()
+            .haveNameMatching("^(uploadToS3Async|deleteInS3Async)$")
+            .should()
+            .onlyBeCalled()
+            .byClassesThat(are(assignableTo(MassenbriefGeneratorService.class))
+                .or(are(assignableTo(FileStoreService.class))))
+            .because("Unbound S3 upload and delete methods bypass the database transaction and may only be used for "
+                + "temporary files in MassenbriefGeneratorService");
+        rule.check(APP_CLASSES);
     }
 
     @Test

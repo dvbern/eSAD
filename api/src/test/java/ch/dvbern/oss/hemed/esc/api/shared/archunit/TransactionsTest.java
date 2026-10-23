@@ -4,6 +4,7 @@ import ch.dvbern.oss.hemed.esc.api.features.example.developer.DatabaseResource;
 import ch.dvbern.oss.hemed.esc.api.features.example.developer.SuperAdminRunnerResource;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.escada.EscadaResource;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.PupilResource;
+import ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckAnlassTitelRequiredIfFeatureEnabledValidator;
 import ch.dvbern.oss.hemed.esc.api.shared.validator.CheckArztRequiredForDezentraleTenantsValidator;
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -43,6 +44,9 @@ class TransactionsTest {
             .that(are(not(SERVICE.or(REPOSITORY))))
             .and()
             .areNotAnnotatedWith(Stereotype.class)
+            // NOT_SUPPORTED, so no transaction of the caller leaks into the tenant's request context
+            .and()
+            .doNotHaveFullyQualifiedName(PerTenantRunnerService.class.getName())
             .should()
             .notBeAnnotatedWith(Transactional.class);
 

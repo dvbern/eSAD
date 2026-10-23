@@ -15,7 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationRollenServi
 import ch.dvbern.oss.hemed.esc.api.features.organisation.OrganisationService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -43,7 +43,7 @@ class FachrollenServiceTest {
     private SystemRollenService systemRollenService;
     private TenantSettingFeatures features;
     private BenutzerService benutzerService;
-    private TenantProducer tenantProducer;
+    private TenantContext tenantContext;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -55,11 +55,11 @@ class FachrollenServiceTest {
         systemRollenService = mock(SystemRollenService.class);
         FachrollenMailService fachrollenMailService = mock(FachrollenMailService.class);
         benutzerService = mock(BenutzerService.class);
-        tenantProducer = mock(TenantProducer.class);
+        tenantContext = mock(TenantContext.class);
         // Use BE tenant: SCHULAERZTIN grants BENUTZER_BERECHTIGUNGEN_SCHREIBEN there,
         // which lets us simulate a non-system caller with the required permission via an
         // organisation role.
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BE);
+        when(tenantContext.get()).thenReturn(TenantEnum.BE);
 
         fachrollenService = new FachrollenService(
             organisationService,
@@ -68,7 +68,7 @@ class FachrollenServiceTest {
             configService,
             tenantSettingsService,
             fachrollenMailService,
-            tenantProducer
+            tenantContext
         );
 
         TenantSetting tenantSetting = mock(TenantSetting.class);

@@ -171,6 +171,7 @@ class AnlassConfigMapperITest extends AbstractITest {
         assertThat(saveJson.isShowMassnahmenUeberweisungAugenarzt()).isTrue();
         assertThat(saveJson.isShowMassnahmenNachkontrolleSaed()).isTrue();
         assertThat(saveJson.isShowMassnahmenAnderes()).isTrue();
+        assertThat(saveJson.isShowAnlassPrintImpfen()).isTrue();
     }
 
     @Test

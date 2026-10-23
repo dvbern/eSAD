@@ -15,7 +15,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.json.DossierNichtMedizinischS
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.PapierakteStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.ZustaendigePersonService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public final class DossierMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AppClock appClock;
     private final ZustaendigePersonService zustaendigePersonService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public static DossierJson toJson(
@@ -101,7 +101,7 @@ public final class DossierMapper {
             nachkontrolle,
             now,
             canReadMedizinischeDaten.test(dossier),
-            tenantProducer.produceTenant());
+            tenantContext.get());
     }
 
     @NonNull
@@ -127,7 +127,7 @@ public final class DossierMapper {
             persistedNachkontrolle,
             now,
             canReadMedizinischeDaten.test(persistedDossier),
-            tenantProducer.produceTenant());
+            tenantContext.get());
     }
 
     @NonNull
@@ -165,7 +165,10 @@ public final class DossierMapper {
         @Nullable ID<Benutzer> mpaId,
         @NonNull Predicate<Dossier> canReadMedizinischeDaten
     ) {
-        Dossier existingDossier = dossierService.getByIdEnsureActive(dossierID);
+        // Bewusst kein getByIdEnsureActive: Wird das Kind im selben Request (KindResource PUT /kinder/{id}) auf
+        // INAKTIV gesetzt, ist der Status hier bereits INAKTIV. Die Aufrufer ausserhalb von KindResource pruefen den
+        // aktiven Status selbst, bevor sie diese Methode aufrufen.
+        Dossier existingDossier = dossierService.getById(dossierID);
         boolean zustaendigkeitChanged = zustaendigePersonService.hasZustaendigkeitChanged(existingDossier, arztId);
         // Die MPA wird wieder dieselbe gesetzt, ausser beim Arzt ist eine neue Organisation zustaendig.
         ID<Benutzer> mpaToSet = mpaId;
@@ -219,6 +222,6 @@ public final class DossierMapper {
             null,
             now,
             canReadMedizinischeDaten.test(existingDossier),
-            tenantProducer.produceTenant());
+            tenantContext.get());
     }
 }

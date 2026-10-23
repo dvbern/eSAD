@@ -4,26 +4,37 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentEnvironment;
 import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
+import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSetting;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.TenantSettingBuilder;
+import io.quarkus.arc.Arc;
+import io.quarkus.arc.ManagedContext;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
@@ -39,14 +50,14 @@ class EnsureBenutzerHelperServiceTest {
 
     private final EnsureBenutzerHelperService ensureBenutzerHelperService;
     private final BenutzerRepo benutzerRepo;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final FixtureService fixtureService;
 
     private TenantSettingsService tenantSettingsServiceMock;
 
     @BeforeEach
     void setUp() throws MalformedURLException {
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
         ConfigService configServiceMock = Mockito.mock(ConfigService.class);
         QuarkusMock.installMockForType(tenantSettingsServiceMock, TenantSettingsService.class);
@@ -264,5 +275,77 @@ class EnsureBenutzerHelperServiceTest {
         Assertions.assertThat(updatedUser).isPresent();
         Assertions.assertThat(updatedUser.get().getVorname()).isEqualTo("changed");
         Assertions.assertThat(updatedUser.get().getKeycloakId()).isEqualTo(newSubjectId.toString());
+    }
+
+    @Test
+    void parallel_requests_of_the_same_benutzer_all_sync_their_token() throws Exception {
+        UUID subjectId = UUID.randomUUID();
+        var testemail = "parallel-" + subjectId.toString().substring(0, 8) + "@example.com";
+        ensureBenutzerHelperService.createNewUserFromToken(jwtDataFor(subjectId, testemail, "testcreate"));
+
+        var storedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
+        Assertions.assertThat(storedUser).isPresent();
+        ID<Benutzer> benutzerId = storedUser.get().getId();
+
+        // The app calls this on every request of /benutzer/self, so a user with several browser tabs -
+        // or a parallel test suite - runs it concurrently on one row.
+        int threads = 4;
+        var startTogether = new CountDownLatch(1);
+        var executor = Executors.newFixedThreadPool(threads);
+        try {
+            List<Future<Object>> updates = IntStream.range(0, threads)
+                .mapToObj(i -> executor.submit(() -> {
+                    startTogether.await();
+                    updateInOwnRequestContext(benutzerId, jwtDataFor(subjectId, testemail, "changed" + i));
+                    return null;
+                }))
+                .toList();
+
+            startTogether.countDown();
+
+            for (Future<Object> update : updates) {
+                // fails with an OptimisticLockException as soon as two of them race the version column
+                update.get(30, TimeUnit.SECONDS);
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+
+        var updatedUser = benutzerRepo.findByEmail(EmailAddress.fromString(testemail));
+        Assertions.assertThat(updatedUser).isPresent();
+        Assertions.assertThat(updatedUser.get().getVorname()).startsWith("changed");
+    }
+
+    /**
+     * The services are request scoped, so a call from another thread needs a request context of its own -
+     * and the Tenant that goes with it.
+     */
+    private void updateInOwnRequestContext(@NonNull ID<Benutzer> benutzerId, @NonNull JsonWebTokenDataDTO jwtData) {
+        ManagedContext requestContext = Arc.container().requestContext();
+        requestContext.activate();
+        try {
+            tenantContext.setCurrentTenant(TenantEnum.BS);
+            ensureBenutzerHelperService.updateExistingUser(benutzerId, jwtData);
+        } finally {
+            requestContext.terminate();
+        }
+    }
+
+    @NonNull
+    private JsonWebTokenDataDTO jwtDataFor(@NonNull UUID subjectId, @NonNull String email, @NonNull String vorname) {
+        return new JsonWebTokenDataDTO(
+            null,
+            subjectId,
+            email,
+            vorname,
+            vorname,
+            EmailAddress.fromString(email),
+            "issuer",
+            "+41 76 123 45 56",
+            "+41 61 123 45 56",
+            "Dr. Med",
+            TenantEnum.BS.name(),
+            Set.of(FachRolle.SYSTEM_ADMIN)
+        );
     }
 }

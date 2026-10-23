@@ -24,7 +24,7 @@ import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationJson;
 import ch.dvbern.oss.hemed.esc.api.features.organisation.json.OrganisationRollenJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSettingsService;
@@ -49,14 +49,14 @@ public class BenutzerMapper {
     private final ConfigService configService;
     private final OrganisationRollenMapper organisationRollenMapper;
     private final OrganisationService organisationService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Nullable
     public BenutzerOptionJson toOptionJson(@Nullable Benutzer benutzer) {
         if (benutzer == null) {
             return null;
         }
-        return toOptionJson(benutzer, tenantProducer.produceTenant());
+        return toOptionJson(benutzer, tenantContext.get());
     }
 
     @Nullable
@@ -107,7 +107,8 @@ public class BenutzerMapper {
 
         if (existingBenutzer == null) {
             existingBenutzer = new Benutzer();
-            existingBenutzer.setEmail(saveJson.getEmail());
+            // stored in lowercase like the email Keycloak delivers at login, whatever case the admin typed
+            existingBenutzer.setEmail(saveJson.getEmail().toLowerCase());
         }
         existingBenutzer.setNachname(saveJson.getName());
         existingBenutzer.setVorname(saveJson.getVorname());
@@ -190,7 +191,7 @@ public class BenutzerMapper {
         if (benutzer == null) {
             return null;
         }
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         return toJson(benutzer, tenant);
     }
 

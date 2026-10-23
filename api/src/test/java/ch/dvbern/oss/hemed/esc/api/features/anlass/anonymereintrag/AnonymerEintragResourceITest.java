@@ -32,7 +32,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.util.HashValueGeneratorUtil;
@@ -69,7 +69,7 @@ class AnonymerEintragResourceITest extends AbstractITest {
     private final AnlassService anlassService;
     private final UntersuchungService untersuchungService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Test
     @TestAsAdminBS
@@ -145,7 +145,7 @@ class AnonymerEintragResourceITest extends AbstractITest {
     @TestAsAdminBE
     void createAnonymerEintrag_dezentral_support_not_allowed() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         LocalDate anlassDatum = LocalDate.now().plusDays(10);
         LocalDate kindGeburtsdatum = LocalDate.of(2016, 2, 12);
         String kindName = "Dummy";
@@ -175,7 +175,7 @@ class AnonymerEintragResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void createAnonymerEintrag_dezentral_must_be_arzt() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         LocalDate anlassDatum = LocalDate.now().plusDays(10);
         LocalDate kindGeburtsdatum = LocalDate.of(2016, 2, 12);
         String kindName = "Dummy";
@@ -218,7 +218,7 @@ class AnonymerEintragResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void abschlussAnonymerEintrag_empty_untersuchung() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(schularzt);
         untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);

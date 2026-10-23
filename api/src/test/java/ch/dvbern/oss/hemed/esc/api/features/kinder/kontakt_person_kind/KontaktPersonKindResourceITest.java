@@ -13,7 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.KontaktPersonKindBuilder;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
@@ -38,7 +38,7 @@ class KontaktPersonKindResourceITest extends AbstractITest {
 
     private final KontaktPersonKindService kontaktPersonKindService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Test
     @TestAsAdminBS
@@ -183,7 +183,7 @@ class KontaktPersonKindResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void createKontaktPersonKind_throws_if_user_not_zustaendig() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // Dossier gehoert einem Arzt einer anderen Organisation,
         // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig

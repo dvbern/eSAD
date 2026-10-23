@@ -4,7 +4,7 @@
   "peerDependencies": {
     "@dvb/util-shared": "0.0.1",
     "@dvb/ui-components": "0.0.1",
-    "@angular/core": "21.2.18",
+    "@angular/core": "22.2.1",
     "d3": "^7.9.0"
   },
   "sideEffects": false

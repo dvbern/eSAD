@@ -72,18 +72,20 @@ public class ImpfstoffChargeService {
         }
         Optional<ImpfstoffCharge> byImpfstoffAndName =
             findByImpfstoffAndName(impfstoff.getId(), chargeName);
-
-        if (byImpfstoffAndName.isPresent()) {
-            ImpfstoffCharge existing = byImpfstoffAndName.get();
-            existing.disableOptimisticLockingCheck();
-            existing.setAktiv(true);
-            return existing;
-        }
-        // Falls erlaubt: Eine neue Charge anlegen
         boolean adHocImpfstoffChargenEnabled = tenantSettingsService.getTenantSetting()
             .getTenantSettingFeatures()
             .getAdHocImpfstoffChargenFeature()
             .isEnabledForDeploymentEnvironment(configService.getEnvironment());
+
+        if (byImpfstoffAndName.isPresent()) {
+            ImpfstoffCharge existing = byImpfstoffAndName.get();
+            if (adHocImpfstoffChargenEnabled) {
+                existing.disableOptimisticLockingCheck();
+                existing.setAktiv(true);
+            }
+            return existing;
+        }
+        // Falls erlaubt: Eine neue Charge anlegen
         if (adHocImpfstoffChargenEnabled) {
             return persist(new ImpfstoffCharge(impfstoff, chargeName, true));
         }

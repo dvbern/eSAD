@@ -19,7 +19,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Transactional(TxType.NOT_SUPPORTED)
 public class PupilWorkerService {
 
-    private final PupilService pupilService;
+    private final PupilSyncEventService pupilSyncEventService;
     private final FileValidationService fileValidationService;
     private final EventBus eventBus;
 
@@ -27,7 +27,7 @@ public class PupilWorkerService {
         // check the filetype
         fileValidationService.requireFiletypeIsAllowed(fileUpload, FileTyp.PUPIL_SYNC);
         // store the sync data in a file
-        PupilSyncEvent pupilSyncEvent = pupilService.savePupilSyncData(fileUpload);
+        PupilSyncEvent pupilSyncEvent = pupilSyncEventService.savePupilSyncData(fileUpload);
         LOG.info("PUPIL: sending event for processing ");
         eventBus.requestAndForget(PupilService.PUPIL_SYNC_EVENT_ADDRESS, pupilSyncEvent);
     }

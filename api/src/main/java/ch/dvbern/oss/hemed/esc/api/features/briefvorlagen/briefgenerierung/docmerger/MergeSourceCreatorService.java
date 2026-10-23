@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +39,7 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.math.GanzZahl;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.UntersuchungArztBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.aerztlicheuntersuchung.types.Blutdruck;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.groessegewicht.UntersuchungGroesseGewicht;
@@ -58,8 +60,10 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatu
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungIntern;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfschutzGegeben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.ImpfungenMassnahmenEmpfehlung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.UntersuchungSehenBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.BrilleLinsenResultat;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sehen.types.DistanzSehenAugeEinzelnResultat;
@@ -106,6 +110,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @Service
 @RequiredArgsConstructor
 public class MergeSourceCreatorService {
+    private static final String BRIEF_PREFIX = "brief";
+    private static final PrintUtilImpl PRINT_UTIL = new PrintUtilImpl("");
+    private static final String BULLET_PREFIX = "\u2003•\u2002"; // renders em-whitespace bulletpoint en-whitespace
+
     private final TL tl;
     private final DossierService dossierService;
     private final UntersuchungService untersuchungService;
@@ -114,8 +122,6 @@ public class MergeSourceCreatorService {
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
     private final AppClock appClock;
     private final BenutzerService benutzerService;
-    private static final String BRIEF_PREFIX = "brief";
-    private static final PrintUtilImpl PRINT_UTIL = new PrintUtilImpl("");
     private final KontaktPersonKindService kontaktPersonKindService;
 
     @NonNull
@@ -261,7 +267,8 @@ public class MergeSourceCreatorService {
             new AnlassMergeSource(
                 toAnlassMetadata(einladung.getAnlass()),
                 toImpfstatusListDTO(impfstatusList, tl),
-                toImpfungDTO(impfungList, tl),
+                toImpfstatusListSummaryDTO(impfstatusList, tl),
+                toImpfungDTO(impfungList, untersuchung.getUntersuchungImpfungen(), tl),
                 toSehenDTO(untersuchung, anlassConfig, tl),
                 toHoerenAudiogrammDTO(untersuchung, anlassConfig, tl),
                 toHoerenOtoskopieDTO(untersuchung, anlassConfig, tl),
@@ -394,8 +401,33 @@ public class MergeSourceCreatorService {
     }
 
     @NonNull
-    private static ImpfungDocMergerDTO toImpfungDTO(
+    static ImpfstatusListSummaryDocMergerDTO toImpfstatusListSummaryDTO(
+        @NonNull List<UntersuchungImpfstatusKrankheit> impfstatusList,
+        @NonNull TL tl
+    ) {
+        return new ImpfstatusListSummaryDocMergerDTO(
+            getFilteredImpfstatusList(
+                impfstatusList,
+                tl,
+                impfstatus -> impfstatus.getImpfschutzGegeben() == ImpfschutzGegeben.JA
+            ),
+            getFilteredImpfstatusList(
+                impfstatusList,
+                tl,
+                UntersuchungImpfstatusKrankheit::isImpfempfehlung
+            ),
+            getFilteredImpfstatusList(
+                impfstatusList,
+                tl,
+                UntersuchungImpfstatusKrankheit::isImpfentscheid
+            )
+        );
+    }
+
+    @NonNull
+    static ImpfungDocMergerDTO toImpfungDTO(
         @NonNull List<UntersuchungImpfungIntern> impfungInternList,
+        @Nullable UntersuchungImpfungen untersuchungImpfungen,
         @NonNull TL tl
     ) {
         String impfungListString = impfungInternList
@@ -414,7 +446,59 @@ public class MergeSourceCreatorService {
                     .collect(Collectors.joining(", "))))
             .collect(Collectors.joining("\n"));
 
-        return new ImpfungDocMergerDTO(impfungListString);
+        String impfausweisNichtVorhanden = getImpfausweisNichtVorhandenText(untersuchungImpfungen, tl);
+        String massnahmeImpfungBeimHausarzt = getMassnahmeImpfungBeimHausarztText(untersuchungImpfungen, tl);
+
+        return new ImpfungDocMergerDTO(
+            impfungListString,
+            impfausweisNichtVorhanden,
+            massnahmeImpfungBeimHausarzt
+        );
+    }
+
+    @NonNull
+    static String getImpfausweisNichtVorhandenText(
+        @Nullable UntersuchungImpfungen untersuchungImpfungen,
+        @NonNull TL tl
+    ) {
+        if (untersuchungImpfungen != null && untersuchungImpfungen.isImpfausweisNichtVorhanden()) {
+            return tl.translate("brief.impfung.impfausweisNichtVorhanden");
+        }
+        return "";
+    }
+
+    @NonNull
+    static String getMassnahmeImpfungBeimHausarztText(
+        @Nullable UntersuchungImpfungen untersuchungImpfungen,
+        @NonNull TL tl
+    ) {
+        if (untersuchungImpfungen != null
+            && untersuchungImpfungen.getUntersuchungImpfungenMassnahmen() != null
+            && untersuchungImpfungen.getUntersuchungImpfungenMassnahmen()
+                .getEmpfehlung()
+                .contains(ImpfungenMassnahmenEmpfehlung.IMPFUNG_BEIM_HAUSARZT)) {
+            return tl.translate("brief.impfung.massnahmeImpfungBeimHausarzt");
+        }
+        return "";
+    }
+
+    @NonNull
+    static String getFilteredImpfstatusList(
+        @NonNull List<UntersuchungImpfstatusKrankheit> impfstatusList,
+        @NonNull TL tl,
+        @NonNull Predicate<UntersuchungImpfstatusKrankheit> filterKrankheit
+    ) {
+        String result = impfstatusList.stream()
+            .filter(filterKrankheit)
+            .map(UntersuchungImpfstatusKrankheit::getKrankheit)
+            .distinct()
+            .sorted()
+            .map(krankheit -> BULLET_PREFIX + tl.translateValue(krankheit))
+            .collect(Collectors.joining("\n"));
+
+        return result.isEmpty()
+            ? tl.translate("brief.impfstatus.krankheiten.empty")
+            : result;
     }
 
     @NonNull
@@ -863,14 +947,28 @@ public class MergeSourceCreatorService {
             return new UntersuchungArztDocMergerDTO(
                 PRINT_UTIL.getPlaceholder(),
                 PRINT_UTIL.getPlaceholder(),
-                PRINT_UTIL.getPlaceholder()
+                PRINT_UTIL.getPlaceholder(),
+                ""
             );
         }
         return new UntersuchungArztDocMergerDTO(
             getEnumValue(BRIEF_PREFIX, untersuchungArztBeurteilung.getBlutdruck(), tl),
             PRINT_UTIL.trimToPlaceholder(untersuchungArztBeurteilung.getBlutdruckSystolisch()),
-            PRINT_UTIL.trimToPlaceholder(untersuchungArztBeurteilung.getBlutdruckDiastolisch())
+            PRINT_UTIL.trimToPlaceholder(untersuchungArztBeurteilung.getBlutdruckDiastolisch()),
+            getBlutdruckAuffaelligText(untersuchungArztBeurteilung, tl)
         );
+    }
+
+    @NonNull
+    static String getBlutdruckAuffaelligText(
+        @Nullable UntersuchungArztBeurteilung untersuchungArztBeurteilung,
+        @NonNull TL tl
+    ) {
+        if (untersuchungArztBeurteilung != null
+            && untersuchungArztBeurteilung.getBlutdruck() == Blutdruck.AUFFAELLIG) {
+            return tl.translate("brief.untersuchungArzt.blutdruckAuffaellig");
+        }
+        return "";
     }
 
     @NonNull

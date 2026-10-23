@@ -18,7 +18,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
@@ -56,11 +56,11 @@ class UntersuchungMassnahmenResourceITest {
     private final FixtureService fixtureService;
     private final EinladungService einladungService;
     private final AufgabeService aufgabeService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @BeforeEach
     void setUp() {
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
     }
 
     @Test
@@ -226,7 +226,7 @@ class UntersuchungMassnahmenResourceITest {
     @TestAsSchularztBE
     void saveUntersuchungSehenMassnahmen_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnonymerEintrag anonymerEintrag = fixtureService.createAnonymerEintragForArzt(arzt);
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchungAnonym(anonymerEintrag.getId(), false);

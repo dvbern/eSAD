@@ -3,7 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.testutil;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.clock.FixedClockProvider;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import io.quarkus.test.junit.QuarkusMock;
 import jakarta.inject.Inject;
 import java.time.OffsetDateTime;
@@ -19,14 +19,14 @@ public abstract class AbstractITest {
     private final AppClock appClock = new AppClock(clockProvider);
 
     @Inject
-    TenantProducer tenantProducer;
+    TenantContext tenantContext;
 
     @BeforeEach
     public void setUp() {
         // Clock wieder zurücksetzen vom letzten Test
         resetTime();
         QuarkusMock.installMockForType(appClock, AppClock.class);
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
     }
 
     public void resetTime() {

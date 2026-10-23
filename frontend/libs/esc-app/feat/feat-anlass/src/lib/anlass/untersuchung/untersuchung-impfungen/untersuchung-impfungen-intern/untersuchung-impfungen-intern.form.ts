@@ -61,9 +61,11 @@ export class UntersuchungImpfungenInternForm
       .subscribe({
         next: value => {
           // ChargeOptions aufgrund Impfstoff anpassen
+          this.chargeOptions.set(this.config.impfstoffChargenStore.chargeOptionsForImpfstoffIncluding(
+            value?.id,
+            undefined));
           this.group.controls.charge.reset();
           this.group.controls.krankheitsImmunitaeten.clear();
-          this.chargeOptions.set(config.impfstoffChargenStore.activeChargenForImpfstoffOptions(value?.id));
           // Die Immunitaets-SubForms pro Krankheit des Impfstoffs erstellen
           if (value) {
             for (const krankheit of value.data.krankheiten) {
@@ -99,6 +101,10 @@ export class UntersuchungImpfungenInternForm
 
     const charge = impfung?.charge ? {label: impfung.charge} as ImpfstoffChargeOption : undefined;
     this.group.reset({...impfung, charge});
+    // Nach dem Reset setzen, damit eine bestehende inaktive oder ad hoc erfasste Charge enthalten bleibt
+    this.chargeOptions.set(this.config.impfstoffChargenStore.chargeOptionsForImpfstoffIncluding(
+      impfung?.impfstoff?.id,
+      charge?.label));
     this.mode = DetailMode.EDIT;
 
     if (impfung) {

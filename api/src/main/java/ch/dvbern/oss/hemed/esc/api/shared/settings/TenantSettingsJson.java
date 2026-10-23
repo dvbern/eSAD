@@ -50,4 +50,9 @@ public class TenantSettingsJson {
     @NonNull
     @Schema(required = true)
     private List<FachRolle> delegierbareFachrollen;
+
+    @NotNull
+    @NonNull
+    @Schema(required = true)
+    private List<LoginOptionJson> loginOptions;
 }

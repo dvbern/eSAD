@@ -6,7 +6,7 @@ import {whenFormValid} from './when-form-valid';
 describe('whenFormValid', () => {
   let fb: NonNullableFormBuilder;
   const fakeDestroyRef: DestroyRef = {
-    onDestroy: jest.fn(),
+    onDestroy: vi.fn(),
     destroyed: false,
   };
 

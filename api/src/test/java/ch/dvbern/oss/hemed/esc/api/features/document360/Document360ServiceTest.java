@@ -10,7 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.features.document360.json.Document360CodeRequ
 import ch.dvbern.oss.hemed.esc.api.features.document360.json.Document360CodeResponseJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
@@ -35,21 +35,21 @@ class Document360ServiceTest {
     private BenutzerService benutzerService;
     private Document360Client document360Client;
     private Document360Service document360Service;
-    private TenantProducer tenantProducer;
+    private TenantContext tenantContext;
 
     @BeforeEach
     void setUp() throws Exception {
         configService = Mockito.mock(ConfigService.class);
         benutzerService = Mockito.mock(BenutzerService.class);
         document360Client = Mockito.mock(Document360Client.class);
-        tenantProducer = Mockito.mock(TenantProducer.class);
-        document360Service = new Document360Service(configService, benutzerService, tenantProducer, document360Client);
+        tenantContext = Mockito.mock(TenantContext.class);
+        document360Service = new Document360Service(configService, benutzerService, tenantContext, document360Client);
 
         when(configService.getDocument360KbLoginUrl()).thenReturn(URI.create("https://kb.document360.io/jwt/authorize")
             .toURL());
         when(configService.getDocument360ClientId()).thenReturn("test-client-id");
         when(configService.getDocument360ClientSecret()).thenReturn("test-client-secret");
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BS);
+        when(tenantContext.get()).thenReturn(TenantEnum.BS);
     }
 
     @Test
@@ -106,7 +106,7 @@ class Document360ServiceTest {
         TenantEnum tenant,
         List<String> expectedReaderGroups
     ) {
-        when(tenantProducer.produceTenant()).thenReturn(tenant);
+        when(tenantContext.get()).thenReturn(tenant);
         Benutzer benutzer = BenutzerBuilder.defaultBenutzer();
         when(benutzerService.getCurrentBenutzerOrThrowException()).thenReturn(benutzer);
 

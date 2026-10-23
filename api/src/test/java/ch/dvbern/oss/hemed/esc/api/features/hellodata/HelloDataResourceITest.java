@@ -3,27 +3,74 @@ package ch.dvbern.oss.hemed.esc.api.features.hellodata;
 import java.net.HttpURLConnection;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.Audiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogramm;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.UntersuchungHoerenAudiogrammService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammSimpel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenEmpfehlung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenHoerhilfe;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfstatusKrankheitRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenNurUnvollstaendige;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenNurUnvollstaendigeRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenNurUnvollstaendigeService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungenRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisGrundUnvollstaendig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfausweisVollstaendig;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDaten;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.kind.UntersuchungKindDatenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmen;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.UntersuchungImpfungenMassnahmenService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.types.InformationEltern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungRepo;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataMetaJson;
 import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSchulenEnvelopeJson;
 import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSentinelJson;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.Dossier;
+import ch.dvbern.oss.hemed.esc.api.features.kinder.DossierService;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.SchuleService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
+import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.MultiValueEnhanced;
+import ch.dvbern.oss.hemed.esc.api.shared.valueenhanced.SingleValueEnhanced;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.AudiogrammBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.DossierBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.builder.EinladungBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsHelloDataBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsHelloDataForeignTenant;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsHelloDataSeedingBE;
+import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSchularztBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBE;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
@@ -46,20 +93,38 @@ class HelloDataResourceITest extends AbstractITest {
 
     private static final String SCHULEN_PATH = "/hellodata/v1/ndjson/schulen";
     private static final String SCHULEN_JSON_PATH = "/hellodata/v1/json/schulen";
+    private static final String UNTERSUCHUNGEN_PATH = "/hellodata/v1/ndjson/untersuchungen";
+    private static final String UNTERSUCHUNGEN_JSON_PATH = "/hellodata/v1/json/untersuchungen";
 
     private final SchuleService schuleService;
     private final FixtureService fixtureService;
-    private final TenantProducer beTenantProducer;
+    private final TenantContext beTenantContext;
     // the CDI bean, not a bare new ObjectMapper(): it carries the application's Jackson
     // configuration, so assertions here see exactly what HelloData receives
     private final ObjectMapper objectMapper;
+    private final AnlassService anlassService;
+    private final AnlassConfigService anlassConfigService;
+    private final EinladungService einladungService;
+    private final UntersuchungService untersuchungService;
+    private final UntersuchungHoerenAudiogrammRepo untersuchungHoerenAudiogrammRepo;
+    private final UntersuchungHoerenAudiogrammService untersuchungHoerenAudiogrammService;
+    private final UntersuchungKindDatenService untersuchungKindDatenService;
+    private final UntersuchungImpfungenRepo untersuchungImpfungenRepo;
+    private final UntersuchungImpfungenNurUnvollstaendigeRepo untersuchungImpfungenNurUnvollstaendigeRepo;
+    private final UntersuchungImpfungenNurUnvollstaendigeService untersuchungImpfungenNurUnvollstaendigeService;
+    private final UntersuchungImpfungenMassnahmenRepo untersuchungImpfungenMassnahmenRepo;
+    private final UntersuchungImpfungenMassnahmenService untersuchungImpfungenMassnahmenService;
+    private final UntersuchungImpfstatusKrankheitRepo untersuchungImpfstatusKrankheitRepo;
+    private final UntersuchungRepo untersuchungRepo;
+    private final DossierService dossierService;
+    private final AppClock appClock;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
         // AbstractITest sets BS - but HelloData reads exclusively in tenant BE.
-        beTenantProducer.setCurrentTenant(TenantEnum.BE);
+        beTenantContext.setCurrentTenant(TenantEnum.BE);
     }
 
     /**
@@ -441,6 +506,256 @@ class HelloDataResourceITest extends AbstractITest {
     }
 
     @Test
+    @SneakyThrows
+    @TestAsHelloDataSeedingBE
+    void export_untersuchungen_returns_ndjson_with_meta_and_anonymized_data() {
+        // ARRANGE
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+        Anlass anlass = anlassService.persist(AnlassBuilder.create(builder -> builder
+            .withTitle("HelloData Test Anlass NDJSON")
+            .withArzt(arzt)
+            .withAnlassConfig(config)));
+        Dossier dossier = dossierService.persist(DossierBuilder.create(builder -> builder
+            .forKind(fixtureService.createKind())
+            .withZustaendigArzt(arzt)));
+        Einladung einladung = einladungService.persist(EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(dossier)));
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        UntersuchungKindDaten kd = untersuchungKindDatenService.persist(
+            UntersuchungKindDaten.ofKind(dossier.getKind()));
+        untersuchung.setUntersuchungKindDaten(kd);
+        fixtureService.executeSql(
+            "UPDATE untersuchung SET untersuchungkinddaten_id = '" + kd.getId().getUUID()
+                + "' WHERE id = '" + untersuchung.getId().getUUID() + "'");
+
+        // ACT
+        Response response = RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_PATH)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_OK)
+            .extract()
+            .response();
+
+        // ASSERT
+        assertThat(response.getContentType()).contains(NdjsonWriter.MEDIA_TYPE);
+
+        String body = response.asString();
+        List<JsonNode> lines = parseNdjson(body);
+        assertThat(lines).isNotEmpty();
+
+        List<JsonNode> data = dataRows(lines);
+        Set<String> exportedIds = data.stream()
+            .map(row -> row.get("id").asText())
+            .collect(Collectors.toSet());
+        assertThat(exportedIds).contains(untersuchung.getId().getUUID().toString());
+
+        // Check metadata sentinel
+        JsonNode lastLine = lines.getLast();
+        assertThat(lastLine.has(HelloDataSentinelJson.META_KEY)).isTrue();
+        JsonNode meta = lastLine.get(HelloDataSentinelJson.META_KEY);
+        assertThat(meta.get("status").asText()).isEqualTo(HelloDataMetaJson.STATUS_COMPLETE);
+        assertThat(meta.get("rowCount").asLong()).isEqualTo(data.size());
+
+        // Verify anonymization: ensure sensitive PII fields are never emitted
+        assertThat(body).doesNotContain("\"vorname\"")
+            .doesNotContain("\"nachname\"")
+            .doesNotContain("\"geburtsdatum\"")
+            .contains("\"geschlecht\"");
+    }
+
+    @Test
+    @SneakyThrows
+    @TestAsHelloDataSeedingBE
+    void export_untersuchungen_returns_json_envelope_with_meta_and_anonymized_data() {
+        // ARRANGE
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+        Anlass anlass = anlassService.persist(AnlassBuilder.create(builder -> builder
+            .withTitle("HelloData Test Anlass")
+            .withArzt(arzt)
+            .withAnlassConfig(config)));
+        Dossier dossier = dossierService.persist(DossierBuilder.create(builder -> builder
+            .forKind(fixtureService.createKind())
+            .withZustaendigArzt(arzt)));
+        Einladung einladung = einladungService.persist(EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(dossier)));
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        UntersuchungKindDaten kd = untersuchungKindDatenService.persist(
+            UntersuchungKindDaten.ofKind(dossier.getKind()));
+        untersuchung.setUntersuchungKindDaten(kd);
+        fixtureService.executeSql(
+            "UPDATE untersuchung SET untersuchungkinddaten_id = '" + kd.getId().getUUID()
+                + "' WHERE id = '" + untersuchung.getId().getUUID() + "'");
+
+        // ACT
+        Response response = RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_JSON_PATH)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_OK)
+            .extract()
+            .response();
+
+        // ASSERT
+        assertThat(response.getContentType()).contains(JsonEnvelopeWriter.MEDIA_TYPE);
+
+        String body = response.asString();
+        JsonNode root = objectMapper.readTree(body);
+
+        assertThat(root.has("data")).isTrue();
+        JsonNode dataArray = root.get("data");
+        assertThat(dataArray.isArray()).isTrue();
+
+        Set<String> exportedIds = idsOf(dataArray);
+        assertThat(exportedIds).contains(untersuchung.getId().getUUID().toString());
+
+        // Check metadata sentinel
+        assertThat(root.has(HelloDataSentinelJson.META_KEY)).isTrue();
+        JsonNode meta = root.get(HelloDataSentinelJson.META_KEY);
+        assertThat(meta.get("status").asText()).isEqualTo(HelloDataMetaJson.STATUS_COMPLETE);
+        assertThat(meta.get("rowCount").asLong()).isEqualTo(dataArray.size());
+
+        // Verify anonymization: ensure sensitive PII fields are never emitted
+        assertThat(body).doesNotContain("\"vorname\"")
+            .doesNotContain("\"nachname\"")
+            .doesNotContain("\"geburtsdatum\"")
+            .contains("\"geschlecht\"");
+    }
+
+    @Test
+    @SneakyThrows
+    @TestAsHelloDataSeedingBE
+    void export_untersuchungen_returns_nested_impfungen_massnahmen() {
+        // ARRANGE
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+        Anlass anlass = anlassService.persist(AnlassBuilder.create(builder -> builder
+            .withTitle("HelloData Impfungen Anlass")
+            .withArzt(arzt)
+            .withAnlassConfig(config)));
+        Dossier dossier = dossierService.persist(DossierBuilder.create(builder -> builder
+            .forKind(fixtureService.createKind())
+            .withZustaendigArzt(arzt)));
+        Einladung einladung = einladungService.persist(EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(dossier)));
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        UntersuchungKindDaten kd = untersuchungKindDatenService.persist(
+            UntersuchungKindDaten.ofKind(dossier.getKind()));
+        untersuchung.setUntersuchungKindDaten(kd);
+
+        // Hoeren Audiogramm
+        UntersuchungHoerenAudiogramm hoeren = UntersuchungHoerenAudiogramm.forUntersuchung(untersuchung);
+        Audiogramm audioR = AudiogrammBuilder.create(b -> b.withDezibelAllHz(Dezibel.DB20));
+        audioR.setVersion(0L);
+        audioR.disableOptimisticLockingCheck();
+        hoeren.setAudiogrammRechts(audioR);
+        Audiogramm audioL = AudiogrammBuilder.create(b -> b.withDezibelAllHz(Dezibel.DB20));
+        audioL.setVersion(0L);
+        audioL.disableOptimisticLockingCheck();
+        hoeren.setAudiogrammLinks(audioL);
+        hoeren.setAudiogrammSimpel(SingleValueEnhanced.of(AudiogrammSimpel.DB_TIEF, null));
+        hoeren.setHoerhilfe(SingleValueEnhanced.of(HoerenHoerhilfe.NEIN, null));
+        hoeren.setAudiogrammBeurteilung(MultiValueEnhanced.of(EnumSet.of(AudiogrammBeurteilung.NORMAL), null));
+        hoeren.setZusaetzlicheAngaben(MultiValueEnhanced.of(EnumSet.of(HoerenZusaetzlicheAngaben.KEINE), null));
+        hoeren.setEmpfehlung(MultiValueEnhanced.of(EnumSet.of(HoerenEmpfehlung.UEBERPRUEFUNG_ARZT), null));
+        hoeren.setBemerkungen("Bemerkungen");
+        hoeren.disableOptimisticLockingCheck();
+        untersuchungHoerenAudiogrammService.persist(hoeren);
+        untersuchung.setUntersuchungHoerenAudiogramm(hoeren);
+        fixtureService.executeSql("UPDATE untersuchung SET untersuchunghoerenaudiogramm_id = '" + hoeren.getId().getUUID() + "' WHERE id = '" + untersuchung.getId().getUUID() + "'");
+
+        // Impfungen
+        UntersuchungImpfungen impfungen = untersuchung.getUntersuchungImpfungen();
+        fixtureService.executeSql("UPDATE untersuchungimpfungen SET impfausweisunvollstaendig = true WHERE id = '" + impfungen.getId().getUUID() + "'");
+
+        UntersuchungImpfungenNurUnvollstaendige nurUnv = new UntersuchungImpfungenNurUnvollstaendige();
+        nurUnv.setUntersuchungImpfungen(impfungen);
+        nurUnv.setImpfausweisVollstaendig(ImpfausweisVollstaendig.NEIN);
+        nurUnv.setImpfausweisGrundUnvollstaendig(ImpfausweisGrundUnvollstaendig.IMPFUNG_AUFGESCHOBEN);
+        nurUnv.disableOptimisticLockingCheck();
+        untersuchungImpfungenNurUnvollstaendigeRepo.persist(nurUnv);
+        impfungen.setUntersuchungImpfungenNurUnvollstaendige(nurUnv);
+        fixtureService.executeSql("UPDATE untersuchungimpfungen SET untersuchungimpfungennurunvollstaendige_id = '" + nurUnv.getId().getUUID() + "' WHERE id = '" + impfungen.getId().getUUID() + "'");
+
+        UntersuchungImpfungenMassnahmen mass = new UntersuchungImpfungenMassnahmen();
+        mass.setUntersuchungImpfungen(impfungen);
+        mass.setInformationEltern(InformationEltern.BRIEF);
+        mass.setInformationHausarzt(true);
+        mass.setRueckfrageHausarzt(true);
+        mass.setVormerkenFuerGruppenFolgetermin(false);
+        mass.disableOptimisticLockingCheck();
+        untersuchungImpfungenMassnahmenRepo.persist(mass);
+        impfungen.setUntersuchungImpfungenMassnahmen(mass);
+        fixtureService.executeSql("UPDATE untersuchungimpfungen SET untersuchungimpfungenmassnahmen_id = '" + mass.getId().getUUID() + "' WHERE id = '" + impfungen.getId().getUUID() + "'");
+
+        // ACT
+        Response response = RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_JSON_PATH)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_OK)
+            .extract()
+            .response();
+
+        // ASSERT
+        String body = response.asString();
+        JsonNode root = objectMapper.readTree(body);
+        JsonNode dataArray = root.get("data");
+        assertThat(dataArray.isArray()).isTrue();
+
+        JsonNode row = null;
+        for (JsonNode item : dataArray) {
+            if (item.get("id").asText().equals(untersuchung.getId().getUUID().toString())) {
+                row = item;
+                break;
+            }
+        }
+        JsonNode impfungenNode = row.get("impfungen");
+        assertThat(impfungenNode.get("id").asText()).isEqualTo(impfungen.getId().getUUID().toString());
+        assertThat(impfungenNode.get("impfausweisUnvollstaendig").asBoolean()).isTrue();
+
+        JsonNode massnahmenNode = impfungenNode.get("massnahmen");
+        assertThat(massnahmenNode.get("id").asText()).isEqualTo(mass.getId().getUUID().toString());
+        assertThat(massnahmenNode.get("vormerkenFuerGruppenFolgetermin").asBoolean()).isFalse();
+        assertThat(massnahmenNode.get("informationHausarzt").asBoolean()).isTrue();
+        assertThat(massnahmenNode.get("informationEltern").asText()).isEqualTo("BRIEF");
+        assertThat(massnahmenNode.get("rueckfrageHausarzt").asBoolean()).isTrue();
+
+        assertThat(impfungenNode.has("nurUnvollstaendige")).isTrue();
+        JsonNode nurUnvNode = impfungenNode.get("nurUnvollstaendige");
+        assertThat(nurUnvNode.get("id").asText()).isEqualTo(nurUnv.getId().getUUID().toString());
+        assertThat(nurUnvNode.get("impfausweisVollstaendig").asText()).isEqualTo("NEIN");
+        assertThat(nurUnvNode.get("impfausweisGrundUnvollstaendig").asText()).isEqualTo("IMPFUNG_AUFGESCHOBEN");
+
+        JsonNode hoerenNode = row.get("hoeren");
+        assertThat(hoerenNode.get("audiogrammId").asText()).isEqualTo(hoeren.getId().getUUID().toString());
+        assertThat(hoerenNode.has("audiogrammRechts")).isTrue();
+        JsonNode audioRNode = hoerenNode.get("audiogrammRechts");
+        assertThat(audioRNode.get("id").asText()).isEqualTo(audioR.getId().getUUID().toString());
+        assertThat(audioRNode.get("dbHz500").asText()).isEqualTo("DB20");
+        assertThat(audioRNode.get("dbHz1000").asText()).isEqualTo("DB20");
+
+        JsonNode audioLNode = hoerenNode.get("audiogrammLinks");
+        assertThat(audioLNode.get("id").asText()).isEqualTo(audioL.getId().getUUID().toString());
+        assertThat(audioLNode.get("dbHz500").asText()).isEqualTo("DB20");
+        assertThat(audioLNode.get("dbHz1000").asText()).isEqualTo("DB20");
+    }
+
+    @Test
     @TestAsHelloDataForeignTenant
     void json_export_refuses_a_tenant_other_than_BE() {
         String body = RestAssured.given()
@@ -473,6 +788,98 @@ class HelloDataResourceITest extends AbstractITest {
         RestAssured.given()
             .when()
             .get(SCHULEN_JSON_PATH)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_UNAUTHORIZED);
+    }
+
+    @Test
+    @TestAsHelloDataSeedingBE
+    @SneakyThrows
+    void json_export_untersuchungen_contains_the_same_rows_as_the_ndjson_export() {
+        // ARRANGE
+        Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
+        AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
+            AnlassTyp.KLASSE_8,
+            appClock.offsetDateTime().now().toLocalDate());
+        Anlass anlass = anlassService.persist(AnlassBuilder.create(builder -> builder
+            .withTitle("HelloData Compare Anlass")
+            .withArzt(arzt)
+            .withAnlassConfig(config)));
+        Dossier dossier = dossierService.persist(DossierBuilder.create(builder -> builder
+            .forKind(fixtureService.createKind())
+            .withZustaendigArzt(arzt)));
+        Einladung einladung = einladungService.persist(EinladungBuilder.create(builder -> builder
+            .withAnlass(anlass)
+            .withDossier(dossier)));
+        Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(einladung.getId());
+        UntersuchungKindDaten kd = untersuchungKindDatenService.persist(
+            UntersuchungKindDaten.ofKind(dossier.getKind()));
+        untersuchung.setUntersuchungKindDaten(kd);
+
+        // ACT
+        Response response = RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_JSON_PATH)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_OK)
+            .extract()
+            .response();
+
+        String ndjsonBody = RestAssured.given().when().get(UNTERSUCHUNGEN_PATH)
+            .then().statusCode(HttpURLConnection.HTTP_OK).extract().asString();
+
+        // ASSERT
+        assertThat(response.getContentType()).contains(JsonEnvelopeWriter.MEDIA_TYPE);
+
+        String body = response.asString();
+        JsonNode envelope = objectMapper.readTree(body);
+
+        Set<String> jsonIds = idsOf(envelope.get(JsonEnvelopeWriter.DATA_KEY));
+        Set<String> ndjsonIds = dataRows(parseNdjson(ndjsonBody)).stream()
+            .map(row -> row.get("id").asText())
+            .collect(Collectors.toSet());
+
+        assertThat(jsonIds)
+            .as("both formats export the same Untersuchungen")
+            .isNotEmpty()
+            .isEqualTo(ndjsonIds);
+    }
+
+    @Test
+    @TestAsHelloDataForeignTenant
+    void ndjson_untersuchungen_export_refuses_a_tenant_other_than_BE() {
+        String body = RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_PATH)
+            .then()
+            .assertThat()
+            .statusCode(not(HttpURLConnection.HTTP_OK))
+            .extract()
+            .asString();
+
+        assertThat(body)
+            .as("no row of another tenant may reach the client")
+            .doesNotContain("untersuchungKindDaten");
+    }
+
+    @Test
+    @TestAsSupportBE
+    void ndjson_untersuchungen_export_is_forbidden_without_the_hellodata_berechtigung() {
+        RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_PATH)
+            .then()
+            .assertThat()
+            .statusCode(HttpURLConnection.HTTP_FORBIDDEN);
+    }
+
+    @Test
+    void ndjson_untersuchungen_export_is_unreachable_without_authentication() {
+        RestAssured.given()
+            .when()
+            .get(UNTERSUCHUNGEN_PATH)
             .then()
             .assertThat()
             .statusCode(HttpURLConnection.HTTP_UNAUTHORIZED);

@@ -5,7 +5,6 @@
     ],
     "compilerOptions": {},
     "exclude": [
-        "jest.config.ts",
         "src/**/*.test.ts",
         "src/**/*.spec.ts"
     ]

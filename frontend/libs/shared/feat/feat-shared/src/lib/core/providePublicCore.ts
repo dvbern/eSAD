@@ -107,10 +107,10 @@ export function providePublicCore(appRoutes: Route[]): ApplicationConfig['provid
       useFactory: () => inject(LanguageStore).activeLocale(),
     },
 
-    // Custom Icons
+    // Custom Icons (relative URL, so that the <base href> is respected, e.g. /publicapp/)
     provideNgIconLoader(name => {
       const http = inject(HttpClient);
-      return http.get(`/icons/${name}.svg`,
+      return http.get(`icons/${name}.svg`,
         {responseType: 'text'},
       );
     }, withCaching()),

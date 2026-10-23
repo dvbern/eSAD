@@ -9,14 +9,14 @@ import {
 } from '@dvb/data-access-backend';
 import {BackendEntityId} from '@dvb/data-access-types';
 import {AppErrorHandlerService, Loader, withSelectedEntity} from '@dvb/util-angular';
-import {requireValue} from '@dvb/util-shared';
+import {ensureProps, hasValue, Nullish, requireValue} from '@dvb/util-shared';
 import {TranslocoService} from '@jsverse/transloco';
 import {tapResponse} from '@ngrx/operators';
 import {patchState, signalStore, withMethods, withState} from '@ngrx/signals';
 import {addEntity, removeEntity, setAllEntities, setEntity, withEntities} from '@ngrx/signals/entities';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {exhaustMap, pipe, switchMap} from 'rxjs';
-import {ImpfstoffChargeOption} from "../core/impfstoff-charge-option";
+import {ImpfstoffChargeOption} from '../core/impfstoff-charge-option';
 
 type ImpfstoffeChargenState = {
   chargenList: ImpfstoffChargeJson[];
@@ -25,6 +25,29 @@ type ImpfstoffeChargenState = {
 const initialState: ImpfstoffeChargenState = {
   chargenList: [],
 };
+
+/**
+ * Options fuer die Charge-Auswahl: alle aktiven Chargen des Impfstoffs sowie die aktuell gesetzte
+ * Charge, auch wenn diese inaktiv oder ad hoc erfasst ist. Letztere wird als inaktiv markiert,
+ * damit die Anzeige einen entsprechenden Suffix ergaenzen kann.
+ */
+export function getChargeOptions(
+  activeChargen: ImpfstoffChargeJson[],
+  currentChargeName: string | Nullish,
+): ImpfstoffChargeOption[] {
+  const options: ImpfstoffChargeOption[] = activeChargen.map(charge => ensureProps<ImpfstoffChargeOption>({
+    label: charge.data.name,
+    inaktiv: false,
+  }));
+  if (hasValue(currentChargeName) && !options.some(option => option.label === currentChargeName)) {
+    options.push(ensureProps<ImpfstoffChargeOption>({
+      label: currentChargeName,
+      inaktiv: true,
+    }));
+  }
+
+  return options;
+}
 
 @Injectable({providedIn: 'root'})
 export class ImpfstoffeChargenStore extends signalStore(
@@ -40,8 +63,11 @@ export class ImpfstoffeChargenStore extends signalStore(
     activeChargenForImpfstoff(impfstoffId: BackendEntityId | undefined): ImpfstoffChargeJson[] {
       return store.chargenList().filter((el: ImpfstoffChargeJson) => el.data.aktiv && el.impfstoffId === impfstoffId);
     },
-    activeChargenForImpfstoffOptions(impfstoffId: BackendEntityId | undefined): ImpfstoffChargeOption[] {
-      return this.activeChargenForImpfstoff(impfstoffId).map(charge => ({ label: charge.data.name }))
+    chargeOptionsForImpfstoffIncluding(
+      impfstoffId: BackendEntityId | undefined,
+      currentChargeName: string | Nullish,
+    ): ImpfstoffChargeOption[] {
+      return getChargeOptions(this.activeChargenForImpfstoff(impfstoffId), currentChargeName);
     },
     getKrankheitenTranslatedList(krankheiten: Krankheit[]): string {
       return krankheiten.map(krankheit => translocoService.translate(`Krankheit.${krankheit}`)).join(', ');

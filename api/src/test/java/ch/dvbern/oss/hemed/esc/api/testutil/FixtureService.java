@@ -20,8 +20,8 @@ package ch.dvbern.oss.hemed.esc.api.testutil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -140,6 +140,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Sprachverstaend
 import ch.dvbern.oss.hemed.esc.api.features.anlass.sprache.types.Wortschatz;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriage;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.triage.UntersuchungTriageService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
@@ -197,10 +198,11 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.KontaktPersonSchuleFunktion;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.Aufgabe;
 import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.AufgabeService;
+import ch.dvbern.oss.hemed.esc.api.shared.aufgabe.types.AufgabeStatus;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataService;
@@ -209,6 +211,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileUploadWrapper;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
+import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnlassBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.AnonymerEintragBuilder;
@@ -314,7 +317,7 @@ public class FixtureService {
     private final UntersuchungAbschlussService untersuchungAbschlussService;
     private final UntersuchungSignaturService untersuchungSignaturService;
     private final ArztService arztService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final ArchivdokumentService archivdokumentService;
     private final DuplikatService duplikatService;
     private final OrganisationService organisationService;
@@ -416,6 +419,8 @@ public class FixtureService {
         @NonNull AnlassConfig existingConfig,
         @NonNull RequirementSetting requirementSetting) {
         boolean show = requirementSetting != RequirementSetting.NOT_VISIBLE;
+        // Ausdrucke
+        existingConfig.setShowAnlassPrintImpfen(show);
         // Daten
         existingConfig.setShowDatenPersonendaten(show);
         existingConfig.setDatenUntersuchung(requirementSetting);
@@ -531,6 +536,14 @@ public class FixtureService {
     }
 
     @NonNull
+    public Anlass createAnlassWithShowAnlassPrintImpfen(boolean showAnlassPrintImpfen) {
+        AnlassConfig config = createAnlassConfigAllOptional();
+        config.setShowAnlassPrintImpfen(showAnlassPrintImpfen);
+        anlassConfigRepo.persist(config);
+        return createAnlass(config);
+    }
+
+    @NonNull
     public Anlass createAnlass(@NonNull AnlassConfig anlassConfig) {
         return anlassService.persist(
             AnlassBuilder.create(builder -> builder
@@ -611,6 +624,38 @@ public class FixtureService {
             .withDatumSetSchuljahr(LocalDate.of(2023, 5, 5))
             .withMPA(mpa)
             .withAnlassConfig(config))
+        );
+    }
+
+    /**
+     * An Anlass with all optional columns under control: the HelloData export projects
+     * {@code zeitVonBis}, {@code arzt} and {@code mpa}, and all three may legitimately be empty,
+     * so a test has to be able to seed both variants.
+     */
+    @NonNull
+    public Anlass createAnlass(
+        @NonNull AnlassStatus status,
+        @NonNull AnlassArt anlassArt,
+        @NonNull Benutzer arzt,
+        @Nullable Benutzer mpa,
+        @NonNull LocalDate datum,
+        @Nullable DateTimeRange zeitVonBis
+    ) {
+        AnlassConfig config = createAnlassConfigAllOptional();
+        return anlassService.persist(
+            AnlassBuilder.create(builder -> {
+                builder
+                    .withTitle("Test getAnlass")
+                    .withAnlassStatus(status)
+                    .withAnlassArt(anlassArt)
+                    .withArzt(arzt)
+                    .withMPA(mpa)
+                    .withDatumSetSchuljahr(datum)
+                    .withAnlassConfig(config);
+                if (zeitVonBis != null) {
+                    builder.withZeitVonBis(zeitVonBis);
+                }
+            })
         );
     }
 
@@ -1156,6 +1201,34 @@ public class FixtureService {
         notiz.getLabels().add(label);
         notiz.disableOptimisticLockingCheck();
         notizService.persist(notiz);
+    }
+
+    /**
+     * Attaches a FileData to a Notiz without going through the file storage - enough for tests
+     * that only care about the fact that a Notiz has an attachment.
+     */
+    @NonNull
+    public Notiz addFileToNotiz(@NonNull ID<Notiz> notizID, @NonNull FileData fileData) {
+        Notiz notiz = notizService.getById(notizID);
+        notiz.getFiles().add(fileData);
+        notiz.disableOptimisticLockingCheck();
+        return notizService.persist(notiz);
+    }
+
+    /**
+     * Uploads a PDF to S3 and attaches it to the Notiz, the way a user upload does.
+     */
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    public FileData uploadFileToNotiz(@NonNull ID<Notiz> notizID) {
+        FileUpload fileUpload = FileUploadWrapper.fromFile(TestUtil.loadTestPDF());
+        return notizService.addUploadedFileAndFlush(notizID, fileUpload).getFiles().getLast();
+    }
+
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    public List<FileData> readFilesOfNotiz(@NonNull ID<Notiz> notizID) {
+        return List.copyOf(notizService.getById(notizID).getFiles());
     }
 
     @Transactional(TxType.REQUIRES_NEW)
@@ -2079,6 +2152,51 @@ public class FixtureService {
         return aufgabeService.persist(aufgabe);
     }
 
+    /**
+     * Uploads a PDF to S3 and attaches it to the Aufgabe, the way a user upload does.
+     */
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    public FileData uploadFileToAufgabe(@NonNull ID<Aufgabe> aufgabeID) {
+        FileUpload fileUpload = FileUploadWrapper.fromFile(TestUtil.loadTestPDF());
+        return aufgabeService.addUploadedFile(aufgabeID, fileUpload).getFiles().getLast();
+    }
+
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    public List<FileData> readFilesOfAufgabe(@NonNull ID<Aufgabe> aufgabeID) {
+        return List.copyOf(aufgabeService.getById(aufgabeID).getFiles());
+    }
+
+    @NonNull
+    public Aufgabe createAufgabe(
+        @NonNull Benutzer benutzer,
+        @Nullable Kind kind,
+        @Nullable Anlass anlass,
+        @NonNull Set<ID<Label>> labelIDs,
+        @NonNull AufgabeStatus aufgabeStatus,
+        @NonNull LocalDate faelligBis,
+        @NonNull String bemerkung
+    ) {
+        Set<Label> labels = labelIDs.stream()
+            .map(labelService::getById)
+            .collect(Collectors.toSet());
+
+        Aufgabe aufgabe = AufgabeBuilder.create(
+            builder -> builder
+                .withID(ID.random(Aufgabe.class))
+                .withTitle("Basis Aufgabe")
+                .withBemerkung(bemerkung)
+                .withStatus(aufgabeStatus)
+                .withFaelligDatum(faelligBis)
+                .withUserErfasst(benutzer)
+                .withEmpfaenger(benutzer)
+                .withKind(kind)
+                .withAnlass(anlass)
+                .withLabel(labels));
+        return aufgabeService.persist(aufgabe);
+    }
+
     @NonNull
     public Aufgabe createAufgabeForBenutzer(@NonNull Benutzer empfaenger) {
         // Create a Aufgabe
@@ -2204,7 +2322,7 @@ public class FixtureService {
     @Transactional(TxType.REQUIRES_NEW)
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void persistBenutzerAndBriefvorlagenForDocumentQueueFileServiceITest() {
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         benutzerService.persist(DEFAULT_BENUTZER);
         briefvorlageService.persist(BriefvorlageBuilder.create(builder ->
             builder.withId(BRIEFVORLAGE_ID_1)
@@ -2214,6 +2332,38 @@ public class FixtureService {
             builder.withId(BRIEFVORLAGE_ID_2)
                 .withName("Arztbesuch Kindergarten")
                 .withType(BriefvorlageType.KIND)));
+    }
+
+    /**
+     * Creates a Benutzer registered before the first login, i.e. without a KeycloakId.
+     * Runs as SYSTEM_ADMIN, so it also works while the logged-in test user does not exist yet.
+     */
+    @NonNull
+    @Transactional(TxType.REQUIRES_NEW)
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public Benutzer createVorerfasstenBenutzer(@NonNull TenantEnum tenant, @NonNull EmailAddress email) {
+        tenantContext.setCurrentTenant(tenant);
+        return benutzerService.persist(BenutzerBuilder.create(
+            builder -> builder
+                .withEmail(email)
+        ));
+    }
+
+    /**
+     * Stores a Benutzer with a raw email string via native SQL, bypassing application-level EmailAddress normalization.
+     * Useful for testing database-level check constraints.
+     */
+    @Transactional(TxType.REQUIRES_NEW)
+    @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
+    public void storeBenutzerWithRawEmail(@NonNull TenantEnum tenant, @NonNull String email) {
+        tenantContext.setCurrentTenant(tenant);
+        Benutzer benutzer = benutzerService.persist(BenutzerBuilder.create(builder -> { }));
+        entityManager.createNativeQuery(
+                "UPDATE benutzer SET email = :email WHERE id = CAST(:id AS uuid)"
+            )
+            .setParameter("email", email)
+            .setParameter("id", benutzer.getId().getId())
+            .executeUpdate();
     }
 
     @Transactional(TxType.REQUIRES_NEW)

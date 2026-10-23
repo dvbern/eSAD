@@ -1,6 +1,7 @@
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
 import {BenutzerService} from '@dvb/data-access-backend';
+import {BackendEntityId} from '@dvb/data-access-types';
 import {ensureProps} from '@dvb/util-shared';
 import {AppUser, BenutzerStore} from './benutzer.store';
 
@@ -42,7 +43,7 @@ describe('BenutzerStore', () => {
         errorMessage: undefined,
       }));
 
-      store.onUserAuthenticated('dfece810-b650-4be3-8ae0-c74cc1eea767',
+      store.onUserAuthenticated('dfece810-b650-4be3-8ae0-c74cc1eea767' as BackendEntityId,
         'username',
         'email',
         'firstName',
@@ -58,7 +59,7 @@ describe('BenutzerStore', () => {
         .toBe(false);
 
       const expectedUser = ensureProps<AppUser>({
-        id: 'dfece810-b650-4be3-8ae0-c74cc1eea767',
+        id: 'dfece810-b650-4be3-8ae0-c74cc1eea767' as BackendEntityId,
         username: 'username',
         email: 'email',
         firstName: 'firstName',

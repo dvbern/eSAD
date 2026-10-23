@@ -7,5 +7,14 @@
       "Connection": "keep-alive"
     },
     "logLevel": "debug"
+  },
+  "/oauth2": {
+    "target": "https://local-esc-win.localhost:5443",
+    "secure": false,
+    "changeOrigin": true,
+    "headers": {
+      "Connection": "keep-alive"
+    },
+    "logLevel": "debug"
   }
 }

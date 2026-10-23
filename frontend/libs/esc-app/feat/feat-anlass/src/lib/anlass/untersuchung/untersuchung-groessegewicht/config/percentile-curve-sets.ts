@@ -101,8 +101,11 @@ export const GEWICHT_CURVE_SETS: CurveSetsByReference = {
     {min: 10, max: 100, interval: 5},
   ),
   // Gewicht für Länge is the one chart whose axes differ per gender: the published table runs to
-  // 200 cm / 128 kg for boys but ends at 180 cm / 95 kg for girls, so the girls' axes stop there
-  // instead of leaving 10 cm of empty chart beyond the last data point.
+  // 200 cm / 128 kg for boys but only to 180 cm / 95 kg for girls (table S7). The girls' CSV is
+  // extended to 190 cm with the rows delivered by paediatrie schweiz (see
+  // scripts/data/pch-2026/README.md), so the girls' curves now run to 190 cm as well. The girls'
+  // y axis goes to 110 kg so P97 (~107.7 kg at 190 cm) stays fully visible; the boys' axis goes to
+  // 130 kg because of their data.
   PCH_2026: {
     male: {
       distribution: Pch2026GewichtKnabenDistribution,
@@ -111,8 +114,8 @@ export const GEWICHT_CURVE_SETS: CurveSetsByReference = {
     },
     female: {
       distribution: Pch2026GewichtMaedchenDistribution,
-      xAxis: {min: 100, max: 180, interval: 10},
-      yAxis: {min: 10, max: 100, interval: 5},
+      xAxis: {min: 100, max: 190, interval: 10},
+      yAxis: {min: 10, max: 110, interval: 5},
     },
   },
 };

@@ -19,6 +19,7 @@ public class AnlassMergeSource implements MergeSource {
     private static final String EMPTY = "";
     private final AnlassMetadatenDocMergerDTO anlassMetadatenDocMergerDTO;
     private final List<ImpfstatusDocMergerDTO> impfstatusDocMergerDTO;
+    private final ImpfstatusListSummaryDocMergerDTO impfstatusListSummaryDocMergerDTO;
     private final ImpfungDocMergerDTO impfungDocMergerDTO;
     private final SehenDocMergerDTO sehenDocMergerDTO;
     private final HoerenAudiogrammDocMergerDTO hoerenAudiogrammDocMergerDTO;
@@ -44,6 +45,10 @@ public class AnlassMergeSource implements MergeSource {
 
         if (key.startsWith("impfung.")) {
             return new BeanMergeSource(impfungDocMergerDTO, "impfung.").getData(ctx, key);
+        }
+
+        if (key.startsWith("impfstatusListe.")) {
+            return new BeanMergeSource(impfstatusListSummaryDocMergerDTO, "impfstatusListe.").getData(ctx, key);
         }
 
         if (key.startsWith("sehen.")) {

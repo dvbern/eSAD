@@ -30,6 +30,7 @@ export const AppValidatorKeys = {
   email: 'email',
   equals: 'equals',
   esadId: 'esadId',
+  loginMethodsRequired: 'loginMethodsRequired',
   minYear: 'minYear',
   nonNegativeNumber: 'nonNegativeNumber',
   nonFutureDates: 'nonFutureDates',
@@ -516,6 +517,20 @@ export class AppValidators {
       });
 
       return atLeastOneChecked ? null : {[AppValidatorKeys.atLeastOneRequired]: true};
+    };
+  }
+
+  /**
+   * At least one item must be selected in a plain (non-FormArray) array-valued control, e.g. a
+   * multi-select. Unlike {@link Validators.required}, this actually treats an empty array as invalid
+   * (`Validators.required` only rejects `null`/`undefined`/empty string, not an empty array).
+   */
+  static loginMethodsRequired(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      return Array.isArray(value) && value.length > 0
+        ? null
+        : {[AppValidatorKeys.loginMethodsRequired]: true};
     };
   }
 

@@ -491,6 +491,25 @@
         </ng-select>
       </svui-form-control>
 
+      <!-- Login Methoden -->
+      <svui-form-control [label]="'config.tenant.loginMethods' | transloco"
+                         [viewValue]="(form.group.controls.loginMethods.value || []) | translatedEnumViewValuePipe:'LoginMethod'"
+      >
+        <ng-select
+          svuiNgSelect
+          bindLabel="dummy"
+          appendTo="body"
+          [formControl]="form.group.controls.loginMethods"
+          [placeholder]="'global.select.bitte-auswaehlen' | transloco"
+          [multiple]="true">
+          @for (loginMethod of loginMethodOptions; track loginMethod) {
+            <ng-option [value]="loginMethod">
+              {{ 'LoginMethod.' + loginMethod | transloco }}
+            </ng-option>
+          }
+        </ng-select>
+      </svui-form-control>
+
       <!--messages for whole form -->
       <svui-form-error-message [errors]="form.group.touched ? form.group.errors : null"/>
 

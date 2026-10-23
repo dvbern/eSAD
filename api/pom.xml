@@ -22,44 +22,39 @@
 
     <groupId>ch.dvbern.oss.hemed.esc</groupId>
     <artifactId>esc-api</artifactId>
-    <version>26.13.0-SNAPSHOT</version>
+    <version>26.15.0-SNAPSHOT</version>
 
     <!-- <editor-fold desc="properties" defaultstate="collapsed"> -->
     <properties>
         <querydsl.version>6.10.1</querydsl.version>
-        <checkerframework.version>3.46.0</checkerframework.version>
         <lombok.version>1.18.44</lombok.version>
         <dvb-commons-i18n-l10n.version>1.0.0</dvb-commons-i18n-l10n.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <pdfbox.version>3.0.7</pdfbox.version>
+        <pdfbox.version>3.0.8</pdfbox.version>
         <docx4j.version>11.5.11</docx4j.version>
         <doctemplate.version>4.0.0</doctemplate.version>
 
-        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.1</surefire-plugin.version>
+        <surefire-plugin.version>3.5.6</surefire-plugin.version>
 
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.33.2.1</quarkus.platform.version>
-        <!-- keep in sync with quarkus! (exception: liquibase is currentyly ahead of quarkus internal version because mvn liquibase:diff will not generate output otherwise)-->
-        <hibernate-jpamodelgen.version>7.1.14.Final</hibernate-jpamodelgen.version>
-        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <quarkus.platform.version>3.40.1</quarkus.platform.version>
+        <!-- keep in sync with org.jacoco:org.jacoco.agent managed by quarkus-bom (used by quarkus-jacoco) -->
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+        <!-- keep in sync with liquibase-core managed by quarkus-bom -->
         <liquibase-diff.liquibase.version>4.33.0</liquibase-diff.liquibase.version>
-        <!--        determined from https://github.com/liquibase/liquibase/blob/v4.31.0/pom.xml-->
+        <!--        determined from https://github.com/liquibase/liquibase/blob/v4.33.0/pom.xml-->
         <liquibase-diff.spring.version>5.3.39</liquibase-diff.spring.version>
-        
-        <!-- fixes for enforcer dependency convergence issues        -->
-        <commons-collections4.version>4.5.0</commons-collections4.version>
         <commons-csv.version>1.14.1</commons-csv.version>
-        <poi.version>5.5.1</poi.version>
-        <apache-mime4j.version>0.8.13</apache-mime4j.version>
+
+        <!-- fixes for enforcer dependency convergence issues        -->
+        <apache-mime4j.version>0.8.14</apache-mime4j.version>
         <tukaani-xz.version>1.12</tukaani-xz.version>
-        <zstd-jni.version>1.5.7-6</zstd-jni.version>
-        <jaxb-runtime.version>4.0.7</jaxb-runtime.version>
         <spotbugs-annotations.version>4.9.8</spotbugs-annotations.version>
         <!-- <editor-fold desc="generated api coordinates" defaultstate="collapsed"> -->
         <package>ch.dvbern.oss.hemed.esc.api</package>
@@ -114,19 +109,9 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version>
-            </dependency>
-            <dependency>
                 <groupId>org.tukaani</groupId>
                 <artifactId>xz</artifactId>
                 <version>${tukaani-xz.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.luben</groupId>
-                <artifactId>zstd-jni</artifactId>
-                <version>${zstd-jni.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>
@@ -137,31 +122,6 @@
                 <groupId>org.apache.james</groupId>
                 <artifactId>apache-mime4j-core</artifactId>
                 <version>${apache-mime4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-runtime</artifactId>
-                <version>${jaxb-runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${jaxb-runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>txw2</artifactId>
-                <version>${jaxb-runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-xjc</artifactId>
-                <version>${jaxb-runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-jxc</artifactId>
-                <version>${jaxb-runtime.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
@@ -244,7 +204,7 @@
         <dependency>
             <groupId>io.quarkiverse.tika</groupId>
             <artifactId>quarkus-tika</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -257,10 +217,11 @@
             </exclusions>
         </dependency>
         <!-- This is a bridge for log4j 2, required for quarkus-tika -->
+        <!-- keep in sync with log4j-api managed by quarkus-bom -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-to-slf4j</artifactId>
-            <version>2.24.3</version>
+            <version>2.26.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -353,7 +314,7 @@
         <dependency>
             <groupId>io.quarkiverse.loggingsentry</groupId>
             <artifactId>quarkus-logging-sentry</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.5</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -426,6 +387,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
@@ -445,7 +411,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.14.1</version>
+            <version>${commons-csv.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
@@ -602,11 +568,11 @@
                             <classifier>jpa</classifier>
                             <version>${querydsl.version}</version>
                         </path>
-                        <dependency>
+                        <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
                             <version>0.2.0</version>
-                        </dependency>
+                        </path>
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
@@ -683,7 +649,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.3</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -697,30 +663,16 @@
                                 <dependencyConvergence/>
                                 <requireUpperBoundDeps>
                                     <excludes>
-                                        <!-- Quarkus does some fancy stuff with dependencies which seems to break this enforcer rule :( -->
-                                        <!-- But these versions are managed by Quarkus anyway -->
-                                        <exclude>io.smallrye.common:smallrye-common-expression</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-ref</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-classloader</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-annotation</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-os</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-net</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-cpu</exclude>
-                                        <exclude>io.smallrye.common:smallrye-common-constraint</exclude>
-                                        <exclude>org.wildfly.common:wildfly-common</exclude>
-                                        <exclude>io.smallrye.reactive:mutiny</exclude>
-                                        <exclude>jakarta.el:jakarta.el-api</exclude>
-                                        <exclude>org.eclipse.microprofile.config:microprofile-config-api</exclude>
-                                        <exclude>com.google.guava:failureaccess</exclude>
-                                        <exclude>com.google.j2objc:j2objc-annotations</exclude>
-                                        <!-- We (unfortunately) need to manage these manually anyway, so we exclude them from this -->
-                                        <exclude>org.apache.poi:poi</exclude>
-                                        <exclude>org.apache.poi:poi-scratchpad</exclude>
-                                        <exclude>com.healthmarketscience.jackcess:jackcess</exclude>
-                                        <!-- quarkus-bom 3.33.2.1 manages the whole jackson family at 2.21.2.
-                                             Transitive POMs declare 2.21.4; patch-level, platform-tested.
-                                             Re-evaluate on Quarkus upgrade. -->
+                                        <!-- The following artifacts are managed by quarkus-bom (platform-tested versions) or transitive dependencies.
+                                             Transitive POMs declare slightly newer patch versions, but the managed version wins. Re-evaluate on Quarkus upgrade. -->
+                                        <exclude>org.bitbucket.b_c:jose4j</exclude>
                                         <exclude>com.fasterxml.jackson.core:jackson-core</exclude>
+                                        <exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+                                        <exclude>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</exclude>
+                                        <exclude>org.jspecify:jspecify</exclude>
+                                        <exclude>org.jctools:jctools-core</exclude>
+                                        <exclude>com.google.j2objc:j2objc-annotations</exclude>
+                                        <exclude>com.google.guava:failureaccess</exclude>
                                     </excludes>
                                 </requireUpperBoundDeps>
                                 <bannedDependencies>
@@ -839,7 +791,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.5.0</version>
                         <executions>
                             <execution>
                                 <id>clean-rest-assured</id>
@@ -886,6 +838,12 @@
                                     <addCompileSourceRoot>false</addCompileSourceRoot>
                                     <generatorName>java</generatorName>
                                     <library>rest-assured</library>
+                                    <!--
+                                    Only the templates present in this directory override the built-in ones.
+                                    licenseInfo.mustache is overridden to drop the OpenAPI document version from
+                                    the file header, so that a version bump does not touch every generated class.
+                                    -->
+                                    <templateDirectory>${project.basedir}/src/test/resources/openapi-templates</templateDirectory>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>${project.artifactId}-test-client</artifactId>
                                     <artifactVersion>${project.version}</artifactVersion>
@@ -904,9 +862,6 @@
                                         <serializationLibrary>jackson</serializationLibrary>
                                         <containerDefaultToNull>true</containerDefaultToNull>
                                         <hideGenerationTimestamp>true</hideGenerationTimestamp>
-                                        <headerVars>
-                                            <hideVersion>true</hideVersion>
-                                        </headerVars>
                                         <additionalModelTypeAnnotations>@lombok.AllArgsConstructor</additionalModelTypeAnnotations>
                                     </configOptions>
                                     <typeMappings>
@@ -919,10 +874,40 @@
 
                     </plugin>
 
+                    <!--
+                    The built-in templates emit trailing whitespace (e.g. "* {{notes}}" in a Javadoc renders as "* "
+                    when the operation has no description, plus whitespace-only lines) and some files lack a final
+                    newline. Our .editorconfig has trim_trailing_whitespace=true / insert_final_newline=true, so the
+                    IDE fixes both as soon as somebody touches a file, and the next regeneration reverts it - a diff on
+                    every class each time. Normalize right after generation, so the generated sources are stable and
+                    match what the IDE would save.
+                    -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>normalize-whitespace-rest-assured</id>
+                                <phase>generate-test-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <replaceregexp match="[ \t]+$" replace="" flags="g" byline="true" encoding="UTF-8">
+                                            <fileset dir="${rest-assured.temp.gen.dir}/src/main/java" includes="**/*.java"/>
+                                        </replaceregexp>
+                                        <fixcrlf srcdir="${rest-assured.temp.gen.dir}/src/main/java" includes="**/*.java" eol="lf" fixlast="true" encoding="UTF-8"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <!--copy the rest assured files into the quarkus directory-->
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.0.2</version>
+                        <version>3.5.0</version>
                         <executions>
                             <!--  This copies only the relevant java classed of the generated rest-assured client -->
                             <execution>

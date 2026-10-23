@@ -10,10 +10,12 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import ch.dvbern.oss.hemed.esc.api.shared.util.KindValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DossierService {
 
     private final DossierRepo dossierRepo;
@@ -32,12 +34,18 @@ public class DossierService {
     }
 
     public void remove(@NonNull ID<Dossier> dossierID) {
+        LOG.info("ESC-DELETE-DOSSIER: Deleting Dossier with ID {}", dossierID.getId());
         dossierRepo.remove(dossierID);
     }
 
     @NonNull
     public Dossier getById(@NonNull ID<Dossier> dossierID) {
         return dossierRepo.getById(dossierID);
+    }
+
+    @NonNull
+    public Optional<Dossier> findByIdLockedQuery(@NonNull ID<Dossier> dossierID) {
+        return dossierRepo.findByIdLockedQuery(dossierID);
     }
 
     @NonNull

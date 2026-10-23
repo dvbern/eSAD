@@ -6,6 +6,7 @@
           <span>{{'untersuchung.tab.defaultwerte.info' | transloco}}</span>
           <button
             class="nav-link"
+            [disabled]="!defaultsLoaded()"
             (click)="loadDefaults()"
             data-testid="untersuchung-hoeren-defaultwerte">
             <svui-icon [useCase]="'edit'"></svui-icon>

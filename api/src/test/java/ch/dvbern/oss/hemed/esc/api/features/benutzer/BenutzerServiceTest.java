@@ -20,7 +20,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.DVBSupportRoleUtil;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.FachrollenService;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.TenantSetting;
@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class BenutzerServiceTest {
 
     private final BenutzerService service;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final FixtureService fixtureService;
     private final FachrollenService fachrollenService;
     private final OrganisationService organisationService;
@@ -105,7 +105,7 @@ class BenutzerServiceTest {
     @TestAsAdminBS
     void berechtigungen_are_derived_from_fachrollen() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         Benutzer result = service.persist(BenutzerBuilder.create(
             builder -> builder
                 .withRandomEmail("norbertneu@example.com")
@@ -169,7 +169,7 @@ class BenutzerServiceTest {
     @TestAsAdminBS
     void getDesiredBerechtigungenToBenutzerFromFachrollen_syncs_berechtigungen_from_stored_fachrollen() {
         // ARRANGE: Create a user with SYSTEM_ADMIN FachRolle via JWT
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         var testemail = "sync-fachrollen-test" + UUID.randomUUID() + "@example.com";
         JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
             null,
@@ -241,7 +241,7 @@ class BenutzerServiceTest {
     @TestAsAdminBS
     void createBenutzerFromJWT_assigns_support_fachrolle_when_tenant_is_dvb_support_marker() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         var testemail = "dvb-support-" + UUID.randomUUID() + "@dvbern.ch";
         JsonWebTokenDataDTO jwtData = new JsonWebTokenDataDTO(
             null,
@@ -270,7 +270,7 @@ class BenutzerServiceTest {
     @TestAsAdminBS
     void createBenutzerFromJWT_does_not_sync_fachrollen_when_ignoreFachrollenFromKeycloak_is_enabled() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         TenantSettingsService tenantSettingsServiceMock = Mockito.mock(TenantSettingsService.class);
         TenantSetting tenantSetting = TenantSettingBuilder.create(builder -> builder
             .withBenutzerverwaltungIgnoreFachRolleFromKeycloakFeature(FeatureEnabledSetting.ENABLED)
@@ -308,7 +308,7 @@ class BenutzerServiceTest {
     @TestAsAdminBE
     void handleOrganisationsRollen_does_not_send_mail_when_organisationsRollen_empty_and_no_organisation() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer benutzer = BenutzerBuilder.create(builder -> builder
             .withRandomEmail("no-org-rollen@example.com")
             .withRandomVorname("Ohne")
@@ -333,7 +333,7 @@ class BenutzerServiceTest {
     @TestAsAdminBE
     void handleOrganisationsRollen_does_not_send_mail_when_benutzer_is_verantwortlicher_arzt() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer verantwortlicherArzt = BenutzerBuilder.create(builder -> builder
             .withRandomEmail("verantwortlich@example.com")
             .withRandomVorname("Vera")
@@ -369,7 +369,7 @@ class BenutzerServiceTest {
     @TestAsSchularztBE
     void handleOrganisationsRollen_sends_mail_when_benutzer_is_not_verantwortlicher_arzt() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Benutzer verantwortlicherArzt = service.getByIdWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         Organisation organisation = organisationService.getById(TestAsSchularztBE.ORGANISATION_ID_ID);
@@ -407,7 +407,7 @@ class BenutzerServiceTest {
         );
         service.persist(supportBenuzter);
 
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer verantwortlicherArzt = BenutzerBuilder.create(builder -> builder
             .withRandomEmail("arzt@example.com")
             .withRandomVorname("Arzt")

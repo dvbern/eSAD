@@ -27,7 +27,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigServ
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -70,14 +70,14 @@ class AnlassResourceDezentralITest extends AbstractITest {
     private final FixtureService fixtureService;
     private final AppClock appClock;
     private final ConfigService configService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         // Mock limit in config service to make sure we get all the results. Delegate all other calls to 'real'
         // config Service
         ConfigService configServiceMock = Mockito.spy(configService);

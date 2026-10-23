@@ -1,4 +1,4 @@
-import {defineConfig, devices, PlaywrightTestConfig} from '@playwright/test';
+import {defineConfig} from '@playwright/test';
 import {baseConfig} from "./playwright.base.conf";
 
 /**

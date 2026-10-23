@@ -1,6 +1,17 @@
 package ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind;
 
 import java.util.List;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.dvbstarter.infrastructure.ratelimit.RateLimitConst;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxResource;
@@ -14,30 +25,20 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.Kont
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
+
+import io.micrometer.core.annotation.Timed;
 import io.smallrye.common.constraint.NotNull;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.core.http.HttpServerResponse;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import io.micrometer.core.annotation.Timed;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/kinder/{kindID}/kontaktpersonen")
 @JaxResource
 @RequiredArgsConstructor
 @Tag(name = Tags.TAG_KONTAKTPERSON_KIND)
-@RolesAllowed(BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH)
+@RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
 @RateLimit(RateLimitConst.DEFAULT_LIMIT)
 @Timed("KontaktPersonKindResourceMS")
 public class KontaktPersonKindResource {
@@ -53,7 +54,7 @@ public class KontaktPersonKindResource {
 
     @GET
     @NonNull
-    @RolesAllowed(BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH)
+    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
     public KontaktPersonKindListJson findAktivByKind(
         @NotNull @NonNull @PathParam("kindID") ID<Kind> kindID
     ) {
@@ -75,7 +76,7 @@ public class KontaktPersonKindResource {
     @GET
     @Path("/{kontaktPersonKindID}")
     @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed(BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH)
+    @RolesAllowed({BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH})
     @NonNull
     public KontaktPersonKindJson getKontaktPersonKind(
         @NonNull @NotNull @PathParam("kindID") ID<Kind> kindID,

@@ -11,6 +11,7 @@ import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 import {PageComponent} from './page.component';
 import {TenantSettingsStore} from "../../tenant/tenant-settings.store";
 import {AppLanguages} from "@dvb/data-access-backend";
+import {BackendEntityId} from '@dvb/data-access-types';
 
 describe('PageComponent', () => {
   let component: PageComponent;
@@ -21,9 +22,9 @@ describe('PageComponent', () => {
   const mockBenutzerStore: BenutzerStore = {
     isLoggedIn: signal(true),
     fachrollen: signal([]),
-    createHasRequiredRoleSig: jest.fn().mockReturnValue(signal(true)),
+    createHasRequiredRoleSig: vi.fn().mockReturnValue(signal(true)),
     requireBenutzer: signal<AppUser>({
-      id: '2852a34b-0c16-44dc-90fe-26a4c1d4baee',
+      id: '2852a34b-0c16-44dc-90fe-26a4c1d4baee' as BackendEntityId,
       username: 'user123',
       email: 'user123@dvbern.ch',
       firstName: 'Frida',
@@ -52,8 +53,8 @@ describe('PageComponent', () => {
   };
 
   const mockLanguageStore: Partial<LanguageStore> = {
-    activeLocale: jest.fn().mockReturnValue('de'),
-    setActiveLanguage: jest.fn(),
+    activeLocale: vi.fn().mockReturnValue('de'),
+    setActiveLanguage: vi.fn(),
   };
 
   beforeEach(async () => {

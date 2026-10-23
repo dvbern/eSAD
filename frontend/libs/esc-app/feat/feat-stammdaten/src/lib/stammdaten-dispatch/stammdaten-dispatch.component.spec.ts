@@ -34,6 +34,8 @@ describe('StammdatenDispatchComponent', () => {
 
   it('should navigate to the correct route', async () => {
     fixture.elementRef.nativeElement.getElementsByTagName('a')[0].click();
+    // zoneless: the routerLink navigation settles asynchronously, so wait for it before asserting
+    await fixture.whenStable();
 
     expect(TestBed.inject(Router).url).toEqual('/1');
   });

@@ -41,7 +41,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPe
 import ch.dvbern.oss.hemed.esc.api.features.notizen.Notiz;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
@@ -79,12 +79,12 @@ public class KinderdossierPrintService {
     private final FileStoreService fileStoreService;
     private final TenantSettingsService tenantSettingsService;
     private final ConfigService configService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final TL tl;
 
     @NonNull
     public PrintResultDTO printKinderdossier(
-        @NonNull KinderdossierPrintVariant variation,
+        @NonNull KinderdossierPrintVariant variant,
         @NonNull ID<Kind> kindId,
         @Nullable ID<Anlass> singleAnlassId
     ) {
@@ -135,12 +135,12 @@ public class KinderdossierPrintService {
                 anlassDTOList,
                 notizList,
                 appClock.getToday(),
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 (AppLanguages) appLanguageProvider.current(),
-                variation
+                variant
             );
 
-            logPrintOfKinderdossier(dto, variation, currentUserService.currentUserName());
+            logPrintOfKinderdossier(dto, variant, currentUserService.currentUserName());
             KinderdossierPrinter.print(dto, baos, fileStoreService, tenantSettingsService, configService);
 
             byte[] byteArray = baos.toByteArray();
@@ -148,7 +148,7 @@ public class KinderdossierPrintService {
                 new PrintResultDTO(byteArray, createFileInfo(kind, byteArray.length, "pdf"));
 
             // If there are any attachments, return a zip instead
-            if (variation != KinderdossierPrintVariant.ANLAESSE
+            if (variant != KinderdossierPrintVariant.ANLAESSE
                 && notizList.stream().anyMatch(notiz -> !notiz.getFiles().isEmpty())
             ) {
                 List<Notiz> notizWithFiles = notizList.stream().filter(notiz -> !notiz.getFiles().isEmpty()).toList();
@@ -168,14 +168,14 @@ public class KinderdossierPrintService {
 
     private void logPrintOfKinderdossier(
         @NonNull KinderdossierPrintDTO dto,
-        @NonNull KinderdossierPrintVariant variation,
+        @NonNull KinderdossierPrintVariant variant,
         @NonNull EmailAddress emailAddress
     ) {
 
-        String template = "ESC-PDF-Print: Generation of Kinderdossier variation=${variation} "
+        String template = "ESC-PDF-Print: Generation of Kinderdossier variant=${variant} "
             + "for kindId=${kindId} (${kindName}) and Anlaesse=[${anlassnames}] for username=${emailAddress}";
         Map<String, String> params = new HashMap<>();
-        params.put("variation", variation.name());
+        params.put("variant", variant.name());
         params.put("kindId", dto.getKind().getId().getUUID().toString());
         params.put("kindName", dto.getKind().getNameVorname());
         params.put(

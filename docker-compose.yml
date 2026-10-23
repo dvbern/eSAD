@@ -44,11 +44,28 @@ services:
 
 
   esc-oauthProxy-bs:
-    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
+    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.15.4
     #  entrypoint: "sh"
-    command: --config /oauth2-proxy.cfg
+    command:
+      - --alpha-config=/oauth2-proxy-alpha.yaml
+      - --skip-provider-button=true
+      - --reverse-proxy=true
+      - --email-domain=*
+      - --skip-auth-route=GET=^/fonts
+      - --skip-auth-route=GET=^/img
+      - --skip-auth-route=GET=^/icons
+      - --skip-auth-route=GET=^/assets
+      - --skip-auth-route=GET=^/[^/]*\.(js|css)$$
+      - --cookie-domain=local-esc-bs.localhost
+      - --cookie-samesite=lax
+      - --cookie-refresh=240s
+      - --cookie-expire=30m
+      - --redirect-url=https://local-esc-bs.localhost:4443/oauth2/callback
+      - --whitelist-domain=*.localhost:4443
+      - --whitelist-domain=*.dvbern.ch
+      - --whitelist-domain=*.localhost:8989
     volumes:
-      - "./developer-local-settings/config/oauthproxy-bs/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      - "./developer-local-settings/config/oauthproxy-bs/oauth2-proxy-alpha.yaml:/oauth2-proxy-alpha.yaml"
       - "./developer-local-settings/config/certs/:/var/run/secrets/serving-cert"
     ports:
       - "4443:443"
@@ -62,11 +79,28 @@ services:
         condition: service_healthy
 
   esc-oauthProxy-win:
-    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
+    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.15.4
     #  entrypoint: "sh"
-    command: --config /oauth2-proxy.cfg
+    command:
+      - --alpha-config=/oauth2-proxy-alpha.yaml
+      - --skip-provider-button=true
+      - --reverse-proxy=true
+      - --email-domain=*
+      - --skip-auth-route=GET=^/fonts
+      - --skip-auth-route=GET=^/img
+      - --skip-auth-route=GET=^/icons
+      - --skip-auth-route=GET=^/assets
+      - --skip-auth-route=GET=^/[^/]*\.(js|css)$$
+      - --cookie-domain=local-esc-win.localhost
+      - --cookie-samesite=lax
+      - --cookie-refresh=240s
+      - --cookie-expire=30m
+      - --redirect-url=https://local-esc-win.localhost:5443/oauth2/callback
+      - --whitelist-domain=*.localhost:5443
+      - --whitelist-domain=*.dvbern.ch
+      - --whitelist-domain=*.localhost:8989
     volumes:
-      - "./developer-local-settings/config/oauthproxy-win/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      - "./developer-local-settings/config/oauthproxy-win/oauth2-proxy-alpha.yaml:/oauth2-proxy-alpha.yaml"
       - "./developer-local-settings/config/certs/:/var/run/secrets/serving-cert"
     ports:
       - "5443:443"
@@ -80,11 +114,28 @@ services:
         condition: service_healthy
 
   esc-oauthProxy-be:
-    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.7.1
+    image: docker-registry.dvbern.ch/quay/oauth2-proxy/oauth2-proxy:v7.15.4
     #  entrypoint: "sh"
-    command: --config /oauth2-proxy.cfg
+    command:
+      - --alpha-config=/oauth2-proxy-alpha.yaml
+      - --skip-provider-button=true
+      - --reverse-proxy=true
+      - --email-domain=*
+      - --skip-auth-route=GET=^/fonts
+      - --skip-auth-route=GET=^/img
+      - --skip-auth-route=GET=^/icons
+      - --skip-auth-route=GET=^/assets
+      - --skip-auth-route=GET=^/[^/]*\.(js|css)$$
+      - --cookie-domain=local-esc-be.localhost
+      - --cookie-samesite=lax
+      - --cookie-refresh=240s
+      - --cookie-expire=30m
+      - --redirect-url=https://local-esc-be.localhost:6443/oauth2/callback
+      - --whitelist-domain=*.localhost:6443
+      - --whitelist-domain=*.dvbern.ch
+      - --whitelist-domain=*.localhost:8989
     volumes:
-      - "./developer-local-settings/config/oauthproxy-be/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      - "./developer-local-settings/config/oauthproxy-be/oauth2-proxy-alpha.yaml:/oauth2-proxy-alpha.yaml"
       - "./developer-local-settings/config/certs/:/var/run/secrets/serving-cert"
     ports:
       - "6443:443"

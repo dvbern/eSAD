@@ -11,7 +11,7 @@ import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerRepo;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
 
 import lombok.RequiredArgsConstructor;
@@ -25,14 +25,14 @@ public class CurrentUserServiceImpl implements CurrentUserService {
 
     private final CurrentIdentityAssociation association;
     private final BenutzerRepo repo;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Override
     public ID<Benutzer> currentUserID() {
         requireNotAnonymous();
 
         if (isSystemAdmin()) {
-            TenantEnum tenantEnum = tenantProducer.produceTenant();
+            TenantEnum tenantEnum = tenantContext.get();
             return Benutzer.getSystemAdminId(tenantEnum);
         }
 
@@ -62,7 +62,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         requireNotAnonymous();
 
         if (isSystemAdmin()) {
-            TenantEnum tenantEnum = tenantProducer.produceTenant();
+            TenantEnum tenantEnum = tenantContext.get();
             return repo.getSystemAdmin(tenantEnum).getEmail();
         }
 

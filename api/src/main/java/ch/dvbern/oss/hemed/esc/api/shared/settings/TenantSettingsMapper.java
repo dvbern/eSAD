@@ -1,17 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.shared.settings;
 
 import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import ch.dvbern.dvbstarter.infrastructure.json.EntityInfoJson;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.StringListConverter;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingsFeatureMapper;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LoginMethod;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -20,12 +22,15 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public final class TenantSettingsMapper {
 
     private final TenantSettingsService tenantSettingsService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final TenantSettingsFeatureMapper tenantSettingsFeatureMapper;
+    private final LoginMethodIdpHintResolver loginMethodIdpHintResolver;
 
     @NonNull
     public TenantSettingsJson toJson(@NonNull TenantSetting settings) {
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
+        List<LoginMethod> loginMethods = EnumSetUtil.toList(settings.getLoginMethods());
+        List<LoginOptionJson> loginOptions = loginMethodIdpHintResolver.toOptions(loginMethods);
         return new TenantSettingsJson(
             settings.getId(),
             tenant,
@@ -42,10 +47,12 @@ public final class TenantSettingsMapper {
                 ),
                 EnumSetUtil.toList(settings.getEinladungStatusValues()),
                 settings.getDefaultLandingPage(),
-                settings.getGueltigAbWachstumskurvePch()
+                settings.getGueltigAbWachstumskurvePch(),
+                loginMethods
             ),
             FachRolle.getFachrollenWithBerechtigung(tenant),
-            FachRolle.getBerechtigteDelegierBareFachrollen(tenant)
+            FachRolle.getBerechtigteDelegierBareFachrollen(tenant),
+            loginOptions
         );
     }
 
@@ -60,6 +67,7 @@ public final class TenantSettingsMapper {
         existing.setAgbResponsability(saveJson.getAgbResponsability());
         existing.setDefaultLandingPage(saveJson.getDefaultLandingPage());
         existing.setGueltigAbWachstumskurvePch(saveJson.getGueltigAbWachstumskurvePch());
+        existing.setLoginMethods(saveJson.getLoginMethods());
         tenantSettingsFeatureMapper.toEntity(existing.getTenantSettingFeatures(), saveJson.getFeatures());
     }
 

@@ -1,8 +1,16 @@
 import {AppLanguages} from "@dvb/data-access-backend";
 
-export type Language = 'de' | 'fr' | 'it' | 'en';
+/**
+ * Languages the frontend ships translations for (see `./translations/translations.<lang>.json`).
+ *
+ * Must be kept in sync with the available translation files: a language listed here but without
+ * translation files would be selected for browsers using that language (e.g. `en`) and then fail
+ * to load ("Module not found in bundle: ./translations/translations.en.json").
+ * The backend's {@link AppLanguages} may contain more languages, these are mapped via {@link appLanguageToLanguage}.
+ */
+export type Language = 'de' | 'fr';
 
-export const SUPPORTED_LANGUAGES: Language[] = ['de', 'fr', 'it', 'en'];
+export const SUPPORTED_LANGUAGES: Language[] = ['de', 'fr'];
 
 export const DEFAULT_LANGUAGE: Language = 'de';
 

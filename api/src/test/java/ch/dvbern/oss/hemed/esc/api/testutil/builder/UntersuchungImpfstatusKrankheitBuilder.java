@@ -110,6 +110,20 @@ public class UntersuchungImpfstatusKrankheitBuilder {
     }
 
     @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfstatusKrankheitBuilder withImpfempfehlung(boolean impfempfehlung) {
+        this.impfstatus.setImpfempfehlung(impfempfehlung);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public UntersuchungImpfstatusKrankheitBuilder withImpfentscheid(boolean impfentscheid) {
+        this.impfstatus.setImpfentscheid(impfentscheid);
+        return this;
+    }
+
+    @NonNull
     public static UntersuchungImpfstatusKrankheit create(
         @NonNull Consumer<UntersuchungImpfstatusKrankheitBuilder> block) {
         UntersuchungImpfstatusKrankheitBuilder builder = new UntersuchungImpfstatusKrankheitBuilder();

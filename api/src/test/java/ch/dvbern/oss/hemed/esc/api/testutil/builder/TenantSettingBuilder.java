@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.settings.features.FeatureEnabledSettin
 import ch.dvbern.oss.hemed.esc.api.shared.settings.features.TenantSettingFeatures;
 import ch.dvbern.oss.hemed.esc.api.shared.types.AgbResponsability;
 import ch.dvbern.oss.hemed.esc.api.shared.types.LandingPageOption;
+import ch.dvbern.oss.hemed.esc.api.shared.types.LoginMethod;
 import ch.dvbern.oss.hemed.esc.api.shared.util.EnumSetUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 
@@ -62,7 +63,8 @@ public class TenantSettingBuilder {
                 FeatureEnabledSetting.ENABLED
             ),
             EnumSetUtil.toString(EnumSet.allOf(EinladungStatus.class)),
-            LocalDate.of(2026, Month.OCTOBER, 6)
+            LocalDate.of(2026, Month.OCTOBER, 6),
+            EnumSetUtil.toString(EnumSet.of(LoginMethod.DVBERN_HEMED_ENTRA))
         );
     }
 
@@ -155,6 +157,13 @@ public class TenantSettingBuilder {
     @CanIgnoreReturnValue
     public TenantSettingBuilder withDefaultLandingPage(@NonNull LandingPageOption defaultLandingPage) {
         this.tenantSetting.setDefaultLandingPage(defaultLandingPage);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
+    public TenantSettingBuilder withLoginMethods(@NonNull List<LoginMethod> loginMethods) {
+        this.tenantSetting.setLoginMethods(loginMethods);
         return this;
     }
 

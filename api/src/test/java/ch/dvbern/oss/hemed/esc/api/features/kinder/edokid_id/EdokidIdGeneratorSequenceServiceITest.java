@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.shared.EdokidIdTestGenerator;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
+import ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.SchuleBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
@@ -45,6 +47,7 @@ class EdokidIdGeneratorSequenceServiceITest extends AbstractITest {
     private final ManagedExecutor parallelGenExecutor;
     private final EdokidIdGeneratorService edokidIdGeneratorService;
     private final EdokidIdRepo edokidIdRepo;
+    private final PerTenantRunnerService perTenantRunnerService;
     private final LocalDate initalDate = getAppClock().localDateTime().now().toLocalDate();
     @Nullable
     private EdokidIdSequence previousSequence; // store previous sequence if it exists
@@ -56,26 +59,29 @@ class EdokidIdGeneratorSequenceServiceITest extends AbstractITest {
         @ManagedExecutorConfig(maxAsync = 8)
         ManagedExecutor parallelGenExecutor,
         EdokidIdGeneratorService edokidIdGeneratorService,
-        EdokidIdRepo edokidIdRepo
+        EdokidIdRepo edokidIdRepo,
+        PerTenantRunnerService perTenantRunnerService
     ) {
         this.parallelGenExecutor = parallelGenExecutor;
         this.edokidIdGeneratorService = edokidIdGeneratorService;
         this.edokidIdRepo = edokidIdRepo;
+        this.perTenantRunnerService = perTenantRunnerService;
 
     }
     // get 2 digit year
 
     @BeforeAll
-    @ActivateRequestContext
     void beforeAll() {
-        Optional<EdokidIdSequence> sequenceOptional = edokidIdRepo.findSequenceByEintrittsjahrAndLock(
-            EdokidIdGeneratorService.calculateEintrittsJahr(initalDate));
-        previousSequence = sequenceOptional.orElse(null);
+        perTenantRunnerService.runForTenant(TenantEnum.BS, () -> {
+            Optional<EdokidIdSequence> sequenceOptional = edokidIdRepo.findSequenceByEintrittsjahrAndLock(
+                EdokidIdGeneratorService.calculateEintrittsJahr(initalDate));
+            previousSequence = sequenceOptional.orElse(null);
 
-        // Remove existing sequence
-        sequenceOptional.ifPresent(
-            optional -> edokidIdRepo.remove(optional.getId())
-        );
+            // Remove existing sequence
+            sequenceOptional.ifPresent(
+                optional -> edokidIdRepo.remove(optional.getId())
+            );
+        });
     }
 
     //    @AfterAll

@@ -33,14 +33,19 @@ export class TenantSettingsStore extends signalStore(
   readonly appErrorHandlerService = inject(AppErrorHandlerService);
   readonly loader = new Loader();
 
+  /**
+   * Loads the tenant settings during app initialization.
+   *
+   * A failure must not abort the app bootstrap (the app can partially work with default settings),
+   * but it must not be swallowed silently either: it is reported via the {@link AppErrorHandlerService}
+   * (visible to the user and captured by Sentry).
+   */
   async init(): Promise<void> {
     return firstValueFrom(this.tenantSettingsService.getTenantSettings$())
       .then(tenantSettings => {
-        console.log('tenantSettings loaded', tenantSettings);
-
         patchState(this, {settings: tenantSettings});
       })
-      .catch(e => console.error(e));
+      .catch(e => this.appErrorHandlerService.handleError(e));
   }
 
   updateTenantSettings = rxMethod<{
@@ -95,6 +100,11 @@ export class TenantSettingsStore extends signalStore(
   availableEinladungStatus = computed(() => {
     return this.settings()?.data.einladungStatusValues ?? [];
   });
+
+  // defensive copy + sort by `order`: the backend already sorts, but we must not rely on that.
+  loginOptions = computed(() =>
+    [...(this.settings()?.loginOptions ?? [])].sort((a, b) => a.order - b.order),
+  );
 
   idEsadIdVisible = computed(() => {
     return this.settings()?.data.features.esadIdFeature.enabledForStage;

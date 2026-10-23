@@ -1,6 +1,7 @@
 import {computed, inject, Injectable} from '@angular/core';
 import {
   AnlassJson,
+  AnlassPrintVariant,
   AnlassSaveJson,
   AnlassService,
   AnlassStatus,
@@ -105,6 +106,9 @@ export class AnlassStore extends signalStore(
       }),
       showImpfeinverstaendnis: computed(() => {
         return selectedEntity()?.anlassConfig.data.showImpfeinverstaendnis;
+      }),
+      showAnlassPrintImpfen: computed(() => {
+        return selectedEntity()?.anlassConfig.data.showAnlassPrintImpfen ?? false;
       }),
       sehenBrilleLinsenValues: computed(() => {
         return selectedEntity()?.anlassConfig.data.sehenBrilleLinsenValues ?? [];
@@ -252,7 +256,20 @@ export class AnlassStore extends signalStore(
     pipe(
       exhaustMap(({anlassId}) =>
         this.loader.tapLoading$(
-          this.#printService.downloadAnlassPrint$({anlassId}, 'response'),
+          this.#printService.downloadAnlassPrint$({anlassId, variant: AnlassPrintVariant.ALLGEMEIN}, 'response'),
+          error => this.#appErrorHandlerService.handleError(error))),
+      tapResponse({
+        next: result => handleBlobResponseDownload(result, true),
+        error: console.error,
+      }),
+    ),
+  );
+
+  downloadAnlassExportPrintImpfen = rxMethod<{ anlassId: BackendEntityId }>(
+    pipe(
+      exhaustMap(({anlassId}) =>
+        this.loader.tapLoading$(
+          this.#printService.downloadAnlassPrint$({anlassId, variant: AnlassPrintVariant.IMPFEN}, 'response'),
           error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
         next: result => handleBlobResponseDownload(result, true),

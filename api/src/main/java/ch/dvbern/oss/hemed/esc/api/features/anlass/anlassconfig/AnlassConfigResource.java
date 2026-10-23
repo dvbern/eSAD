@@ -34,7 +34,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.json.AnlassConfi
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper.AnlassConfigSkriptJson;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.skripthelper.AnlassConfigSkriptMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 import io.micrometer.core.annotation.Timed;
@@ -73,7 +73,7 @@ public class AnlassConfigResource {
 
     private final AnlassConfigMapper anlassConfigMapper;
     private final AnlassConfigSkriptMapper anlassConfigSkriptMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final ConfigService configService;
     private final AppClock appClock;
 
@@ -148,7 +148,7 @@ public class AnlassConfigResource {
         byte[] content = skript.getBytes(StandardCharsets.UTF_8);
         // Filename mit Datum, Tenant, und Stufe
         String filename = "XXXX-update-anlassconfig-"
-            + tenantProducer.produceTenant().getRealmName()
+            + tenantContext.get().getRealmName()
             + '-'
             + configService.getEnvironment().name().toLowerCase()
             + '-'

@@ -3,6 +3,7 @@ package ch.dvbern.oss.hemed.esc.api.shared.scheduler;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
 import ch.dvbern.oss.hemed.esc.api.features.archivierung.ArchivdokumentService;
+import ch.dvbern.oss.hemed.esc.api.features.auditretention.AuditRetentionService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.features.kinddeactivation.KindDeactivationService;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindService;
@@ -45,7 +46,8 @@ class SuperAdminRunnerServiceHealthCheckTest {
             mock(DossierQueueRunnerService.class),
             mock(ArchivierungRuleService.class),
             mock(DossierQueueService.class),
-            fileStoreHealthCheckService
+            fileStoreHealthCheckService,
+            mock(AuditRetentionService.class)
         );
     }
 

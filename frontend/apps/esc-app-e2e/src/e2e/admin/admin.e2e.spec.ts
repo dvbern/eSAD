@@ -15,11 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {expect, test} from '@playwright/test';
+import {expect, test} from '../../fixtures/test.fixture';
 import {AdminPageObject} from './page-objects/admin.page-object';
+import {authStatePath} from '../../util/env.util';
 
 test.describe('feat admin', () => {
-  test.use({storageState: './playwright/.auth/ESC_SUPPORT'});
+  test.use({storageState: authStatePath('ESC_SUPPORT')});
 
   test('should show all links', async ({page}) => {
     const adminPage = new AdminPageObject(page);

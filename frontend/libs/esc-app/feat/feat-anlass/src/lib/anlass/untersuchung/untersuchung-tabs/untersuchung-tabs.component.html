@@ -289,9 +289,9 @@
     <!-- Abstand -->
     <li style="flex-grow: 1;"></li>
     <!-- Dossier Button -->
-    @if(showLinkToDossier()){
+    @if (showLinkToDossier() && untersuchungStore.currentTab()?.kindID; as kindID) {
       <li ngbNavItem role="presentation">
-        <a class="nav-link" target="_blank" [routerLink]="'/kinder/' + untersuchungStore.currentTab()?.kindID">
+        <a class="nav-link" target="_blank" [routerLink]="'/kinder/' + kindID">
           <svui-icon [useCase]="'link'"></svui-icon>
           {{ 'untersuchung.tab.dossierlink' | transloco }}
         </a>

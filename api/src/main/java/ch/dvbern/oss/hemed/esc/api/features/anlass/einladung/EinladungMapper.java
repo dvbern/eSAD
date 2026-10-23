@@ -34,7 +34,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.util.PathParamConsistancyUtil;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -63,7 +63,7 @@ public final class EinladungMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final UntersuchungImpfstatusKrankheitService untersuchungImpfstatusKrankheitService;
     private final UntersuchungImpfungInternService untersuchungImpfungInternService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public static EinladungJson toJson(
@@ -183,7 +183,7 @@ public final class EinladungMapper {
         @NonNull Predicate<Einladung> hasAuthorizationEinladung
     ) {
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         return einladungService.findByAnlass(anlassId).stream()
             .filter(hasAuthorizationEinladung)
             .map(einladung -> toJson(
@@ -205,7 +205,7 @@ public final class EinladungMapper {
         aktivitaetHistoryService.createAktivitaetKind(einladung.getDossier().getKind());
         Nachkontrolle nachkontrolle = this.nachkontrolleService.getOrCreateByDossier(einladung.getDossier().getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return toJson(einladung, nachkontrolle, now, tenantProducer.produceTenant());
+        return toJson(einladung, nachkontrolle, now, tenantContext.get());
     }
 
     @NonNull
@@ -229,7 +229,7 @@ public final class EinladungMapper {
     ) {
         Anlass anlass = anlassService.getById(anlassID);
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         return einladungService.createEinladungenForAnlass(anlass, kindListJson.getKinderIdList()).stream()
             .map(einladung -> toJson(
                 einladung,
@@ -291,7 +291,7 @@ public final class EinladungMapper {
             einladungService.persistWithOptimisticLocking(updated, einladungSaveJson.getVersion());
         Nachkontrolle nachkontrolle = this.nachkontrolleService.getOrCreateByDossier(updated.getDossier().getId());
         LocalDate now = appClock.offsetDateTime().now().toLocalDate();
-        return toJson(persistedEinladung, nachkontrolle, now, tenantProducer.produceTenant());
+        return toJson(persistedEinladung, nachkontrolle, now, tenantContext.get());
     }
 
     @NonNull
@@ -301,7 +301,7 @@ public final class EinladungMapper {
         @NonNull List<FileUpload> fileUploads
     ) {
         Notiz notiz = einladungNotizMapper.createEinladungNotiz(einladungId, createJson, fileUploads);
-        return NotizMapper.toJson(notiz, tenantProducer.produceTenant());
+        return NotizMapper.toJson(notiz, tenantContext.get());
     }
 
     private void updateAbmeldungsNotiz(

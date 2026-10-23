@@ -22,7 +22,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungServ
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.json.BenutzerOptionJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -41,7 +41,7 @@ public final class UntersuchungImpfungenMapper {
     private final UntersuchungImpfstatusKrankheitMapper untersuchungImpfstatusKrankheitMapper;
     private final UntersuchungImpfungInternMapper untersuchungImpfungInternMapper;
     private final VisumMapper visumMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final AppClock appClock;
 
     @Nullable
@@ -135,7 +135,7 @@ public final class UntersuchungImpfungenMapper {
         }
 
         return new UntersuchungImpfungenDataJson(
-            toJson(impfungen, tenantProducer.produceTenant()),
+            toJson(impfungen, tenantContext.get()),
             UntersuchungImpfungenMassnahmenMapper.toJson(impfungen.getUntersuchungImpfungenMassnahmen()),
             new UntersuchungImpfstatusListSaveJson(impfstatusJsonList),
             new UntersuchungImpfungInternListJson(impfungenInternList),
@@ -153,7 +153,7 @@ public final class UntersuchungImpfungenMapper {
         hasAuthorizationUntersuchung.accept(untersuchung);
         UntersuchungImpfungen existingUntersuchungImpfung = untersuchung.getUntersuchungImpfungen();
         UntersuchungImpfungen entity = toEntity(untersuchung, existingUntersuchungImpfung, saveJson);
-        return toJson(untersuchungImpfungenService.persistWithOptimisticLocking(entity, saveJson.getVersion()), tenantProducer.produceTenant());
+        return toJson(untersuchungImpfungenService.persistWithOptimisticLocking(entity, saveJson.getVersion()), tenantContext.get());
     }
 
     @NonNull
@@ -168,7 +168,7 @@ public final class UntersuchungImpfungenMapper {
         Objects.requireNonNull(untersuchungImpfung);
         return toJson(untersuchungImpfungenService.visierenDoppelkontrolleVisum1(
             untersuchungImpfung,
-            saveJson.getVersion()), tenantProducer.produceTenant());
+            saveJson.getVersion()), tenantContext.get());
     }
 
     @NonNull
@@ -185,7 +185,7 @@ public final class UntersuchungImpfungenMapper {
         return toJson(untersuchungImpfungenService.anfordernDoppelkontrolleVisum2(
             untersuchungImpfung,
             saveJson.getVersion(),
-            benutzerJson.getId()), tenantProducer.produceTenant());
+            benutzerJson.getId()), tenantContext.get());
     }
 
     @NonNull
@@ -200,7 +200,7 @@ public final class UntersuchungImpfungenMapper {
         Objects.requireNonNull(untersuchungImpfung);
         return toJson(untersuchungImpfungenService.visierenDoppelkontrolleVisum2(
             untersuchungImpfung,
-            saveJson.getVersion()), tenantProducer.produceTenant());
+            saveJson.getVersion()), tenantContext.get());
     }
 
     @NonNull
@@ -215,6 +215,6 @@ public final class UntersuchungImpfungenMapper {
         Objects.requireNonNull(untersuchungImpfung);
         return toJson(untersuchungImpfungenService.resetDoppelkontrolle(
             untersuchungImpfung,
-            saveJson.getVersion()), tenantProducer.produceTenant());
+            saveJson.getVersion()), tenantContext.get());
     }
 }

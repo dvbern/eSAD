@@ -5,7 +5,7 @@
     <label [for]="id" class="form-check-label">
       {{ label() }}
 
-      @if (required) {
+      @if (required()) {
         <!--FIXME(zusa) funktioniert nicht bei single checkbox -->
         <svui-required/>
       }

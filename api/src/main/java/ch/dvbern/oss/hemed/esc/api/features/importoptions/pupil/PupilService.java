@@ -3,7 +3,6 @@ package ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,11 +15,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import ch.dvbern.dvbstarter.infrastructure.fileio.FileNameUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.dvbstarter.shared.runas.RunAs;
-import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.oss.hemed.esc.api.externalimportinfojson.ImportTyp;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.csv.PupilCSVMapperService;
 import ch.dvbern.oss.hemed.esc.api.features.importoptions.pupil.csv.PupilCsvDTO;
@@ -47,21 +44,13 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExterna
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalRepo;
 import ch.dvbern.oss.hemed.esc.api.features.schule.schulenexternal.SchuleExternalSyncService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ExternalSystemIdDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ImportPlanDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.externalsystem.ItemSyncResultJson;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
-import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
-import io.quarkus.vertx.ConsumeEvent;
-import io.smallrye.mutiny.Uni;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +59,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createInputStreamFromPath;
 import static ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil.createReaderFromInputStream;
@@ -87,7 +75,7 @@ public class PupilService {
     private final FileValidationService fileValidationService;
     private final FileStoreService fileStoreService;
     private final ConfigService configService;
-    private final PupilSyncEventRepo pupilSyncEventRepo;
+    private final PupilSyncEventService pupilSyncEventService;
     private final PupilCsvService pupilCsvService;
     private final SchuleExternalRepo schuleExternalRepo;
     private final SchuleExternalSyncService schuleExternalSyncService;
@@ -96,7 +84,6 @@ public class PupilService {
     private final KindExternalRepo kindExternalRepo;
     private final KindExternalSyncService kindExternalSyncService;
     private final PupilMailService pupilMailService;
-    private final TenantProducer tenantProducer;
     private final LehrpersonExternalRepo lehrpersonExternalRepo;
     private final LehrpersonExternalSyncService lehrpersonExternalSyncService;
     private final KontaktPersonKindExternalRepo kontaktPersonKindExternalRepo;
@@ -108,18 +95,18 @@ public class PupilService {
         // check the filetype
         fileValidationService.requireFiletypeIsAllowed(fileUpload, FileTyp.PUPIL_SYNC);
         // store the sync data in a file
-        PupilSyncEvent pupilSyncEvent = this.savePupilSyncData(fileUpload);
+        PupilSyncEvent pupilSyncEvent = pupilSyncEventService.savePupilSyncData(fileUpload);
         InputStream is = createInputStreamFromPath(fileUpload.filePath());
         return handlePupilCSVUpload(is, pupilSyncEvent);
     }
 
-    @ActivateRequestContext
-    @ConsumeEvent(value = PUPIL_SYNC_EVENT_ADDRESS, blocking = true)
+    /**
+     * Called by {@link PupilSyncEventRunnerService} inside the request context of the tenant WIN.
+     */
     @Transactional(TxType.NOT_SUPPORTED)
     @RunAs(username = "Irrelevant solange Rolle SYSTEM_ADMIN", roles = { BerechtigungName.SYSTEM_ADMIN })
     public void handlePupilSyncEvent(@NonNull PupilSyncEvent pupilSyncEvent) {
         try {
-            tenantProducer.setCurrentTenant(TenantEnum.WIN); // Pupil Import ist fix für WIN
             var bytes = fileStoreService.getFileBytesSync(pupilSyncEvent.getFileData()
                 .getFileInfoBucket()
                 .getFileIdInBucket());
@@ -138,31 +125,6 @@ public class PupilService {
         }
     }
 
-
-    @NonNull
-    protected PupilSyncEvent savePupilSyncData(@NonNull FileUpload fileUpload) {
-        // prepare the file info Embeddable
-        FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.PUPIL_SYNC);
-        // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
-        PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Uploaded pupil csv file  to S3: {}", putObjectResponse);
-
-        LocalDate today = appClock.getToday();
-        final String originalFileName = fileInfo.getFileName().getFileName();
-        CleanFileName calculatedFileName = FileNameUtil.calculateAutomaticFilename(
-            List.of(),
-            today,
-            "Pupil-Sync",
-            FileTyp.PUPIL_SYNC,
-            originalFileName);
-
-        FileData fileData = new FileData(FileTyp.PUPIL_SYNC, calculatedFileName, fileInfo);
-
-        PupilSyncEvent event = new PupilSyncEvent(fileData);
-        this.pupilSyncEventRepo.persist(event);
-        return event;
-    }
 
     @NonNull
     private ImportPlanDTO<LehrpersonExternal> extractLehrpersonenAndDetermineUpdatePlan(

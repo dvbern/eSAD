@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, output, signal} from '@angular/core';
 import {FormFullWidthDirective, IconOnlyButtonComponent} from '@dvb/ui-components';
 import {AppNotificationStore} from '@dvb/util-angular';
 import {TranslocoPipe, TranslocoService} from '@jsverse/transloco';
@@ -25,21 +25,22 @@ export class FileDropComponent {
 
   readonly #appNotificationStore = inject(AppNotificationStore);
   readonly #transloco = inject(TranslocoService);
-  readonly cdRef = inject(ChangeDetectorRef);
 
   readonly filesToUpload = output<File[]>();
-  public selectedFiles: File[] = []; // list of 'File' objects to emit to parent component
-  public files: NgxFileDropEntry[] = [];
+  // list of 'File' objects to emit to parent component
+  readonly #selectedFiles = signal<File[]>([]);
+  readonly selectedFiles = this.#selectedFiles.asReadonly();
+  readonly #files = signal<NgxFileDropEntry[]>([]);
+  readonly files = this.#files.asReadonly();
 
   // is used in notizen-mobile-app to clear the table
   public clear(): void {
-    this.files = [];
-    this.selectedFiles = [];
-    this.cdRef.detectChanges();
+    this.#files.set([]);
+    this.#selectedFiles.set([]);
   }
 
   public dropped(inputFiles: NgxFileDropEntry[]): void {
-    if (!this.multiple() && this.files.length >= 1) {
+    if (!this.multiple() && this.#files().length >= 1) {
       this.#appNotificationStore.addDangerNotification(
         this.#transloco.translate('ui.upload.action.upload.error.multipleFiles'),
       );
@@ -53,13 +54,12 @@ export class FileDropComponent {
           // the mime type is not checked by ngx-filedrop, we have to check it here
           const matchingMimeType = FileDropComponent.validateFileType(f, this.acceptedFiletypes());
           if (matchingMimeType) {
-            this.files.push(file);
-            this.selectedFiles.push(f);
-            this.cdRef.detectChanges();
+            this.#files.update(files => [...files, file]);
+            this.#selectedFiles.update(selectedFiles => [...selectedFiles, f]);
 
             // once all are processed, emit the files to the parent component
             if (i === inputFiles.length - 1) {
-              this.filesToUpload.emit(this.selectedFiles);
+              this.filesToUpload.emit(this.#selectedFiles());
             }
           } else {
             this.#appNotificationStore.addNotification({
@@ -89,18 +89,16 @@ export class FileDropComponent {
   }
 
   public removeFileFromUpload(item: NgxFileDropEntry): void {
-    if (this.files) {
-      const indexToRemove = this.files.indexOf(item);
-      if (indexToRemove > -1) {
-        this.files.splice(indexToRemove, 1);
-        const fileToRemove = item.fileEntry as FileSystemFileEntry;
-        fileToRemove.file((f: File) => {
-          // async remove file from selectedFiles
-          this.selectedFiles = this.selectedFiles.filter(file => file.name !== f.name);
-          // emit the updated files to the parent component
-          this.filesToUpload.emit(this.selectedFiles);
-        });
-      }
+    if (!this.#files().includes(item)) {
+      return;
     }
+    this.#files.update(files => files.filter(file => file !== item));
+    const fileToRemove = item.fileEntry as FileSystemFileEntry;
+    fileToRemove.file((f: File) => {
+      // async remove file from selectedFiles
+      this.#selectedFiles.update(selectedFiles => selectedFiles.filter(file => file.name !== f.name));
+      // emit the updated files to the parent component
+      this.filesToUpload.emit(this.#selectedFiles());
+    });
   }
 }

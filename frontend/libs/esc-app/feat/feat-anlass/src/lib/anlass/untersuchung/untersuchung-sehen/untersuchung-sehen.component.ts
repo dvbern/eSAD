@@ -6,6 +6,7 @@ import {CardInCardComponent, IconComponent,} from '@dvb/ui-components';
 import {DirtyMarker} from '@dvb/util-angular';
 import {TranslocoPipe} from '@jsverse/transloco';
 import {AnlassStore} from '../../anlass.store';
+import {UntersuchungSehenStore} from './untersuchung-sehen.store';
 import {
   UntersuchungSehenBeurteilungComponent
 } from "./untersuchung-sehen-beurteilung/untersuchung-sehen-beurteilung.component";
@@ -40,6 +41,7 @@ export class UntersuchungSehenComponent implements DirtyMarker {
   protected readonly RequirementSetting = RequirementSetting;
 
   readonly anlassStore = inject(AnlassStore);
+  readonly sehenStore = inject(UntersuchungSehenStore);
 
 
   isDirty(): boolean {

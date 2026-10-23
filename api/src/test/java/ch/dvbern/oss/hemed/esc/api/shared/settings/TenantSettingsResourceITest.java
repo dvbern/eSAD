@@ -6,6 +6,7 @@ import java.util.List;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
+import ch.dvbern.oss.hemed.esc.api.testutil.assertj.AppValidationErrorJsonSpecAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBE;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
@@ -13,10 +14,12 @@ import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsSupportBS;
 import ch.dvbern.oss.hemed.esc.generated.restassured.api.TenantSettingsApiSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AgbResponsabilitySpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppLanguagesSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.AppValidationErrorJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.EinladungStatusSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FachRolleSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.FeatureEnabledSettingSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LandingPageOptionSpec;
+import ch.dvbern.oss.hemed.esc.generated.restassured.dto.LoginMethodSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingFeatureStateJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingFeaturesJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.TenantSettingSaveJsonSpec;
@@ -62,6 +65,14 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(16);
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(1);
         Assertions.assertThat(result.getData().getEinladungStatusValues()).hasSize(3);
+        Assertions.assertThat(result.getData().getLoginMethods())
+            .containsExactlyInAnyOrder(LoginMethodSpec.PASSWORD, LoginMethodSpec.DVBERN_HEMED_ENTRA);
+        // loginOptions follow LoginMethodIdpHintResolver.DISPLAY_ORDER: DVBERN_HEMED_ENTRA before PASSWORD
+        Assertions.assertThat(result.getLoginOptions()).hasSize(2);
+        Assertions.assertThat(result.getLoginOptions().get(0).getMethod()).isEqualTo(LoginMethodSpec.DVBERN_HEMED_ENTRA);
+        Assertions.assertThat(result.getLoginOptions().get(0).getIdpHint()).isNotBlank();
+        Assertions.assertThat(result.getLoginOptions().get(1).getMethod()).isEqualTo(LoginMethodSpec.PASSWORD);
+        Assertions.assertThat(result.getLoginOptions().get(1).getIdpHint()).isEmpty();
         Assertions.assertThat(result.getFachrollen()).containsExactlyInAnyOrder(
             FachRolleSpec.EMPFANG,
             FachRolleSpec.MPA,
@@ -96,6 +107,19 @@ class TenantSettingsResourceITest extends AbstractITest {
         Assertions.assertThat(result.getData().getDefaultLanguage().name()).isEqualTo(AppLanguages.DE.name());
         Assertions.assertThat(result.getData().getFolgeTermineMaxSlots()).isEqualTo(16);
         Assertions.assertThat(result.getData().getSupportedLanguages()).hasSize(1);
+        // All tenants start with the PASSWORD + DVBERN_HEMED_ENTRA seed. On tenants with a single effective
+        // login method Keycloak is configured to redirect directly to the hemed realm (defaultProvider),
+        // so the seeded default is never visible there. BeLogin/HIN for Bern are enabled per environment
+        // via the Support UI only after the broker IdPs and allow-list entries exist (see plan Step 5)
+        // - so no db/be changeset.
+        Assertions.assertThat(result.getData().getLoginMethods())
+            .containsExactlyInAnyOrder(LoginMethodSpec.PASSWORD, LoginMethodSpec.DVBERN_HEMED_ENTRA);
+        // loginOptions follow LoginMethodIdpHintResolver.DISPLAY_ORDER: DVBERN_HEMED_ENTRA before PASSWORD
+        Assertions.assertThat(result.getLoginOptions()).hasSize(2);
+        Assertions.assertThat(result.getLoginOptions().get(0).getMethod()).isEqualTo(LoginMethodSpec.DVBERN_HEMED_ENTRA);
+        Assertions.assertThat(result.getLoginOptions().get(0).getIdpHint()).contains("hemed-entra-client");
+        Assertions.assertThat(result.getLoginOptions().get(1).getMethod()).isEqualTo(LoginMethodSpec.PASSWORD);
+        Assertions.assertThat(result.getLoginOptions().get(1).getIdpHint()).isEmpty();
         Assertions.assertThat(result.getFachrollen()).containsExactlyInAnyOrder(
             FachRolleSpec.MPA,
             FachRolleSpec.SCHULAERZTIN,
@@ -152,7 +176,8 @@ class TenantSettingsResourceITest extends AbstractITest {
             ),
             List.of(EinladungStatusSpec.TEILNAHME_BESTAETIGT, EinladungStatusSpec.PRIVATARZT_BESTAETIGT),
             LandingPageOptionSpec.DASHBOARD,
-            LocalDate.of(2026, Month.OCTOBER, 6));
+            LocalDate.of(2026, Month.OCTOBER, 6),
+            List.of(LoginMethodSpec.DVBERN_HEMED_ENTRA, LoginMethodSpec.PASSWORD));
 
         var result = api.tenantSettingsResourceUpdateTenantSettings()
             .body(saveJson)
@@ -224,6 +249,9 @@ class TenantSettingsResourceITest extends AbstractITest {
             .getEinladungStatusValues()
             .stream()
             .anyMatch(einladungStatus -> einladungStatus == EinladungStatusSpec.PRIVATARZT_BESTAETIGT)).isTrue();
+        Assertions.assertThat(result.getData().getLoginMethods())
+            .containsExactlyInAnyOrder(LoginMethodSpec.DVBERN_HEMED_ENTRA, LoginMethodSpec.PASSWORD);
+        Assertions.assertThat(result.getLoginOptions()).hasSize(2);
 
         // RESET value in db, not pretty but this should make sure we dont break other tests
         api.tenantSettingsResourceUpdateTenantSettings()
@@ -232,6 +260,36 @@ class TenantSettingsResourceITest extends AbstractITest {
             .then()
             .assertThat()
             .statusCode(Status.OK.getStatusCode());
+    }
+
+    @Test
+    @TestAsSupportBS
+    void updateTenantSettings_with_empty_loginMethods_fails() {
+        // ARRANGE
+        TenantSettingsJsonSpec initial = api
+            .tenantSettingsResourceGetTenantSettings()
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.OK.getStatusCode())
+            .extract().as(TenantSettingsJsonSpec.class);
+
+        TenantSettingSaveJsonSpec saveJson = initial.getData();
+        saveJson.setLoginMethods(List.of());
+
+        // ACT
+        AppValidationErrorJsonSpec validationError = api.tenantSettingsResourceUpdateTenantSettings()
+            .body(saveJson)
+            .execute(ResponseBody::prettyPeek)
+            .then()
+            .assertThat()
+            .statusCode(Status.BAD_REQUEST.getStatusCode())
+            .extract().as(AppValidationErrorJsonSpec.class);
+
+        // ASSERT
+        AppValidationErrorJsonSpecAssert.assertThatAppValidationErrorJsonSpec(validationError)
+            .extractingExactlyOneViolation()
+            .hasRawMessageContaining("Größe muss zwischen 1 und 2147483647 sein");
     }
 }
 

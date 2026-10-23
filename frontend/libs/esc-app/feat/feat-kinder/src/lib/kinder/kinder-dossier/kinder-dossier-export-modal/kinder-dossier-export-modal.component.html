@@ -2,13 +2,13 @@
   <form [formGroup]="form.group"
         (ngSubmit)="speichern()">
 
-    @for (variation of exportVariation; track variation) {
-      <svui-single-radio-wrapper [label]="'KinderdossierPrintVariant.' + variation | transloco">
+    @for (variant of exportVariants; track variant) {
+      <svui-single-radio-wrapper [label]="'KinderdossierPrintVariant.' + variant | transloco">
         <input svuiRadio
                type="radio"
                name="KinderdossierPrintVariant"
                [formControl]="form.controlAt('kinderdossierPrintVariant')"
-               [value]="variation"/>
+               [value]="variant"/>
       </svui-single-radio-wrapper>
     }
 

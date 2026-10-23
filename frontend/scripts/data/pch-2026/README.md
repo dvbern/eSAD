@@ -24,11 +24,16 @@ These are the curves recommended by **pädiatrie schweiz** as the *Wachstumskurv
 | `height-boys.csv` | S2 | `age` (years) | 0–20 |
 | `bmi-girls.csv` | S3 | `age` (years) | 2–18 |
 | `bmi-boys.csv` | S4 | `age` (years) | 2–20 |
-| `weight-for-height-girls.csv` | S7 | `height` (cm) | 50–180 |
+| `weight-for-height-girls.csv` | S7 (50–180) + delivery (181–190) | `height` (cm) | 50–190 |
 | `weight-for-height-boys.csv` | S8 | `height` (cm) | 50–200 |
 
 The full published range is kept here even where eSAD plots only part of it — the narrowing to the
 ranges actually charted happens in the generator, not in the data.
+
+The girls' Gewicht-für-Grösse table (S7) stops at 180 cm. Rows 181–190 cm of
+`weight-for-height-girls.csv` are taken verbatim from `centiles female WeightForHeight.csv` (`l`
+and `s` from `LMS female WeightForHeight.csv`), delivered by pädiatrie schweiz (ESC-1306). They
+are in 1-cm steps and 2 decimals, as delivered.
 
 ## Columns
 

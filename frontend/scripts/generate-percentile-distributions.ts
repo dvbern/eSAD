@@ -25,20 +25,17 @@ const OUT_DIR = path.join(
 const PERCENTILES = [3, 10, 25, 50, 75, 90, 97] as const;
 
 /**
- * P3 and P97 bound the reference range and are drawn emphasised, P50 is the median.
- * Matches how the existing Groesse curves are typed.
+ * The emphasised lines of the chart (`spec.emphasised`) are drawn solid with a bold label and the area
+ * outside them is shaded; P50 is the median. All other lines are drawn dashed.
  */
-function lineType(percentile: number): string {
-  switch (percentile) {
-    case 3:
-      return 'bottom';
-    case 97:
-      return 'top';
-    case 50:
-      return 'main';
-    default:
-      return 'sub';
+function lineType(percentile: number, spec: ChartSpec): string {
+  if (percentile === spec.emphasised.bottom) {
+    return 'bottom';
   }
+  if (percentile === spec.emphasised.top) {
+    return 'top';
+  }
+  return percentile === 50 ? 'main' : 'sub';
 }
 
 type Row = Record<string, number>;
@@ -79,7 +76,15 @@ interface ChartSpec {
   xStep?: number;
   /** Decimal places for the y values. */
   yDecimals: number;
+  /**
+   * Percentiles drawn as the emphasised lower and upper bound. Groesse uses P3/P97; Gewicht and BMI
+   * use P10/P90, which are the limits of the Basel assessment and match the old Basel curves.
+   */
+  emphasised: {bottom: number; top: number};
 }
+
+const EMPHASISE_P3_P97 = {bottom: 3, top: 97};
+const EMPHASISE_P10_P90 = {bottom: 10, top: 90};
 
 const CHARTS: ChartSpec[] = [
   // Groesse: age 1-18, as the official chart ("Laenge 1-18 Jahre alt"). The published table starts
@@ -95,6 +100,7 @@ const CHARTS: ChartSpec[] = [
     xMax: 18,
     xStep: 0.5,
     yDecimals: 1,
+    emphasised: EMPHASISE_P3_P97,
   },
   {
     outFile: 'percentile-distributions-groesse-female-2026',
@@ -107,6 +113,7 @@ const CHARTS: ChartSpec[] = [
     xMax: 18,
     xStep: 0.5,
     yDecimals: 1,
+    emphasised: EMPHASISE_P3_P97,
   },
 
   // BMI: age 2-18. The official chart runs 0-18, but the Swiss reference itself starts at 2 and the
@@ -122,6 +129,7 @@ const CHARTS: ChartSpec[] = [
     xMax: 18,
     xStep: 0.5,
     yDecimals: 2,
+    emphasised: EMPHASISE_P10_P90,
   },
   {
     outFile: 'percentile-distributions-bmi-female-2026',
@@ -134,11 +142,14 @@ const CHARTS: ChartSpec[] = [
     xMax: 18,
     xStep: 0.5,
     yDecimals: 2,
+    emphasised: EMPHASISE_P10_P90,
   },
 
   // Gewicht fuer Laenge, from 100 cm as requested. The paper publishes one continuous table; the two
-  // printed charts (50-120 and 120-200 cm) are a paper-layout split. The girls' table ends at
-  // 180 cm, the boys' at 200 cm.
+  // printed charts (50-120 and 120-200 cm) are a paper-layout split. The published girls' table (S7)
+  // ends at 180 cm, the boys' table (S8) at 200 cm. The girls' CSV is extended to 190 cm with the
+  // rows delivered by paediatrie schweiz (see the CSV header comment and README), so the girls'
+  // chart runs to 190 cm just like the old Basel chart.
   {
     outFile: 'percentile-distributions-gewicht-male-2026',
     constName: 'Pch2026GewichtKnabenDistribution',
@@ -149,6 +160,7 @@ const CHARTS: ChartSpec[] = [
     xMin: 100,
     xMax: 200,
     yDecimals: 1,
+    emphasised: EMPHASISE_P10_P90,
   },
   {
     outFile: 'percentile-distributions-gewicht-female-2026',
@@ -158,8 +170,9 @@ const CHARTS: ChartSpec[] = [
     sourceFile: 'weight-for-height-girls.csv',
     xColumn: 'height',
     xMin: 100,
-    xMax: 180,
+    xMax: 190,
     yDecimals: 1,
+    emphasised: EMPHASISE_P10_P90,
   },
 ];
 
@@ -204,7 +217,7 @@ function generate(spec: ChartSpec, rows: Row[]): string {
     return `    {
       id: '${spec.idPrefix}P${percentile}',
       percentile: ${percentile},
-      type: '${lineType(percentile)}',
+      type: '${lineType(percentile, spec)}',
       data: [
 ${points}
       ],

@@ -13,6 +13,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.shared.abstractentity.AbstractEntity;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.types.IgnoreForIdClassTest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -524,6 +525,14 @@ public class AppValidationMessage {
         return of(
             "InvalidImpfstoffCharge",
             I18nMessage.of("AppValidation.INVALID_IMPFSTOFF_CHARGE", "charge", charge)
+        );
+    }
+
+    @NonNull
+    public static AppValidationMessage anlassPrintVariantDisabled(@NonNull AnlassPrintVariant variant) {
+        return of(
+            "AnlassPrintVariantDisabled",
+            I18nMessage.of("AppValidation.ANLASS_PRINT_VARIANT_DISABLED", "variant", variant)
         );
     }
 

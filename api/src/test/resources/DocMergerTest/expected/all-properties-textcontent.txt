@@ -27,7 +27,10 @@ FIELD_anlass.meta.datum: 14.02.2024
 FIELD_anlass.meta.zeit: 10:14
 FIELD_anlass.meta.mpa: Monika Mate
 FIELD_anlass.meta.arzt: Julien Schularzt
-
+IMPFSTATUS
+FIELD_anlass.impfstatusListe.impfschutzGenuegend: Keine
+FIELD_anlass.impfstatusListe.impfempfehlung: Keine
+FIELD_anlass.impfstatusListe.impfentscheid: Keine
 
 DIPHTERIE
 FIELD_anlass.krankheit.DIPHTERIE_anzahlImpfungen : 3
@@ -103,7 +106,8 @@ FIELD_anlass.krankheit.HAEMOPHILUS_INFLUENZAE.Impfempfehlung : Nein
 FIELD_anlass.impfung.impfungList : 20.04.2025 VARIVAX (Varizellen)
 13.03.2025 Boostrix (Diphtherie, Tetanus, Pertussis)
 13.03.2025 VARIVAX (Varizellen)
-
+FIELD_anlass.impfung.impfausweisNichtVorhanden: Ihr Kind hat keinen Impfausweis abgegeben oder es gibt Unklarheiten.
+FIELD_anlass.impfung.massnahmeImpfungBeimHausarzt: Wir empfehlen: Für noch fehlende Impfungen vereinbaren Sie einen Termin bei Ihrem Hausarzt / Ihrer Hausärztin.
 SEHEN
 FIELD_anlass.sehen.elternBrilleLinsen: mit Sehhilfe
 FIELD_anlass.sehen.arztBrilleLinsen: cc
@@ -311,7 +315,7 @@ UNTERSUCHUNG ARZT
 FIELD_anlass.untersuchungArzt.blutdruckBewertung: unauffällig
 FIELD_anlass.untersuchungArzt.blutdruckWertSystolisch: 80
 FIELD_anlass.untersuchungArzt.blutdruckWertDiastolisch: 80
-
+FIELD_anlass.untersuchungArzt.blutdruckAuffaellig: 
 
 Arzt
 

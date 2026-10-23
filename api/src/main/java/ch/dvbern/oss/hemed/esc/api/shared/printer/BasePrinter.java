@@ -17,6 +17,7 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.phonenumber.NormalizedPhoneNumber;
 import ch.dvbern.dvbstarter.shared.types.sozialversicherungsnummer.SozialversicherungsNummer;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
@@ -84,7 +85,7 @@ public class BasePrinter {
         @NonNull TenantEnum tenant,
         @NonNull FileStoreService fileStoreService
     ) {
-        this.tl = new TLProducer(() -> appLanguage, () -> tenant).forAppLanguage(appLanguage);
+        this.tl = new TLProducer(() -> appLanguage, TenantContext.forTenant(tenant)).forAppLanguage(appLanguage);
         this.appLanguages = appLanguage;
         this.tenant = tenant;
         this.fileStoreService = fileStoreService;

@@ -22,7 +22,7 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService;
 import io.quarkus.liquibase.LiquibaseDataSource;
 import io.quarkus.liquibase.LiquibaseFactory;
 import jakarta.enterprise.inject.Instance;
@@ -53,21 +53,26 @@ public class DatabaseService {
 
     private final DatabaseInfoRepo databaseInfoRepo;
 
-    private final TenantProducer tenantProducer;
+    private final PerTenantRunnerService perTenantRunnerService;
 
     /**
      * Resets the database and reinitializes it while preserving the current value of the revinfo_seq
      * This is important because otherwise the sequence value would be reset to 1 but existing connections
      * might still have higher values because they are reserved/cached in incremetns of 50
      * This would lead to a conflict once the sequence re-reaches the value of the cached value
+     * <p>
+     * Runs in a request context of its own for the given tenant, so no session of the caller's tenant is reused.
      */
     @Transactional(TxType.NOT_SUPPORTED)
     public void resetAndReinitDatabasePreservingHibernateSequenceValue(@NonNull TenantEnum tenant) {
+        perTenantRunnerService.runForTenant(tenant, () -> resetAndReinitDatabase(tenant));
+    }
+
+    private void resetAndReinitDatabase(@NonNull TenantEnum tenant) {
         LOG.info("DB-RESET: Resetting and reinitializing database for tenant: {}", tenant);
         LiquibaseFactory liquibaseFactory = createLiquibaseFactory(tenant);
         try (Liquibase ourSingleLiquibase = liquibaseFactory.createLiquibase()) {
 
-            tenantProducer.setCurrentTenant(tenant);
             long nextHibernateRevInfoSeqValue = databaseInfoRepo.getNextHibernateRevInfoSeqValue();
             ourSingleLiquibase.dropAll();
             liquibaseUpdate(tenant, ourSingleLiquibase);
@@ -104,7 +109,6 @@ public class DatabaseService {
 
     @NonNull
     private LiquibaseFactory createLiquibaseFactory(@NonNull TenantEnum tenant) {
-        tenantProducer.setCurrentTenant(tenant);
         if (TenantEnum.BS == tenant) {
             return liquibaseFactoryBS.get();
         }

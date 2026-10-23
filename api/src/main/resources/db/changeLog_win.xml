@@ -154,6 +154,11 @@
   <include file="db/base/0082-tenant-setting-gueltigkeit-wachstumskurve-pch.xml"/>
   <include file="db/base/0083-add-tenant-header-in-exports-feature.xml"/>
   <include file="db/base/0084-groesse-gewicht-perzentile-single-multi-value.xml"/>
+  <include file="db/base/0085-tenant-settings-login-methods.xml"/>
+  <include file="db/base/0085-audit-retention-batchjobconfig.xml"/>
+  <include file="db/base/0086-add-anlassconfig-show-anlass-print-impfen.xml"/>
+  <include file="db/base/0087-benutzer-email-lowercase.xml"/>
+  <include file="db/win/0040-update-anlassconfig-win-local-20261023.xml"/>
 
   <!--  The following scripts only run in the 'test' context-->
 

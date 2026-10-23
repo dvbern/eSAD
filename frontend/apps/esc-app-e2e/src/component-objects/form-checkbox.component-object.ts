@@ -18,10 +18,15 @@
 import { Locator } from '@playwright/test';
 
 export class FormCheckboxComponentObject {
-  constructor(private testId : string) {}
+  constructor(private readonly testId : string) {}
 
   getCheckboxLabel(row : Locator){
     return row.locator('label');
+  }
+
+  /** The checkbox input itself, for reading a tick back after clicking the label. */
+  getCheckboxInput(row : Locator){
+    return row.locator('input[type="checkbox"]');
   }
 
 }

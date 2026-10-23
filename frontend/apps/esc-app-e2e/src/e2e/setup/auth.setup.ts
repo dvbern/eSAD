@@ -14,16 +14,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import {test as setup} from '@playwright/test';
+import {test as setup} from '../../fixtures/test.fixture';
 import {loginAsUser} from '../../routines/login.routines';
-import {testUsers} from '../../util/env.util';
+import {authStatePath, TestUserRole, testUsers} from '../../util/env.util';
 
 setup.describe.configure({ mode: 'parallel' });
 
-Object.entries(testUsers).forEach(([storage, user]) => {
-  setup(`Create ${storage} Auth`, async ({page, context}) => {
+type TestUser = (typeof testUsers)[keyof typeof testUsers];
+
+/*
+ * One login per distinct account, not per storage state. A local .env may well point several of the
+ * ESC_* slots at the same account, and logging that account in from several browsers at once makes
+ * Keycloak reject all but one of them ("Invalid username or password").
+ */
+const loginsByAccount = new Map<string, { user: TestUser; storages: TestUserRole[] }>();
+// a tenant does not need every role (BE has no Admin with Untersuchung rights), so only configured users log in
+(Object.entries(testUsers) as [TestUserRole, TestUser][]).filter(([, user]) => user.name).forEach(([storage, user]) => {
+  const account = user.name ?? storage;
+  const login = loginsByAccount.get(account) ?? {user, storages: []};
+
+  login.storages.push(storage);
+  loginsByAccount.set(account, login);
+});
+
+loginsByAccount.forEach(({user, storages}) => {
+  setup(`Create ${storages.join(' + ')} Auth`, async ({page, context}) => {
     await loginAsUser(page, user);
 
-    await context.storageState({path: `./playwright/.auth/${storage}`});
+    for (const storage of storages) {
+      await context.storageState({path: authStatePath(storage)});
+    }
   });
 });

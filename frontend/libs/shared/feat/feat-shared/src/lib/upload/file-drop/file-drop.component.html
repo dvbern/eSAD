@@ -41,8 +41,8 @@
   </ngx-file-drop>
 
   <!--   List of staged files-->
-  @if (files.length !== 0) {
-    <div class="file_drop__upload_list">
+  @if (files().length !== 0) {
+    <div class="file_drop__upload_list" data-testid="upload-staged-files">
       <table class="table">
         <thead>
         <tr>
@@ -51,7 +51,7 @@
         </tr>
         </thead>
         <tbody class="upload-name-style">
-          @for (file of files; let i = $index; track file) {
+          @for (file of files(); let i = $index; track file) {
             <tr>
               <td class="file_drop__upload_list_filename">
                 <span>{{ file.relativePath }}</span>
@@ -62,7 +62,8 @@
                         [tooltip]="'global.tooltip.icon.loeschen' | transloco"
                         [icon]="'loeschen'"
                         (click)="removeFileFromUpload(file)"
-                        style="margin-left: 10px">
+                        style="margin-left: 10px"
+                        data-testid="button-remove-staged-file">
                 </button>
               </td>
             </tr>

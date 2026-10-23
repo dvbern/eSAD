@@ -29,13 +29,7 @@
       "defaultConfiguration": "production"
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
-      "options": {
-        "jestConfig": "libs/shared/data-access/data-access-types/jest.config.ts"
-      }
+      "executor": "@nx/angular:unit-test"
     },
     "lint": {
       "executor": "@nx/eslint:lint"

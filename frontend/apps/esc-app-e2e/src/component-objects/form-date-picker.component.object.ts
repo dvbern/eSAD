@@ -20,7 +20,7 @@ import {format} from 'date-fns';
 
 export class FormDatePickerComponentObject {
 
-  constructor(private testId: string) {
+  constructor(private readonly testId: string) {
   }
 
   getFormField = (page: Page) => page.locator(`svui-form-control[data-testid=${this.testId}]`);
@@ -28,8 +28,10 @@ export class FormDatePickerComponentObject {
   getInput = (page: Page) => this.getFormField(page).locator('input');
 
   async setDate(page: Page, date: Date) {
-    const dateInput = format(date, 'MMddyyyy');
-    await this.getInput(page).pressSequentially(dateInput);
+    // The app renders native <input type="date">. Typing the segments one by one would follow the
+    // browser locale (de-CH expects dd.MM.yyyy, en-US MM/dd/yyyy), which silently swapped day and
+    // month. fill() takes the value in the wire format instead and is locale independent.
+    await this.getInput(page).fill(format(date, 'yyyy-MM-dd'));
     await this.getInput(page).blur();
   }
 }

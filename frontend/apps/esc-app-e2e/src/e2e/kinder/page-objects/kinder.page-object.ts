@@ -21,7 +21,8 @@ import {WithSubpaths} from "../../../page-objects/with-subpahts";
 
 export class KinderPageObject extends WithSubpaths<'detail' | 'view'> {
 
-  selector = 'feat-anlass-detail-anlassdaten';
+  // The Kind dossier, not the Anlass detail page this used to point at.
+  selector = 'feat-kinder-detail-dossier';
 
   paths = {
     detail: `/kinder/${patternBackendEntityId}`,
@@ -31,5 +32,10 @@ export class KinderPageObject extends WithSubpaths<'detail' | 'view'> {
   elements = {
     buttonAddAnlass: () => this.page.getByTestId('button-add-anlass'),
     buttonAddNotiz: () => this.page.getByTestId('button-add-notiz'),
+    // Scoped to the Personalien card: Aufgaben rows in the dossier are headings starting with the
+    // Kind's name too.
+    kindName: () => this.page.locator('feat-kind-dossier-main').getByRole('heading').first(),
+    anlaesseList: () => this.page.locator('feat-kind-dossier-anlaesse-list'),
+    notizenList: () => this.page.locator('feat-kind-notizen-list'),
   }
 }

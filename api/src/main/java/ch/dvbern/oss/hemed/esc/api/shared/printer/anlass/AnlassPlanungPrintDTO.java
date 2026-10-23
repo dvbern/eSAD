@@ -20,10 +20,12 @@ package ch.dvbern.oss.hemed.esc.api.shared.printer.anlass;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
@@ -32,6 +34,7 @@ import ch.dvbern.oss.hemed.esc.api.shared.util.EinladungUtil;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Data Transfer Object for printing an Anlass  with its Einladungen children.
@@ -45,6 +48,9 @@ public class AnlassPlanungPrintDTO {
     private final TenantEnum tenant;
     private final AppLanguages language;
     private final List<Nachkontrolle> nachkontrollen;
+    private final AnlassPrintVariant variant;
+    @Nullable
+    private final Map<Einladung, List<Impfstoff>> geplanteImpfstoffeByEinladung;
 
     @NonNull
     public String getSchulenCommaSeparated() {

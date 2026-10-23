@@ -2,6 +2,281 @@ openapi: 3.1.0
 info:
   title: esc-api API
 paths:
+  /api/hellodata/v1/json/anlaesse:
+    get:
+      operationId: HelloDataResource_exportAnlaesseAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataAnlaesseEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Anlaesse As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/aufgaben:
+    get:
+      operationId: HelloDataResource_exportAufgabenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataAufgabenEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Aufgaben As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/benutzer:
+    get:
+      operationId: HelloDataResource_exportBenutzerAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataBenutzereEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Benutzer As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/dossiers:
+    get:
+      operationId: HelloDataResource_exportDossiersAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataDossiersEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Dossiers As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/einladungen:
+    get:
+      operationId: HelloDataResource_exportEinladungenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataEinladungenEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Einladungen As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/impfstatuskrankheiten:
+    get:
+      operationId: HelloDataResource_exportImpfstatusKrankheitenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataImpfstatusEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Impfstatus Krankheiten As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/impfstoffe:
+    get:
+      operationId: HelloDataResource_exportImpfstoffeAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataImpfstoffeEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Impfstoffe As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/impfungenintern:
+    get:
+      operationId: HelloDataResource_exportImpfungenInternAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataImpfungenInternEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Impfungen Intern As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/klassen:
+    get:
+      operationId: HelloDataResource_exportKlassenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataKlassenEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Klassen As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/labels:
+    get:
+      operationId: HelloDataResource_exportLabelsAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataLabelsEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Labels As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/notizen:
+    get:
+      operationId: HelloDataResource_exportNotizenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataNotizenEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Notizen As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
   /api/hellodata/v1/json/schulen:
     get:
       operationId: HelloDataResource_exportSchulenAsJson
@@ -24,6 +299,306 @@ paths:
         "403":
           description: Not Allowed
       summary: Export Schulen As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/json/untersuchungen:
+    get:
+      operationId: HelloDataResource_exportUntersuchungenAsJson
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            A single JSON document: the rows in a `data` array, closed by a `_meta` object. Same rows and same guarantees as the NDJSON variant, only framed differently.
+
+            The response is streamed, so `_meta` is the last member of the document - `rowCount` is not known before the last row has been read. JSON members are unordered, so read it by key, not by position. If `_meta` is missing the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code. (A truncated response here is not valid JSON either, so a strict parser catches it too.)
+
+            Note that consuming this with a whole-document parser buffers the entire export on the client. Prefer the NDJSON variant if your tooling can read it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloDataUntersuchungenEnvelopeJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Untersuchungen As Json
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/anlaesse:
+    get:
+      operationId: HelloDataResource_exportAnlaesse
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataAnlassJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataAnlassJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Anlaesse
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/aufgaben:
+    get:
+      operationId: HelloDataResource_exportAufgaben
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataAufgabeJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataAufgabeJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Aufgaben
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/benutzer:
+    get:
+      operationId: HelloDataResource_exportBenutzer
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataBenutzerJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataBenutzerJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Benutzer
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/dossiers:
+    get:
+      operationId: HelloDataResource_exportDossiers
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataDossierJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataDossierJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Dossiers
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/einladungen:
+    get:
+      operationId: HelloDataResource_exportEinladungen
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataEinladungJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataEinladungJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Einladungen
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/impfstatuskrankheiten:
+    get:
+      operationId: HelloDataResource_exportImpfstatusKrankheiten
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataImpfstatusKrankheitJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataImpfstatusKrankheitJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Impfstatus Krankheiten
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/impfstoffe:
+    get:
+      operationId: HelloDataResource_exportImpfstoffe
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataImpfstoffJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataImpfstoffJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Impfstoffe
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/impfungenintern:
+    get:
+      operationId: HelloDataResource_exportImpfungenIntern
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataImpfungInternJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataImpfungInternJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Impfungen Intern
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/klassen:
+    get:
+      operationId: HelloDataResource_exportKlassen
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataKlasseJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataKlasseJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Klassen
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/labels:
+    get:
+      operationId: HelloDataResource_exportLabels
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataLabelJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataLabelJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Labels
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/notizen:
+    get:
+      operationId: HelloDataResource_exportNotizen
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataNotizJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataNotizJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Notizen
       security:
       - SecurityScheme:
         - HELLODATA_EXPORT_LESEN
@@ -52,13 +627,1117 @@ paths:
       security:
       - SecurityScheme:
         - HELLODATA_EXPORT_LESEN
+  /api/hellodata/v1/ndjson/untersuchungen:
+    get:
+      operationId: HelloDataResource_exportUntersuchungen
+      tags:
+      - HelloData
+      responses:
+        "200":
+          description: |-
+            NDJSON (newline delimited JSON): one JSON object per line, separated by \n, with no enclosing array and no commas. The schema describes a single line.
+
+            Every data line matches HelloDataUntersuchungenJson. The final line is a HelloDataSentinelJson: if it is missing, the response was truncated and the load must be treated as failed - after HTTP 200 no error can be signalled by status code.
+          content:
+            application/x-ndjson:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/HelloDataUntersuchungenJson"
+                - $ref: "#/components/schemas/HelloDataSentinelJson"
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+      summary: Export Untersuchungen
+      security:
+      - SecurityScheme:
+        - HELLODATA_EXPORT_LESEN
 components:
   schemas:
+    AbschlussResultat:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - KEINE_ANGABE
+    AnlassArt:
+      type: string
+      enum:
+      - EINZEL_ANLASS
+      - GRUPPEN_ANLASS
+    AnlassStatus:
+      type: string
+      enum:
+      - IN_PLANUNG
+      - AUFGEBOTEN
+      - BEREIT
+      - DURCHGEFUEHRT
+      - ABGESCHLOSSEN
+      - ABGESAGT
+    ArtAbmeldung:
+      type: string
+      enum:
+      - MAIL_ELTERN
+      - MAIL_LEHRPERSON
+      - TELEFON_ELTERN
+      - TELEFON_LEHRPERSON
+      - INFO_LEHRPERSON
+      - UNABGEMELDET_1
+      - UNABGEMELDET_2
+    AudiogrammBeurteilung:
+      type: string
+      enum:
+      - NORMAL
+      - RECHTS_REDUZIERT
+      - LINKS_REDUZIERT
+      - NICHT_GEPRUEFT
+    AudiogrammSimpel:
+      type: string
+      enum:
+      - DB_TIEF
+      - DB_MITTEL
+      - DB_HOCH
+      - NICHT_GEPRUEFT
+    AufgabeStatus:
+      type: string
+      enum:
+      - OFFEN
+      - IN_BEARBEITUNG
+      - ABGESCHLOSSEN
+    Aussprache:
+      type: string
+      enum:
+      - OKAY
+      - NICHT_OKAY
+      - NICHT_GEPRUEFT
+    BallFangen:
+      type: string
+      enum:
+      - BALL_GEFANGEN
+      - BALL_NICHT_GEFANGEN
+      - NICHT_GEPRUEFT
+    BallWerfen:
+      type: string
+      enum:
+      - MIND_ZWEI_METER
+      - WENIGER_ALS_ZWEI_METER
+      - NICHT_GEPRUEFT
+    Bewegungsapparat:
+      type: string
+      enum:
+      - GROBKURSORISCH_NORMAL
+      - KONGENITALE_FEHLBILDUNG
+      - SKOLIOSE
+      - GANGSTOERUNG
+      - FUSSFEHLSTELLUNG
+      - ANDERES
+      - NICHT_GEPRUEFT
+    Blutdruck:
+      type: string
+      enum:
+      - NORMAL
+      - AUFFAELLIG
+      - NICHT_GEPRUEFT
+    BrilleLinsenResultat:
+      type: string
+      enum:
+      - OHNE_KEINE
+      - OHNE_VERGESSEN
+      - MIT
+      - BRILLE
+      - KONTAKTLINSEN
+      - NICHT_GEPRUEFT
+    ChronischeKrankheiten:
+      type: string
+      enum:
+      - NICHT_VORHANDEN
+      - VORHANDEN
+      - NICHT_ABGEKLAERT
+    Dezibel:
+      type: string
+      enum:
+      - DB10
+      - DB20
+      - DB30
+      - DB40
+      - DB50
+      - DB60
+      - MORE_THAN_DB60
+    DistanzSehenAugeEinzelnResultat:
+      type: string
+      enum:
+      - NORMAL
+      - REDUZIERT
+      - NICHT_GEPRUEFT
+    DistanzSehenResultat:
+      type: string
+      enum:
+      - NORMAL
+      - RECHTS_REDUZIERT
+      - LINKS_REDUZIERT
+      - NICHT_GEPRUEFT
+    Einbeinhuepfen:
+      type: string
+      enum:
+      - SICHER
+      - UNSICHER_UNGEUEBT
+      - NICHT_MOEGLICH
+      - ANDERES
+      - MIN_DREIMAL
+      - MAX_DREIMAL
+      - NICHT_GEPRUEFT
+    Einbeinstand:
+      type: string
+      enum:
+      - SICHER
+      - UNSICHER_UNGEUEBT
+      - NICHT_MOEGLICH
+      - ANDERES
+      - MIN_FUENF_SEKUNDEN
+      - MAX_FUENF_SEKUNDEN
+      - NICHT_GEPRUEFT
+    EinladungStatus:
+      type: string
+      enum:
+      - TEILNAHME_BESTAETIGT
+      - TEILNAHME_ABGESAGT
+      - NACHZUEGLER
+      - PRIVATARZT_OFFEN
+      - PRIVATARZT_BESTAETIGT
+      - PRIVATARZT_MUENDL_BESTAETIGT
+      - KEINE_ANMELDUNG
+      - UNTERSUCHUNG_JA
+    EinverstaendnisImpfungen:
+      type: string
+      enum:
+      - EINVERSTANDEN
+      - NICHT_EINVERSTANDEN
+      - NICHT_ERHALTEN
+    Einverstaendniserklaerung:
+      type: string
+      enum:
+      - ENTBINDUNG_VORHANDEN
+      - SCHWEIGEPFLICHT_VORHANDEN
+      - VIDEOAUFNAHME_VORHANDEN
     EntityAktivStatus:
       type: string
       enum:
       - AKTIV
       - INAKTIV
+    FarbsehenResultat:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - UNSICHER
+      - NICHT_GEPRUEFT
+    Feinmotorik:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
+    FigurNachmalen:
+      type: string
+      enum:
+      - KORREKT
+      - NICHT_KORREKT
+      - NICHT_GEPRUEFT
+    Fingeropposition:
+      type: string
+      enum:
+      - ALTERSENTSPRECHEND
+      - RECHTS_AUFFAELLIG
+      - LINKS_AUFFAELLIG
+      - ANDERES
+      - NICHT_GEPRUEFT
+    FragebogenStatus:
+      type: string
+      enum:
+      - ERHALTEN_VOLLSTAENDIG
+      - ERHALTEN_UNVOLLSTAENDIG
+      - NICHT_ERHALTEN
+    FreiesGehen:
+      type: string
+      enum:
+      - NICHT_GEPRUEFT
+    Geschlecht:
+      type: string
+      enum:
+      - MAENNLICH
+      - WEIBLICH
+      - DIVERS
+      - UNBEKANNT
+    GleichgewichtEinbeinstand:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
+    Grafomotorik:
+      type: string
+      enum:
+      - GUT
+      - FEHLERHAFT
+      - NICHT_GEPRUEFT
+    GrobmotorikEinbeinhuepfen:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
+    GrundAbmeldung:
+      type: string
+      enum:
+      - KONTROLLE_KINDER_PRIVATARZT
+      - KONTROLLE_KINDER_AUGENARZT
+      - KONTROLLE_AUGENARZT
+      - REGELMAESSIGE_KONTROLLE
+      - GRUND_UNBEKANNT
+      - KEINE_ABMELDUNG
+      - ANDERER_GRUND
+      - SU_BEREITS_ERFOLGT
+    Haltungsschwaeche:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - NICHT_GEPRUEFT
+    Hampelmann:
+      type: string
+      enum:
+      - MIND_FUENF_MAL
+      - WENIGER_ALS_FUENF_MAL
+      - NICHT_GEPRUEFT
+    Haut:
+      type: string
+      enum:
+      - GROBKURSORISCH_UNAUFFAELLIG
+      - ANDERES
+      - NICHT_GEPRUEFT
+    HelloDataAbschlussJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        ueberweisungErfolgt:
+          $ref: "#/components/schemas/AbschlussResultat"
+        ueberweisungErfolgtNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        aerztlicheValidierungErforderlich:
+          $ref: "#/components/schemas/AbschlussResultat"
+        aerztlicheValidierungErforderlichNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        beratungDurchgefuehrt:
+          $ref: "#/components/schemas/AbschlussResultat"
+        beratungDurchgefuehrtNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+    HelloDataAnlaesseEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataAnlassJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataAnlassJson:
+      type: object
+      required:
+      - id
+      - schuljahr
+      - datum
+      - anlassStatus
+      - anlassArt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        titel:
+          type: string
+        schuljahr:
+          type: integer
+          format: int32
+        datum:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        anlassStatus:
+          $ref: "#/components/schemas/AnlassStatus"
+        anlassArt:
+          $ref: "#/components/schemas/AnlassArt"
+        arztId:
+          $ref: "#/components/schemas/UUID"
+        mpaId:
+          $ref: "#/components/schemas/UUID"
+    HelloDataArztJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        einverstaendniserklaerung:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Einverstaendniserklaerung"
+        verhaltensfragebogen:
+          $ref: "#/components/schemas/Verhaltensfragebogen"
+        verhalten:
+          $ref: "#/components/schemas/Verhalten"
+        blutdruck:
+          $ref: "#/components/schemas/Blutdruck"
+        blutdruckSystolisch:
+          type: integer
+          format: int32
+        blutdruckDiastolisch:
+          type: integer
+          format: int32
+        herzauskultation:
+          $ref: "#/components/schemas/Herzauskultation"
+        haut:
+          $ref: "#/components/schemas/Haut"
+        mundAndZaehne:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/MundAndZaehne"
+        sprachfaehigkeitSingleValue:
+          $ref: "#/components/schemas/Sprachfaehigkeit"
+        sprachfaehigkeitMultiValue:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Sprachfaehigkeit"
+        sprachfaehigkeitPunkte:
+          type: number
+        motorik:
+          $ref: "#/components/schemas/Motorik"
+        motorikPunkte:
+          type: number
+        kognition:
+          $ref: "#/components/schemas/Kognition"
+        kognitionPunkte:
+          type: number
+        bewegungsapparat:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Bewegungsapparat"
+        einbeinstand:
+          $ref: "#/components/schemas/Einbeinstand"
+        einbeinstandRechts:
+          $ref: "#/components/schemas/Einbeinstand"
+        einbeinstandLinks:
+          $ref: "#/components/schemas/Einbeinstand"
+        einbeinhuepfen:
+          $ref: "#/components/schemas/Einbeinhuepfen"
+        einbeinhuepfenRechts:
+          $ref: "#/components/schemas/Einbeinhuepfen"
+        einbeinhuepfenLinks:
+          $ref: "#/components/schemas/Einbeinhuepfen"
+        fingeropposition:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/Fingeropposition"
+        hampelmann:
+          $ref: "#/components/schemas/Hampelmann"
+        ballFangen:
+          $ref: "#/components/schemas/BallFangen"
+        ballWerfen:
+          $ref: "#/components/schemas/BallWerfen"
+        nameSchreiben:
+          $ref: "#/components/schemas/NameSchreiben"
+        figurNachmalen:
+          $ref: "#/components/schemas/FigurNachmalen"
+        stifthaltung:
+          $ref: "#/components/schemas/Stifthaltung"
+        aussprache:
+          $ref: "#/components/schemas/Aussprache"
+        lesefit:
+          $ref: "#/components/schemas/Lesefit"
+        lesefitPunkte:
+          type: number
+        zahlenNachsprechen4:
+          $ref: "#/components/schemas/ZahlenNachsprechen"
+        zahlenNachsprechen5:
+          $ref: "#/components/schemas/ZahlenNachsprechen"
+        zeichnenKreis:
+          $ref: "#/components/schemas/Zeichnen"
+        zeichnenViereck:
+          $ref: "#/components/schemas/Zeichnen"
+        zeichnenDreieck:
+          $ref: "#/components/schemas/Zeichnen"
+        zeichnenMensch:
+          $ref: "#/components/schemas/ZeichnenMensch"
+        zeichnenMenschPunkte:
+          type: number
+    HelloDataAudiogrammJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        dbHz250:
+          $ref: "#/components/schemas/Dezibel"
+        dbHz500:
+          $ref: "#/components/schemas/Dezibel"
+        dbHz1000:
+          $ref: "#/components/schemas/Dezibel"
+        dbHz2000:
+          $ref: "#/components/schemas/Dezibel"
+        dbHz4000:
+          $ref: "#/components/schemas/Dezibel"
+        dbHz6000:
+          $ref: "#/components/schemas/Dezibel"
+        dbHz8000:
+          $ref: "#/components/schemas/Dezibel"
+    HelloDataAufgabeJson:
+      type: object
+      required:
+      - id
+      - aufgabeStatus
+      - faelligBis
+      - userErfasst
+      - empfaenger
+      - labels
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        aufgabeStatus:
+          $ref: "#/components/schemas/AufgabeStatus"
+        faelligBis:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        userErfasst:
+          $ref: "#/components/schemas/UUID"
+        empfaenger:
+          $ref: "#/components/schemas/UUID"
+        kindId:
+          $ref: "#/components/schemas/UUID"
+        anlassId:
+          $ref: "#/components/schemas/UUID"
+        labels:
+          type: string
+    HelloDataAufgabenEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataAufgabeJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataBenutzerJson:
+      type: object
+      required:
+      - id
+      - fachrollen
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        fachrollen:
+          type: string
+    HelloDataBenutzereEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataBenutzerJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataBewegungsapparatJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        skoliose:
+          $ref: "#/components/schemas/Skoliose"
+        skolioseNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        haltungsschwaeche:
+          $ref: "#/components/schemas/Haltungsschwaeche"
+        haltungsschwaecheNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        verkuerzungHamstringmuskulatur:
+          $ref: "#/components/schemas/VerkuerzungHamstringmuskulatur"
+        verkuerzungHamstringmuskulaturNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+    HelloDataDossierJson:
+      type: object
+      required:
+      - id
+      - kindId
+      - geschlecht
+      - geburtsjahr
+      - kindAktivStatus
+      - kinderschutzfall
+      - keineAuskunftAnDrittpersonen
+      - sansPapier
+      - immunitaetMasern
+      - immunitaetVarizellen
+      - papierakteStatus
+      - hashValue
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        kindId:
+          $ref: "#/components/schemas/UUID"
+        geschlecht:
+          $ref: "#/components/schemas/Geschlecht"
+        geburtsjahr:
+          type: integer
+          format: int32
+        nationalitaet:
+          $ref: "#/components/schemas/Land"
+        erstsprache:
+          type: string
+        wohntyp:
+          type: string
+        schuleId:
+          $ref: "#/components/schemas/UUID"
+        klasseId:
+          $ref: "#/components/schemas/UUID"
+        kindAktivStatus:
+          $ref: "#/components/schemas/EntityAktivStatus"
+        kinderschutzfall:
+          type: boolean
+        keineAuskunftAnDrittpersonen:
+          type: boolean
+        sansPapier:
+          type: boolean
+        immunitaetMasern:
+          type: boolean
+        immunitaetVarizellen:
+          type: boolean
+        papierakteStatus:
+          $ref: "#/components/schemas/PapierakteStatus"
+        hashValue:
+          type: string
+    HelloDataDossiersEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataDossierJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataDurchfuehrungJson:
+      type: object
+      required:
+      - id
+      - nachkontrolle
+      - nachzuegler
+      - neueintritt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        nachkontrolle:
+          type: boolean
+        nachzuegler:
+          type: boolean
+        neueintritt:
+          type: boolean
+    HelloDataEinladungJson:
+      type: object
+      required:
+      - id
+      - anlassId
+      - impfausweisVorhanden
+      - fragebogenVorhanden
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        anlassId:
+          $ref: "#/components/schemas/UUID"
+        dossierId:
+          $ref: "#/components/schemas/UUID"
+        untersuchungId:
+          $ref: "#/components/schemas/UUID"
+        einladungStatus:
+          $ref: "#/components/schemas/EinladungStatus"
+        grundAbmeldung:
+          $ref: "#/components/schemas/GrundAbmeldung"
+        artAbmeldung:
+          $ref: "#/components/schemas/ArtAbmeldung"
+        impfausweisVorhanden:
+          type: boolean
+        fragebogenVorhanden:
+          type: boolean
+        hash:
+          type: string
+    HelloDataEinladungenEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataEinladungJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataGroesseGewichtJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        groesse:
+          type: integer
+          format: int32
+        gewicht:
+          type: number
+        bmi:
+          type: number
+        groessePerzentileSingleValue:
+          $ref: "#/components/schemas/PerzentileGroesse"
+        groessePerzentileSingleValueNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        groessePerzentileMultiValue:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/PerzentileGroesse"
+        groessePerzentileMultiValueNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        gewichtPerzentileSingleValue:
+          $ref: "#/components/schemas/PerzentileGewicht"
+        gewichtPerzentileSingleValueNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        gewichtPerzentileMultiValue:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/PerzentileGewicht"
+        gewichtPerzentileMultiValueNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        bmiPerzentileSingleValue:
+          $ref: "#/components/schemas/PerzentileBmi"
+        bmiPerzentileSingleValueNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        bmiPerzentileMultiValue:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/PerzentileBmi"
+        bmiPerzentileMultiValueNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+    HelloDataHoerenJson:
+      type: object
+      properties:
+        audiogrammId:
+          $ref: "#/components/schemas/UUID"
+        otoskopieId:
+          $ref: "#/components/schemas/UUID"
+        audiogrammSimpel:
+          $ref: "#/components/schemas/AudiogrammSimpel"
+        audiogrammSimpelNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        hoerhilfe:
+          $ref: "#/components/schemas/HoerenHoerhilfe"
+        hoerhilfeNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        audiogrammBeurteilung:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/AudiogrammBeurteilung"
+        audiogrammBeurteilungNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        zusaetzlicheAngaben:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/HoerenZusaetzlicheAngaben"
+        zusaetzlicheAngabenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        empfehlung:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/HoerenEmpfehlung"
+        empfehlungNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        otoskopieRechts:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/OtoskopieResultat"
+        otoskopieRechtsNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        otoskopieLinks:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/OtoskopieResultat"
+        otoskopieLinksNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        audiogrammRechts:
+          $ref: "#/components/schemas/HelloDataAudiogrammJson"
+        audiogrammLinks:
+          $ref: "#/components/schemas/HelloDataAudiogrammJson"
+    HelloDataImpfstatusEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataImpfstatusKrankheitJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataImpfstatusKrankheitJson:
+      type: object
+      required:
+      - id
+      - untersuchungId
+      - untersuchungImpfungenId
+      - krankheit
+      - impfschutzGegeben
+      - impfempfehlung
+      - impfentscheid
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        untersuchungId:
+          $ref: "#/components/schemas/UUID"
+        untersuchungImpfungenId:
+          $ref: "#/components/schemas/UUID"
+        krankheit:
+          $ref: "#/components/schemas/Krankheit"
+        anzahlImpfungen:
+          type: integer
+          format: int32
+        datumLetzteImpfung:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        impfschutzGegeben:
+          $ref: "#/components/schemas/ImpfschutzGegeben"
+        impfempfehlung:
+          type: boolean
+        impfentscheid:
+          type: boolean
+    HelloDataImpfstoffJson:
+      type: object
+      required:
+      - id
+      - name
+      - krankheiten
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        name:
+          type: string
+        krankheiten:
+          type: string
+    HelloDataImpfstoffeEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataImpfstoffJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataImpfungInternJson:
+      type: object
+      required:
+      - id
+      - untersuchungId
+      - untersuchungImpfungenId
+      - impfstoffId
+      - impfStatus
+      - anlassImpfungErfasstId
+      - krankheitenImmunitaeten
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        untersuchungId:
+          $ref: "#/components/schemas/UUID"
+        untersuchungImpfungenId:
+          $ref: "#/components/schemas/UUID"
+        impfstoffId:
+          $ref: "#/components/schemas/UUID"
+        chargeId:
+          $ref: "#/components/schemas/UUID"
+        datumImpfung:
+          type: string
+          $ref: "#/components/schemas/LocalDate"
+        impfStatus:
+          $ref: "#/components/schemas/ImpfStatus"
+        anlassImpfungErfasstId:
+          $ref: "#/components/schemas/UUID"
+        anlassImpfungDurchgefuehrtId:
+          $ref: "#/components/schemas/UUID"
+        krankheitenImmunitaeten:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataImpfungInternKrankheitImmunitaetJson"
+    HelloDataImpfungInternKrankheitImmunitaetJson:
+      type: object
+      required:
+      - krankheit
+      - immunitaetGenuegend
+      properties:
+        krankheit:
+          $ref: "#/components/schemas/Krankheit"
+        immunitaetGenuegend:
+          type: boolean
+    HelloDataImpfungenInternEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataImpfungInternJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataImpfungenJson:
+      type: object
+      required:
+      - id
+      - impfausweisUnvollstaendig
+      - impfausweisNichtVorhanden
+      - impfausweisZweiPlusEinsSchema
+      - checkEinwilligungVorhanden
+      - checkKontraindikationenAbgeklaert
+      - checkDoppelkontrolleImpfentscheidDurchgefuehrt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        impfausweisUnvollstaendig:
+          type: boolean
+        impfausweisNichtVorhanden:
+          type: boolean
+        impfausweisZweiPlusEinsSchema:
+          type: boolean
+        checkEinwilligungVorhanden:
+          type: boolean
+        checkKontraindikationenAbgeklaert:
+          type: boolean
+        checkDoppelkontrolleImpfentscheidDurchgefuehrt:
+          type: boolean
+        massnahmen:
+          $ref: "#/components/schemas/HelloDataImpfungenMassnahmenJson"
+        nurUnvollstaendige:
+          $ref: "#/components/schemas/HelloDataImpfungenNurUnvollstaendigeJson"
+    HelloDataImpfungenMassnahmenJson:
+      type: object
+      required:
+      - id
+      - keineMassnahmen
+      - vormerkenFuerGruppenFolgetermin
+      - impfberatungMpaDurchgefuehrt
+      - infomaterialAbgegeben
+      - informationHausarzt
+      - rueckfrageHausarzt
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        keineMassnahmen:
+          type: boolean
+        vormerkenFuerGruppenFolgetermin:
+          type: boolean
+        impfberatungMpaDurchgefuehrt:
+          type: boolean
+        infomaterialAbgegeben:
+          type: boolean
+        informationEltern:
+          $ref: "#/components/schemas/InformationEltern"
+        informationHausarzt:
+          type: boolean
+        rueckfrageHausarzt:
+          type: boolean
+        empfehlung:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/ImpfungenMassnahmenEmpfehlung"
+    HelloDataImpfungenNurUnvollstaendigeJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        impfausweisVollstaendig:
+          $ref: "#/components/schemas/ImpfausweisVollstaendig"
+        impfausweisGrundUnvollstaendig:
+          $ref: "#/components/schemas/ImpfausweisGrundUnvollstaendig"
+    HelloDataKindDatenJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        klassenstufe:
+          $ref: "#/components/schemas/Klassenstufe"
+        klassentyp:
+          type: string
+        klasse:
+          type: string
+        schulhaus:
+          type: string
+        schulstandort:
+          type: string
+        quartier:
+          type: string
+        schulkreis:
+          type: string
+        schulhausnummer:
+          type: string
+        nationalitaet:
+          $ref: "#/components/schemas/Land"
+        geschlecht:
+          $ref: "#/components/schemas/Geschlecht"
+    HelloDataKlasseJson:
+      type: object
+      required:
+      - id
+      - schuleId
+      - bezeichnung
+      - klassenstufe
+      - klasseSchulart
+      - klasseAktivStatus
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        schuleId:
+          $ref: "#/components/schemas/UUID"
+        bezeichnung:
+          type: string
+        klassenstufe:
+          $ref: "#/components/schemas/Klassenstufe"
+        klasseSchulart:
+          type: string
+        klasseAktivStatus:
+          $ref: "#/components/schemas/EntityAktivStatus"
+    HelloDataKlassenEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataKlasseJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataLabelJson:
+      type: object
+      required:
+      - id
+      - labelTyp
+      - nameDe
+      - nameFr
+      - autoLabel
+      - aktiv
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        labelTyp:
+          $ref: "#/components/schemas/LabelTyp"
+        nameDe:
+          type: string
+        nameFr:
+          type: string
+        autoLabel:
+          type: boolean
+        aktiv:
+          type: boolean
+    HelloDataLabelsEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataLabelJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataLaeusekontrolleJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        beurteilung:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/LaeusekontrolleBeurteilung"
+    HelloDataMassnahmenJson:
+      type: object
+      required:
+      - id
+      - keineMassnahmen
+      - beratungMPA
+      - beratungSchulAerztin
+      - anderes
+      - bereitsBehandeltSehen
+      - bereitsBehandeltHoeren
+      - bereitsBehandeltGroesseGewicht
+      - bereitsBehandeltSprache
+      - bereitsBehandeltMotorik
+      - bereitsBehandeltAnderes
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        keineMassnahmen:
+          type: boolean
+        beratungMPA:
+          type: boolean
+        beratungSchulAerztin:
+          type: boolean
+        anderes:
+          type: boolean
+        bereitsBehandeltSehen:
+          type: boolean
+        bereitsBehandeltHoeren:
+          type: boolean
+        bereitsBehandeltGroesseGewicht:
+          type: boolean
+        bereitsBehandeltSprache:
+          type: boolean
+        bereitsBehandeltMotorik:
+          type: boolean
+        bereitsBehandeltAnderes:
+          type: boolean
     HelloDataMetaJson:
       type: object
       required:
@@ -74,6 +1753,40 @@ components:
         exportedAt:
           type: string
           $ref: "#/components/schemas/OffsetDateTime"
+    HelloDataNotizJson:
+      type: object
+      required:
+      - id
+      - dossierId
+      - verantwortlichePersonId
+      - status
+      - hatFileanhang
+      - labels
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        dossierId:
+          $ref: "#/components/schemas/UUID"
+        verantwortlichePersonId:
+          $ref: "#/components/schemas/UUID"
+        status:
+          $ref: "#/components/schemas/NotizStatus"
+        hatFileanhang:
+          type: boolean
+        labels:
+          type: string
+    HelloDataNotizenEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataNotizJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
     HelloDataSchuleJson:
       type: object
       required:
@@ -115,6 +1828,127 @@ components:
             $ref: "#/components/schemas/HelloDataSchuleJson"
         _meta:
           $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataSchulrelevanteBeeintraechtigungJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        freiesGehen:
+          $ref: "#/components/schemas/FreiesGehen"
+        freiesGehenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        anzahlMonateFreiesGehen:
+          type: integer
+          format: int32
+        ohneStuetzradVelofahren:
+          $ref: "#/components/schemas/OhneStuetzradVelofahren"
+        ohneStuetzradVelofahrenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        grafomotorik:
+          $ref: "#/components/schemas/Grafomotorik"
+        grafomotorikNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        feinmotorik:
+          $ref: "#/components/schemas/Feinmotorik"
+        feinmotorikNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        grobmotorikEinbeinhuepfen:
+          $ref: "#/components/schemas/GrobmotorikEinbeinhuepfen"
+        grobmotorikEinbeinhuepfenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        gleichgewichtEinbeinstand:
+          $ref: "#/components/schemas/GleichgewichtEinbeinstand"
+        gleichgewichtEinbeinstandNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+    HelloDataSehenJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        brilleLinsen:
+          $ref: "#/components/schemas/BrilleLinsenResultat"
+        brilleLinsenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        stereotest:
+          $ref: "#/components/schemas/StereotestResultat"
+        stereotestNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        farbsehen:
+          $ref: "#/components/schemas/FarbsehenResultat"
+        farbsehenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        verwendeteTafel:
+          $ref: "#/components/schemas/VerwendetTafelResultat"
+        verwendeteTafelNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        fernvisus:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/DistanzSehenResultat"
+        fernvisusNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        fernvisusRechts:
+          type: number
+        fernvisusLinks:
+          type: number
+        fernvisusAugeLinks:
+          $ref: "#/components/schemas/DistanzSehenAugeEinzelnResultat"
+        fernvisusAugeLinksNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        fernvisusAugeRechts:
+          $ref: "#/components/schemas/DistanzSehenAugeEinzelnResultat"
+        fernvisusAugeRechtsNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        nahvisus:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/DistanzSehenResultat"
+        nahvisusNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        nahvisusRechts:
+          type: number
+        nahvisusLinks:
+          type: number
+        motilitaet:
+          $ref: "#/components/schemas/MotilitaetResultat"
+        motilitaetNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        strabismus:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/StrabismusResultat"
+        strabismusNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        strabismusAuspraegung:
+          $ref: "#/components/schemas/StrabismusAuspraegungResultat"
+        strabismusAuspraegungNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        strabismusAuftreten:
+          $ref: "#/components/schemas/StrabismusAuftretenResultat"
+        strabismusAuftretenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        inspektion:
+          $ref: "#/components/schemas/InspektionKonvergenzResultat"
+        inspektionNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        konvergenz:
+          $ref: "#/components/schemas/InspektionKonvergenzResultat"
+        konvergenzNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        empfehlung:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/SehenEmpfehlung"
+        empfehlungNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
     HelloDataSentinelJson:
       type: object
       required:
@@ -122,15 +1956,677 @@ components:
       properties:
         _meta:
           $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataSpracheJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        nachsprechen:
+          $ref: "#/components/schemas/Nachsprechen"
+        nachsprechenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        wortschatz:
+          $ref: "#/components/schemas/Wortschatz"
+        wortschatzNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        sprachverstaendnis:
+          $ref: "#/components/schemas/Sprachverstaendnis"
+        sprachverstaendnisNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+    HelloDataTriageJson:
+      type: object
+      required:
+      - id
+      - triageSu
+      - triageMpa
+      - befundSu
+      - wunschSchueler
+      - vorinformationLehrperson
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        triageSu:
+          type: boolean
+        triageMpa:
+          type: boolean
+        befundSu:
+          type: boolean
+        wunschSchueler:
+          type: boolean
+        vorinformationLehrperson:
+          type: boolean
+    HelloDataUntersuchungenEnvelopeJson:
+      type: object
+      required:
+      - data
+      - _meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/HelloDataUntersuchungenJson"
+        _meta:
+          $ref: "#/components/schemas/HelloDataMetaJson"
+    HelloDataUntersuchungenJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        kindDaten:
+          $ref: "#/components/schemas/HelloDataKindDatenJson"
+        durchfuehrung:
+          $ref: "#/components/schemas/HelloDataDurchfuehrungJson"
+        vorabklaerungen:
+          $ref: "#/components/schemas/HelloDataVorabklaerungenJson"
+        triage:
+          $ref: "#/components/schemas/HelloDataTriageJson"
+        impfungen:
+          $ref: "#/components/schemas/HelloDataImpfungenJson"
+        sehen:
+          $ref: "#/components/schemas/HelloDataSehenJson"
+        hoeren:
+          $ref: "#/components/schemas/HelloDataHoerenJson"
+        groesseGewicht:
+          $ref: "#/components/schemas/HelloDataGroesseGewichtJson"
+        arzt:
+          $ref: "#/components/schemas/HelloDataArztJson"
+        sprache:
+          $ref: "#/components/schemas/HelloDataSpracheJson"
+        bewegungsapparat:
+          $ref: "#/components/schemas/HelloDataBewegungsapparatJson"
+        beeintraechtigung:
+          $ref: "#/components/schemas/HelloDataSchulrelevanteBeeintraechtigungJson"
+        laeusekontrolle:
+          $ref: "#/components/schemas/HelloDataLaeusekontrolleJson"
+        massnahmen:
+          $ref: "#/components/schemas/HelloDataMassnahmenJson"
+        abschluss:
+          $ref: "#/components/schemas/HelloDataAbschlussJson"
+    HelloDataVorabklaerungenJson:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        fragebogenStatus:
+          $ref: "#/components/schemas/FragebogenStatus"
+        fragebogenStatusNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        einverstaendnisImpfungen:
+          $ref: "#/components/schemas/EinverstaendnisImpfungen"
+        einverstaendnisImpfungenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+        chronischeKrankheiten:
+          $ref: "#/components/schemas/ChronischeKrankheiten"
+        chronischeKrankheitenNichtGeprueftGrund:
+          $ref: "#/components/schemas/NichtGeprueftGrund"
+    Herzauskultation:
+      type: string
+      enum:
+      - UNAUFFAELLIG
+      - AKZIDENTELLES_SYSTOLIKUM
+      - ANDERES
+      - NICHT_GEPRUEFT
+    HoerenEmpfehlung:
+      type: string
+      enum:
+      - UEBERPRUEFUNG_ARZT
+    HoerenHoerhilfe:
+      type: string
+      enum:
+      - NEIN
+      - JA
+      - NICHT_GEPRUEFT
+    HoerenZusaetzlicheAngaben:
+      type: string
+      enum:
+      - KEINE
+      - ERKAELTUNG
+      - HOERHILFE
+    ImpfStatus:
+      type: string
+      enum:
+      - GEPLANT
+      - DURCHGEFUEHRT
+      - NICHT_DURCHGEFUEHRT
+    ImpfausweisGrundUnvollstaendig:
+      type: string
+      enum:
+      - MEDIZINISCHE_KONTRAINDIKATION
+      - IMPFUNG_AUFGESCHOBEN
+      - IMPFENTSCHEIDUNG_ERZIEHUNGSBERECHTIGTE
+      - IMPFUNG_ORGANISATORISCH_NICHT_ERFOLGT
+      - UNKLAR
+    ImpfausweisVollstaendig:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - KEINE_ANGABE
+    ImpfschutzGegeben:
+      type: string
+      enum:
+      - JA
+      - NEIN
+      - KEINE_ANGABE
+    ImpfungenMassnahmenEmpfehlung:
+      type: string
+      enum:
+      - IMPFUNG_BEIM_HAUSARZT
+      - IMPFTERMIN_EMPFOHLEN
+    InformationEltern:
+      type: string
+      enum:
+      - KEINE
+      - TELEFON
+      - MAIL
+      - BRIEF
+    InspektionKonvergenzResultat:
+      type: string
+      enum:
+      - UNAUFFAELLIG
+      - AUFFAELLIG
+      - NICHT_GEPRUEFT
+    Klassenstufe:
+      type: string
+      enum:
+      - KINDERGARTEN_1
+      - KINDERGARTEN_2
+      - PRIMAR_KLASSE_1
+      - PRIMAR_KLASSE_2
+      - PRIMAR_KLASSE_3
+      - PRIMAR_KLASSE_4
+      - PRIMAR_KLASSE_5
+      - PRIMAR_KLASSE_6
+      - SEK_I_KLASSE_1
+      - SEK_I_KLASSE_2
+      - SEK_I_KLASSE_3
+      - SEK_II_KLASSE_1
+      - SEK_II_KLASSE_2
+      - SEK_II_KLASSE_3
+      - SEK_II_KLASSE_4
+      - ANDERE
+    Kognition:
+      type: string
+      enum:
+      - AUFFAELLIG
+      - GRENZWERTIG
+      - GUT
+    Krankheit:
+      type: string
+      enum:
+      - DIPHTERIE
+      - TETANUS
+      - PERTUSSIS
+      - POLIO
+      - HEPATITIS_B
+      - HPV
+      - FSME
+      - MASERN
+      - MUMPS
+      - ROETELN
+      - VARIZELLEN
+      - MENINGOKOKKEN_A_C_W_Y
+      - MENINGOKOKKEN_B
+      - HAEMOPHILUS_INFLUENZAE
+    LabelTyp:
+      type: string
+      enum:
+      - NOTIZEN
+      - AUFGABEN
+    LaeusekontrolleBeurteilung:
+      type: string
+      enum:
+      - KEINE_LAEUSE_KEINE_NISSEN
+      - LAEUSE_VORHANDEN
+      - NISSEN_VORHANDEN
+      - NICHT_GEPRUEFT
+    Land:
+      type: string
+      enum:
+      - ALBANIEN
+      - ANDORRA
+      - BELGIEN
+      - BULGARIEN
+      - DANEMARK
+      - DEUTSCHLAND
+      - FINNLAND
+      - FRANKREICH
+      - GRIECHENLAND
+      - GROSSBRITANNIEN
+      - IRLAND
+      - ISLAND
+      - ITALIEN
+      - LIECHTENSTEIN
+      - LUXEMBURG
+      - MALTA
+      - MONACO
+      - NIEDERLANDE
+      - NORWEGEN
+      - OSTERREICH
+      - POLEN
+      - PORTUGAL
+      - RUMANIEN
+      - SAN_MARINO
+      - SCHWEDEN
+      - SCHWEIZ
+      - SPANIEN
+      - TURKEI
+      - UNGARN
+      - VATIKANSTADT
+      - ZYPERN
+      - SLOWAKEI
+      - TSCHECHIEN
+      - SERBIEN
+      - KROATIEN
+      - SLOWENIEN
+      - BOSNIEN_UND_HERZEGOWINA
+      - MONTENEGRO
+      - NORDMAZEDONIEN
+      - KOSOVO
+      - ESTLAND
+      - LETTLAND
+      - LITAUEN
+      - MOLDOVA
+      - RUSSLAND
+      - UKRAINE
+      - BELARUS
+      - AQUATORIALGUINEA
+      - ATHIOPIEN
+      - DSCHIBUTI
+      - ALGERIEN
+      - ANGOLA
+      - BOTSUANA
+      - BURUNDI
+      - BENIN
+      - COTE_D_IVOIRE
+      - GABUN
+      - GAMBIA
+      - GHANA
+      - GUINEA_BISSAU
+      - GUINEA
+      - KAMERUN
+      - CABO_VERDE
+      - KENIA
+      - KOMOREN
+      - KONGO_BRAZZAVILLE
+      - KONGO_KINSHASA
+      - LESOTHO
+      - LIBERIA
+      - LIBYEN
+      - MADAGASKAR
+      - MALAWI
+      - MALI
+      - MAROKKO
+      - MAURETANIEN
+      - MAURITIUS
+      - MOSAMBIK
+      - NIGER
+      - NIGERIA
+      - BURKINA_FASO
+      - SIMBABWE
+      - RUANDA
+      - SAMBIA
+      - SAO_TOME_UND_PRINCIPE
+      - SENEGAL
+      - SEYCHELLEN
+      - SIERRA_LEONE
+      - SOMALIA
+      - SUDAFRIKA
+      - SUDAN
+      - NAMIBIA
+      - ESWATINI
+      - TANSANIA
+      - TIBET
+      - TOGO
+      - TSCHAD
+      - TUNESIEN
+      - UGANDA
+      - AGYPTEN
+      - ZENTRALAFRIKANISCHE_REPUBLIK
+      - ERITREA
+      - SUDSUDAN
+      - WESTSAHARA
+      - ARGENTINIEN
+      - BAHAMAS
+      - BARBADOS
+      - BOLIVIEN
+      - BRASILIEN
+      - CHILE
+      - COSTA_RICA
+      - DOMINIKANISCHE_REPUBLIK
+      - ECUADOR
+      - EL_SALVADOR
+      - GUATEMALA
+      - GUYANA
+      - HAITI
+      - BELIZE
+      - HONDURAS
+      - JAMAIKA
+      - KANADA
+      - KOLUMBIEN
+      - KUBA
+      - MEXIKO
+      - NICARAGUA
+      - PANAMA
+      - PARAGUAY
+      - PERU
+      - SURINAME
+      - TRINIDAD_UND_TOBAGO
+      - URUGUAY
+      - VENEZUELA
+      - VEREINIGTE_STAATEN
+      - DOMINICA
+      - GRENADA
+      - ANTIGUA_UND_BARBUDA
+      - ST_LUCIA
+      - ST_VINCENT_UND_DIE_GRENADINEN
+      - ST_KITTS_UND_NEVIS
+      - AFGHANISTAN
+      - BAHRAIN
+      - BHUTAN
+      - BRUNEI_DARUSSALAM
+      - MYANMAR
+      - SRI_LANKA
+      - TAIWAN
+      - CHINA
+      - INDIEN
+      - INDONESIEN
+      - IRAK
+      - IRAN
+      - ISRAEL
+      - JAPAN
+      - JEMEN
+      - JORDANIEN
+      - KAMBODSCHA
+      - KATAR
+      - KUWAIT
+      - LAOS
+      - LIBANON
+      - MACAO
+      - MALAYSIA
+      - MALEDIVEN
+      - OMAN
+      - MONGOLEI
+      - NEPAL
+      - KOREA_NORD
+      - VEREINIGTE_ARABISCHE_EMIRATE
+      - PAKISTAN
+      - PHILIPPINEN
+      - SAUDI_ARABIEN
+      - SINGAPUR
+      - KOREA_SUD
+      - SYRIEN
+      - THAILAND
+      - VIETNAM
+      - BANGLADESCH
+      - TIMOR_LESTE
+      - ARMENIEN
+      - ASERBAIDSCHAN
+      - GEORGIEN
+      - KASACHSTAN
+      - KIRGISISTAN
+      - TADSCHIKISTAN
+      - TURKMENISTAN
+      - USBEKISTAN
+      - AUSTRALIEN
+      - FIDSCHI
+      - NAURU
+      - VANUATU
+      - NEUSEELAND
+      - PAPUA_NEUGUINEA
+      - TONGA
+      - SAMOA
+      - SALOMONINSELN
+      - TUVALU
+      - KIRIBATI
+      - MARSHALLINSELN
+      - MIKRONESIEN
+      - PALAU
+      - COOKINSELN
+    Lesefit:
+      type: string
+      enum:
+      - PUNKTE_MAX_14
+      - PUNKTE_15_BIS_16
+      - PUNKTE_MIN_17
+      - NICHT_GEPRUEFT
+    LocalDate:
+      type: string
+      format: date
+      examples:
+      - 2022-03-10
+    MotilitaetResultat:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - NICHT_GEPRUEFT
+    Motorik:
+      type: string
+      enum:
+      - NORMAL
+      - AUFFAELLIG
+      - AUFFAELLIG_PUNKTE
+      - GRENZWERTIG
+      - GUT
+      - NICHT_GEPRUEFT
+    MundAndZaehne:
+      type: string
+      enum:
+      - UNAUFFAELLIG
+      - KARIES
+      - KARIES_SANIERT
+      - ADENOIDHYPERPLASIE
+      - ANDERES
+      - NICHT_GEPRUEFT
+    Nachsprechen:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
+    NameSchreiben:
+      type: string
+      enum:
+      - GESCHAFFT
+      - NICHT_GESCHAFFT
+      - NICHT_GEPRUEFT
+    NichtGeprueftGrund:
+      type: string
+      enum:
+      - FEHLENDE_INFRASTRUKTUR
+      - FEHLENDE_ZEIT
+      - UNPASSENDER_UNTERSUCHUNGSORT
+      - FEHLENDES_EINVERSTAENDNIS
+      - VERWEIGERTE_UNTERSUCHUNG
+      - KRANK
+      - VERSTAENDIGUNGS_PROBLEME
+      - UNTERSUCHUNG_NICHT_INDIZIERT
+      - ANDERER_GRUND
+    NotizStatus:
+      type: string
+      enum:
+      - AKTIV
+      - ABGESCHLOSSEN
     OffsetDateTime:
       type: string
       format: date-time
       examples:
       - 2022-03-10T12:15:50-04:00
+    OhneStuetzradVelofahren:
+      type: string
+      enum:
+      - JA_OHNE_STUETZRAD_VELOFAHREN
+      - NEIN_OHNE_STUETZRAD_VELOFAHREN
+      - NICHT_GEPRUEFT
+    OtoskopieResultat:
+      type: string
+      enum:
+      - NORMAL
+      - TROMMELFELL_CERUMEN
+      - NICHT_EINSEHBAR
+      - TROMMELFELL_PERFORATION
+      - SEROMUKOTYMPANON
+      - NICHT_GEPRUEFT
+      - ANDERES
+    PapierakteStatus:
+      type: string
+      enum:
+      - VORHANDEN
+      - NICHT_VORHANDEN
+      - UNKLAR
+    PerzentileBmi:
+      type: string
+      enum:
+      - NORMAL
+      - PERZENTILE_TIEF
+      - PERZENTILE_HOCH
+      - UNTERGEWICHT
+      - UEBERGEWICHT
+      - ADIPOSITAS
+      - NICHT_GEPRUEFT
+    PerzentileGewicht:
+      type: string
+      enum:
+      - NORMAL
+      - PERZENTILE_TIEF
+      - PERZENTILE_HOCH
+      - NICHT_GEPRUEFT
+    PerzentileGroesse:
+      type: string
+      enum:
+      - NORMAL
+      - PERZENTILE_TIEF
+      - PERZENTILE_HOCH
+      - NICHT_GEPRUEFT
+    SehenEmpfehlung:
+      type: string
+      enum:
+      - UEBERPRUEFUNG_AUGENARZT
+      - UEBERPRUEFUNG_BRILLE
+    Skoliose:
+      type: string
+      enum:
+      - SKOLIOSE_NEIN
+      - SKOLIOSE_JA
+      - NICHT_GEPRUEFT
+    Sprachfaehigkeit:
+      type: string
+      enum:
+      - GROBKURSORISCH_NORMAL
+      - ENTWICKLUNGSVERZOEGERUNG
+      - ARTIKULATIONSFEHLER
+      - DEUTSCHKENNTNISSE_MINIM
+      - ANDERES
+      - AUFFAELLIG
+      - GRENZWERTIG
+      - GUT
+      - NICHT_GEPRUEFT
+    Sprachverstaendnis:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
+    StereotestResultat:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - UNSICHER
+      - NICHT_GEPRUEFT
+    Stifthaltung:
+      type: string
+      enum:
+      - OKAY
+      - NICHT_OKAY
+      - NICHT_GEPRUEFT
+    StrabismusAuftretenResultat:
+      type: string
+      enum:
+      - KEIN_STRABISMUS
+      - RECHTS
+      - LINKS
+      - ALTERNNIEREND
+      - NICHT_GEPRUEFT
+    StrabismusAuspraegungResultat:
+      type: string
+      enum:
+      - KEIN_STRABISMUS
+      - MANIFEST
+      - LATENT
+      - INTERMITTIEREND
+      - NICHT_GEPRUEFT
+    StrabismusResultat:
+      type: string
+      enum:
+      - KEIN_STRABISMUS
+      - EXO
+      - ESO
+      - HYPER
+      - LINKS
+      - RECHTS
+      - NICHT_GEPRUEFT
     UUID:
       type: string
       format: uuid
       pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+    Verhalten:
+      type: string
+      enum:
+      - UNAUFFAELLIG
+      - AUFFAELLIG
+      - NICHT_GEPRUEFT
+    Verhaltensfragebogen:
+      type: string
+      enum:
+      - VORHANDEN
+      - NICHT_VORHANDEN
+      - NICHT_RELEVANT
+    VerkuerzungHamstringmuskulatur:
+      type: string
+      enum:
+      - NORMAL
+      - PATHOLOGISCH
+      - NICHT_GEPRUEFT
+    VerwendetTafelResultat:
+      type: string
+      enum:
+      - E_TAFEL
+      - C_TAFEL
+      - PATTI_PICS
+      - BUCHSTABEN
+      - NICHT_GEPRUEFT
+    Wortschatz:
+      type: string
+      enum:
+      - BESTANDEN
+      - NICHT_BESTANDEN
+      - NICHT_GEPRUEFT
+    ZahlenNachsprechen:
+      type: string
+      enum:
+      - RICHTIG
+      - FALSCH
+      - NICHT_GEPRUEFT
+    Zeichnen:
+      type: string
+      enum:
+      - RICHTIG
+      - FALSCH
+      - NICHT_GEPRUEFT
+    ZeichnenMensch:
+      type: string
+      enum:
+      - ERFUELLT
+      - NICHT_ERFUELLT
+      - NICHT_GEPRUEFT
   securitySchemes:
     SecurityScheme:
       type: openIdConnect

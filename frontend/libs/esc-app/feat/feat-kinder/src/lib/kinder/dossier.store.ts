@@ -371,11 +371,11 @@ export class DossierStore extends signalStore(
     ),
   );
 
-  downloadKinderdossierReport = rxMethod<{ kindId: BackendEntityId, variation: KinderdossierPrintVariant }>(
+  downloadKinderdossierReport = rxMethod<{ kindId: BackendEntityId, variant: KinderdossierPrintVariant }>(
     pipe(
-      switchMap(({variation, kindId}) =>
+      switchMap(({variant, kindId}) =>
         this.loader.tapLoading$(
-          this.#printerService.downloadKinderdossier$({variation, kindId}, 'response'),
+          this.#printerService.downloadKinderdossier$({variant, kindId}, 'response'),
           error => this.#appErrorHandlerService.handleError(error))),
       tapResponse({
         next: result => handleBlobResponseDownload(result, true),

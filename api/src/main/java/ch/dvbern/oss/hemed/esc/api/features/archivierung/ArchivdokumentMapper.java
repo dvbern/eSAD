@@ -7,7 +7,7 @@ import ch.dvbern.dvbstarter.infrastructure.stereotypes.JaxMapper;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
 
@@ -19,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class ArchivdokumentMapper {
 
     private final ArchivdokumentService archivdokumentService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public static ArchivdokumentJson toJson(@NonNull Archivdokument archivdokument, @NonNull TenantEnum tenant) {
@@ -37,7 +37,7 @@ public class ArchivdokumentMapper {
 
     @NonNull
     public List<ArchivdokumentJson> findAll(boolean onlyOpen) {
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         return archivdokumentService.findAll(onlyOpen).stream().map(a -> ArchivdokumentMapper.toJson(a, tenant)).toList();
     }
 

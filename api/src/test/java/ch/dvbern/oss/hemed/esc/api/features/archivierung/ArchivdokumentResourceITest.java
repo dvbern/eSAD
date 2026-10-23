@@ -15,7 +15,7 @@ import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
@@ -52,14 +52,14 @@ class ArchivdokumentResourceITest extends AbstractITest {
     private final FixtureService fixtureService;
     private final ArchivdokumentService archivdokumentService;
     private final BenutzerService benutzerService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Test
     @TestAsSupportBE
     @Order(10)
     void findAllOffeneArchivdokument_as_Support_find_all_with_correct_status() {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokumentOffenI = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
@@ -103,7 +103,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(20)
     void findAllAbgeschlosseneArchivdokument_finds_own_with_correct_status() {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         var adminId = ID.of(UUID.fromString(TestAsAdminBE.BENUTZER_ID), Benutzer.class);
         var currentBenutzer = benutzerService.getById(adminId);
@@ -135,7 +135,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(30)
     void findAllOffeneArchivdokument_finds_own_with_correct_status() {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         var adminId = ID.of(UUID.fromString(TestAsAdminBE.BENUTZER_ID), Benutzer.class);
         var currentBenutzer = benutzerService.getById(adminId);
@@ -180,7 +180,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @TestAsSupportBE
     @Order(40)
     void downloadArchivdokument_works_and_sets_status_and_timestamtp() {
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
@@ -214,7 +214,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @TestAsSupportBE
     @Order(50)
     void downloadArchivdokument_works_and_sets_status_for_kind_deaktiviert() {
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
@@ -245,7 +245,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(60)
     void downloadArchivdokument_throws_if_owner_is_not_current_benutzer() {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
@@ -272,7 +272,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(70)
     void bulkDownloadArchivFiles_returns_ok() throws IOException {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer currentSchularzt = benutzerService.getById(TestAsSchularztBE.BENUTZER_ID_ID);
 
         Archivdokument archivdokument1 = ArchivdokumentBuilder.create(builder -> builder
@@ -320,7 +320,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(71)
     void bulkDownloadArchivFiles_respects_max_files_cap() throws IOException {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer currentSchularzt = benutzerService.getById(TestAsSchularztBE.BENUTZER_ID_ID);
 
         // create 3 open documents; the %test profile caps esc.archive.bulk-download.max-files at 2
@@ -383,7 +383,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(72)
     void bulkDownloadArchivFiles_skips_documents_with_broken_s3_reference() throws IOException {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer currentSchularzt = benutzerService.getById(TestAsSchularztBE.BENUTZER_ID_ID);
 
         Archivdokument validDoc = ArchivdokumentBuilder.create(builder -> builder
@@ -437,7 +437,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(73)
     void bulkDownloadArchivFiles_no_archive_documents_to_download() throws IOException {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         //ACT
         byte[] result = api.archivdokumentResourceBulkDownloadArchivFiles()
@@ -457,7 +457,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(74)
     void bulkDownloadArchivFiles_only_download_own_archives() throws IOException {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument1 = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())
@@ -488,7 +488,7 @@ class ArchivdokumentResourceITest extends AbstractITest {
     @Order(75)
     void bulkDownloadArchivFiles_bulk_download_archives_not_allowed_fo_support() throws IOException {
         //ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Archivdokument archivdokument1 = ArchivdokumentBuilder.create(builder -> builder
             .withOwner(fixtureService.createBenutzerWithOrganisation())

@@ -9,7 +9,6 @@ import ch.dvbern.dvbstarter.shared.types.cleanfilename.CleanFileName;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizListItemJson;
-import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileDataService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
@@ -17,12 +16,10 @@ import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfoS3Mapper;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileTyp;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileValidationService;
-import io.smallrye.mutiny.Uni;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.util.List;
@@ -37,7 +34,6 @@ public class NotizService {
 
     private final FileStoreService fileStoreService;
     private final FileValidationService fileValidationService;
-    private final ConfigService configService;
     private final AppClock appClock;
     private final FileDataService fileDataService;
 
@@ -141,21 +137,19 @@ public class NotizService {
 
         notizRepo.flush();
 
-        Uni<DeleteObjectResponse> deleteObjectResponseUni =
-            fileStoreService.deleteInS3Async(fileToRemove.getFileIdInBucket());
-
-        DeleteObjectResponse deleteResponse =
-            deleteObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
-        LOG.info("Deleted file from S3: {}", deleteResponse);
+        // only once the removal is committed: deleting now would lose the file if the transaction still rolls back
+        fileStoreService.deleteInS3AfterCommit(fileToRemove.getFileIdInBucket());
     }
 
     @NonNull
     private FileInfo saveNotizAttachmentInFilestorage(@NonNull FileUpload fileUpload) {
         // prepare the file info Embeddable
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.NOTIZUPLOAD);
-        // upload the file to S3
-        Uni<PutObjectResponse> putObjectResponseUni = fileStoreService.uploadToS3Async(fileUpload, fileInfo);
-        PutObjectResponse putObjectResponse = putObjectResponseUni.await().atMost(configService.getS3UploadTimeout());
+        // upload the file to S3; it is deleted again if the transaction does not commit
+        PutObjectResponse putObjectResponse = fileStoreService.uploadToS3BoundToTransaction(
+            fileUpload,
+            fileInfo
+        );
         LOG.info("Uploaded file to S3, fileIdInBucket: {}, putObjectResponse: {}", fileInfo.getFileIdInBucket(), putObjectResponse);
         return fileInfo;
     }

@@ -16,15 +16,16 @@
  */
 
 import { expect, test } from '../../fixtures/test.fixture';
-import { addMonths } from 'date-fns';
+import { addMonths, format } from 'date-fns';
 import { AnlassListPageObject } from './page-objects/anlass-list.page-object';
 import { AnlassPageObject } from './page-objects/anlass.page-object';
 import { AnlassPlanungPageObject } from './page-objects/anlass-planung.page-objects';
-import { KinderListPageObject } from '../kinder/page-objects/kinder-list.page-object';
 import { KinderPageObject } from '../kinder/page-objects/kinder.page-object';
+import { openKindFromList } from '../../routines/kind.routines';
+import {authStatePath} from '../../util/env.util';
 
 test.describe('anlass create', () => {
-  test.use({ storageState: './playwright/.auth/ESC_SUPPORT' });
+  test.use({ storageState: authStatePath('ESC_SUPPORT') });
   test.describe.configure({ mode: 'serial' });
 
   test('create anlass', async ({ page, testData }) => {
@@ -49,24 +50,21 @@ test.describe('anlass create', () => {
     ]);
 
     const postData = request.postDataJSON();
-    expect(postData).toEqual({
-      anlassConfigOption : {
+    expect(postData).toMatchObject({
+      anlassConfigOption: {
         id: expect.any(String),
-        anlassTyp : 'VERTRAUENSARZT',
-        datumVon: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-        datumBis: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+        anlassTyp: 'VERTRAUENSARZT',
         bezeichnung: 'Default',
-    },
+      },
       titel: testData.anlass1.title,
       anlassStatus: 'IN_PLANUNG',
-      anlassTyp : 'VERTRAUENSARZT',
+      anlassTyp: 'VERTRAUENSARZT',
       anlassArt: 'GRUPPEN_ANLASS',
       arzt: null,
-      datum: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/), //format(anlassDate, 'yyyy-MM-dd'),
+      datum: format(anlassDate, 'yyyy-MM-dd'),
       schuljahr: getSchoolYear(anlassDate),
       mpa: null,
       weiterePerson: null,
-      version: expect.any(Number),
     })
 
     await anlassFormPage.isCurrentPage('edit');
@@ -76,6 +74,9 @@ test.describe('anlass create', () => {
     const anlassList = new AnlassListPageObject(page);
     const anlassFormPage = new AnlassPageObject(page);
     const anlassDate = new Date();
+    // A "4. Primar" Anlass is planned for the school year before the current one. Deriving both the
+    // option label and the expected value from the date keeps this working past the next August.
+    const previousSchoolYear = getSchoolYear(anlassDate) - 1;
 
     await anlassList.goto();
     await anlassList.elements.buttonHinzufuegen().click();
@@ -86,7 +87,7 @@ test.describe('anlass create', () => {
     await anlassFormPage.elements.anlassArtSelect().setOption(page, 'Gruppe');
     await anlassFormPage.elements.anlassTypSelect().setOption(page, '4. Primar');
     await anlassFormPage.elements.anlassDatumDatePicker().setDate(page, anlassDate);
-    await anlassFormPage.elements.schuljahrSelect().setOption(page, '2025/26');
+    await anlassFormPage.elements.schuljahrSelect().setOption(page, formatSchoolYear(previousSchoolYear));
 
     const [request] = await Promise.all([
       page.waitForRequest(request => request.url().includes('/api/anlaesse') && request.method() === 'POST'),
@@ -95,26 +96,51 @@ test.describe('anlass create', () => {
 
     const postData = request.postDataJSON();
 
-    expect(postData).toEqual({
-      anlassConfigOption : {
-        anlassTyp : 'KLASSE_4',
+    expect(postData).toMatchObject({
+      anlassConfigOption: {
+        anlassTyp: 'KLASSE_4',
         id: expect.any(String),
-        datumVon: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-        datumBis: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
         bezeichnung: 'Default',
       },
       anlassArt: 'GRUPPEN_ANLASS',
       anlassStatus: 'IN_PLANUNG',
       anlassTyp: 'KLASSE_4',
       arzt: null,
-      datum: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      datum: format(anlassDate, 'yyyy-MM-dd'),
       mpa: null,
-      schuljahr: getPreviousYear(anlassDate),
+      schuljahr: previousSchoolYear,
       titel: testData.anlass2.title,
-      version: expect.any(Number),
       weiterePerson: null,
     });
     await anlassFormPage.isCurrentPage('edit');
+  });
+
+  test('create anlass for the edit tests', async ({ page, testData }) => {
+    const anlassList = new AnlassListPageObject(page);
+    const anlassFormPage = new AnlassPageObject(page);
+    const anlassPlanungPage = new AnlassPlanungPageObject(page);
+
+    await anlassList.goto();
+    await anlassList.elements.buttonHinzufuegen().click();
+
+    await anlassFormPage.isCurrentPage('create');
+
+    await anlassFormPage.elements.anlassTitleInput().getInput(page).fill(testData.anlassEdit.title);
+    await anlassFormPage.elements.anlassArtSelect().setOption(page, 'Gruppe');
+    await anlassFormPage.elements.anlassTypSelect().setOption(page, 'Andere');
+    await anlassFormPage.elements.anlassDatumDatePicker().setDate(page, addMonths(new Date(), 2));
+    await anlassFormPage.baseForm.submitButton().click();
+
+    await anlassFormPage.isCurrentPage('edit');
+
+    await anlassFormPage.elements.schuleSelect().setOption(page, 'Hochstrassschulhaus');
+    await anlassFormPage.elements.klasseSelect().setOption(page, 'Klasse 4a');
+    await anlassFormPage.elements.buttonAddKinder().click();
+
+    await expect(page.getByTestId('anlass-selected-kinder-table').locator('tbody tr')).toHaveCount(2);
+
+    await anlassFormPage.elements.buttonSaveAnlass().click();
+    await anlassPlanungPage.isCurrentPage();
   });
 
   test('add kinder to anlass', async ({ page, testData }) => {
@@ -162,13 +188,11 @@ test.describe('anlass create', () => {
   });
 
   test('add anlass in kinder', async ({ page, testData }) => {
-    const kinderList = new KinderListPageObject(page);
     const kinderFormPage = new KinderPageObject(page);
     const anlassFormPage = new AnlassPageObject(page);
     const anlassDate = new Date();
 
-    await kinderList.goto();
-    await kinderList.elements.linkKinder().first().click();
+    await openKindFromList(page, testData.kindForAnlass3);
 
     await kinderFormPage.elements.buttonAddAnlass().click();
 
@@ -182,28 +206,24 @@ test.describe('anlass create', () => {
     const [request] = await Promise.all([
       page.waitForRequest(req => req.url().includes('/api/anlaesse') && req.method() === 'POST'),
       anlassFormPage.baseForm.submitButton().click(),
-      await anlassFormPage.elements.buttonSaveAnlass().click()
     ]);
 
     const postData = request.postDataJSON();
 
-    expect(postData).toEqual({
-      anlassConfigOption : {
-        anlassTyp : 'IMPFTERMIN',
+    expect(postData).toMatchObject({
+      anlassConfigOption: {
+        anlassTyp: 'IMPFTERMIN',
         id: expect.any(String),
-        datumVon: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-        datumBis: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
         bezeichnung: 'Default',
       },
       anlassArt: 'EINZEL_ANLASS',
       anlassStatus: 'IN_PLANUNG',
       anlassTyp: 'IMPFTERMIN',
       arzt: null,
-      datum: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      datum: format(anlassDate, 'yyyy-MM-dd'),
       mpa: null,
       schuljahr: getSchoolYear(anlassDate),
-      titel:  testData.anlass3.title,
-      version: expect.any(Number),
+      titel: testData.anlass3.title,
       weiterePerson: null,
     });
 
@@ -221,6 +241,7 @@ function getSchoolYear(date: Date): number {
   return date.getFullYear();
 }
 
-function getPreviousYear(date: Date): number {
-  return date.getFullYear() - 1;
+/** Renders a school year the way the Schuljahr select labels it, e.g. 2025 as "2025/26". */
+function formatSchoolYear(schoolYear: number): string {
+  return `${schoolYear}/${String((schoolYear + 1) % 100).padStart(2, '0')}`;
 }

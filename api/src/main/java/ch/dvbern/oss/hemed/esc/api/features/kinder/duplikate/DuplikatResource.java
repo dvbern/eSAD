@@ -10,7 +10,7 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.AuthorizerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.scheduler.SuperAdminRunnerService;
 import io.smallrye.faulttolerance.api.RateLimit;
 import io.vertx.mutiny.core.eventbus.EventBus;
@@ -41,7 +41,7 @@ public class DuplikatResource {
 
     private final SuperAdminRunnerService superAdminRunnerService;
     private final DuplikatMapper duplikatMapper;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final EventBus eventBus;
     private final AuthorizerService authorizerService;
 
@@ -50,7 +50,7 @@ public class DuplikatResource {
     @RolesAllowed(BerechtigungName.DUBLETTEN_ZUSAMMENFUHREN)
     @Transactional(TxType.NOT_SUPPORTED)
     public void reloadDuplikateAsync() {
-        eventBus.send(DUPLIKAT_RECALCULATION_EVENT, tenantProducer.produceTenant());
+        eventBus.send(DUPLIKAT_RECALCULATION_EVENT, tenantContext.get());
     }
 
     @PUT

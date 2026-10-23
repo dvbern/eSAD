@@ -23,18 +23,19 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import jakarta.transaction.Status;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.TransactionManager;
 
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataMetaJson;
 import ch.dvbern.oss.hemed.esc.api.features.hellodata.json.HelloDataSentinelJson;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
+
 import io.micrometer.core.annotation.Timed;
 import io.quarkus.narayana.jta.runtime.TransactionConfiguration;
-import jakarta.transaction.Status;
-import jakarta.transaction.SystemException;
-import jakarta.transaction.TransactionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -73,10 +74,22 @@ import org.eclipse.microprofile.faulttolerance.Bulkhead;
 public class HelloDataExportService {
 
     private final HelloDataSchuleRepo helloDataSchuleRepo;
+    private final HelloDataImpfstoffRepo helloDataImpfstoffRepo;
+    private final HelloDataLabelRepo helloDataLabelRepo;
+    private final HelloDataBenutzerRepo helloDataBenutzerRepo;
+    private final HelloDataNotizRepo helloDataNotizRepo;
+    private final HelloDataAufgabeRepo helloDataAufgabeRepo;
+    private final HelloDataKlasseRepo helloDataKlasseRepo;
+    private final HelloDataEinladungRepo helloDataEinladungRepo;
+    private final HelloDataImpfstatusRepo helloDataImpfstatusRepo;
+    private final HelloDataImpfungInternRepo helloDataImpfungInternRepo;
+    private final HelloDataAnlassRepo helloDataAnlassRepo;
+    private final HelloDataDossierRepo helloDataDossierRepo;
+    private final HelloDataUntersuchungenRepo helloDataUntersuchungenRepo;
     private final NdjsonWriter ndjsonWriter;
     private final JsonEnvelopeWriter jsonEnvelopeWriter;
     private final TransactionManager transactionManager;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final AppClock appClock;
 
     /**
@@ -154,6 +167,304 @@ public class HelloDataExportService {
         timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
     public void writeSchulenAsJson(@NonNull OutputStream os) {
         write("schulen", helloDataSchuleRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    @Bulkhead(1)
+    @Timed("writeUntersuchungenMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeUntersuchungen(@NonNull OutputStream os) {
+        write(
+            "untersuchungen",
+            helloDataUntersuchungenRepo::streamAll,
+            ndjsonWriter,
+            os
+        );
+    }
+
+    @Bulkhead(1)
+    @Timed("writeUntersuchungenAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeUntersuchungenAsJson(@NonNull OutputStream os) {
+        write(
+            "untersuchungen",
+            helloDataUntersuchungenRepo::streamAll,
+            jsonEnvelopeWriter,
+            os
+        );
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Impfstoffe dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeImpfstoffeMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeImpfstoffe(@NonNull OutputStream os) {
+        write("impfstoffe", helloDataImpfstoffRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeImpfstoffe} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeImpfstoffeAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeImpfstoffeAsJson(@NonNull OutputStream os) {
+        write("impfstoffe", helloDataImpfstoffRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Labels dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeLabelsMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeLabels(@NonNull OutputStream os) {
+        write("labels", helloDataLabelRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeLabels} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeLabelsAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeLabelsAsJson(@NonNull OutputStream os) {
+        write("labels", helloDataLabelRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Benutzer dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeBenutzerMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeBenutzer(@NonNull OutputStream os) {
+        write("benutzer", helloDataBenutzerRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeBenutzer} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeBenutzerAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeBenutzerAsJson(@NonNull OutputStream os) {
+        write("benutzer", helloDataBenutzerRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Notizen dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeNotizenMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeNotizen(@NonNull OutputStream os) {
+        write("notizen", helloDataNotizRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeNotizen} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeNotizenAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeNotizenAsJson(@NonNull OutputStream os) {
+        write("notizen", helloDataNotizRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Aufgaben dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeAufgabenMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeAufgaben(@NonNull OutputStream os) {
+        write("aufgaben", helloDataAufgabeRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeAufgaben} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeAufgabenAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeAufgabenAsJson(@NonNull OutputStream os) {
+        write("aufgaben", helloDataAufgabeRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Klassen dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeKlassenMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeKlassen(@NonNull OutputStream os) {
+        write("klassen", helloDataKlasseRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeKlassen} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeKlassenAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeKlassenAsJson(@NonNull OutputStream os) {
+        write("klassen", helloDataKlasseRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Einladungen dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeEinladungenMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeEinladungen(@NonNull OutputStream os) {
+        write("einladungen", helloDataEinladungRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeEinladungen} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeEinladungenAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeEinladungenAsJson(@NonNull OutputStream os) {
+        write("einladungen", helloDataEinladungRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    @Bulkhead(1)
+    @Timed("writeImpfstatusKrankheitenMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeImpfstatusKrankheiten(@NonNull OutputStream os) {
+        write("impfstatuskrankheiten", helloDataImpfstatusRepo::streamAll, ndjsonWriter, os);
+    }
+
+    @Bulkhead(1)
+    @Timed("writeImpfstatusKrankheitenAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeImpfstatusKrankheitenAsJson(@NonNull OutputStream os) {
+        write("impfstatuskrankheiten", helloDataImpfstatusRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    @Bulkhead(1)
+    @Timed("writeImpfungenInternMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeImpfungenIntern(@NonNull OutputStream os) {
+        write("impfungenintern", helloDataImpfungInternRepo::streamAll, ndjsonWriter, os);
+    }
+
+    @Bulkhead(1)
+    @Timed("writeImpfungenInternAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeImpfungenInternAsJson(@NonNull OutputStream os) {
+        write("impfungenintern", helloDataImpfungInternRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Anlaesse dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeAnlaesseMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeAnlaesse(@NonNull OutputStream os) {
+        write("anlaesse", helloDataAnlassRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeAnlaesse} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeAnlaesseAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeAnlaesseAsJson(@NonNull OutputStream os) {
+        write("anlaesse", helloDataAnlassRepo::streamAll, jsonEnvelopeWriter, os);
+    }
+
+    /**
+     * Same shape as {@link #writeSchulen}, only for the Dossiers dataset. See the class
+     * documentation for why every dataset gets its own thin method delegating to {@link #write}.
+     */
+    @Bulkhead(1)
+    @Timed("writeDossiersMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeDossiers(@NonNull OutputStream os) {
+        write("dossiers", helloDataDossierRepo::streamAll, ndjsonWriter, os);
+    }
+
+    /**
+     * Same rows, same cursor, same guarantees as {@link #writeDossiers} - only the framing
+     * differs (see {@link JsonEnvelopeWriter}).
+     */
+    @Bulkhead(1)
+    @Timed("writeDossiersAsJsonMS")
+    @TransactionConfiguration(
+        timeout = EXPORT_TRANSACTION_TIMEOUT_SECONDS,
+        timeoutFromConfigProperty = TRANSACTION_TIMEOUT_PROPERTY)
+    public void writeDossiersAsJson(@NonNull OutputStream os) {
+        write("dossiers", helloDataDossierRepo::streamAll, jsonEnvelopeWriter, os);
     }
 
     /**
@@ -268,7 +579,7 @@ public class HelloDataExportService {
      * provision it that way" is too thin a guarantee, so the restriction is checked here.
      */
     private void requireAllowedTenant(@NonNull String dataset) {
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         if (tenant != ONLY_ALLOWED_TENANT) {
             throw new IllegalStateException((
                 "HelloData export '%s' is only available for tenant %s, but the request resolved "

@@ -14,7 +14,7 @@ export const Pch2026BmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmiFemale2026P3',
       percentile: 3,
-      type: 'bottom',
+      type: 'sub',
       data: [
         {x: 2, y: 13.76},
         {x: 2.5, y: 13.61},
@@ -54,7 +54,7 @@ export const Pch2026BmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmiFemale2026P10',
       percentile: 10,
-      type: 'sub',
+      type: 'bottom',
       data: [
         {x: 2, y: 14.4},
         {x: 2.5, y: 14.23},
@@ -214,7 +214,7 @@ export const Pch2026BmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmiFemale2026P90',
       percentile: 90,
-      type: 'sub',
+      type: 'top',
       data: [
         {x: 2, y: 17.83},
         {x: 2.5, y: 17.67},
@@ -254,7 +254,7 @@ export const Pch2026BmiMaedchenDistribution: PercentileDistribution = {
     {
       id: 'bmiFemale2026P97',
       percentile: 97,
-      type: 'top',
+      type: 'sub',
       data: [
         {x: 2, y: 18.85},
         {x: 2.5, y: 18.73},

@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentConfigFixtures;
 import ch.dvbern.dvbstarter.infrastructure.deployment.DeploymentConfigFixtures.DeploymentConfigDTO;
 import ch.dvbern.oss.commons.logging.mdc.CommonMDCField;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProvider;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.doReturn;
 class LoggingCommonMDCFieldsFilterTest {
 
     private final ConfigService configServiceMock = Mockito.mock(ConfigService.class);
-    private final TenantProvider tenantProviderMock = Mockito.mock(TenantProvider.class);
+    private final TenantContext tenantContextMock = Mockito.mock(TenantContext.class);
 
     @Mock
     ContainerRequestContext requestCtx;
@@ -60,7 +60,7 @@ class LoggingCommonMDCFieldsFilterTest {
     @BeforeEach
     void beforeEach() {
         setupDeploymentConfigMock(DeploymentConfigFixtures.defaults());
-        Mockito.when(tenantProviderMock.produceTenant()).thenReturn(null);
+        Mockito.when(tenantContextMock.getOrNull()).thenReturn(null);
 
         mdcBackup = MDC.getCopyOfContextMap();
         MDC.clear();
@@ -93,7 +93,7 @@ class LoggingCommonMDCFieldsFilterTest {
                 .withInstance("The Instance")
             );
 
-            requestFilter = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantProviderMock) {
+            requestFilter = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantContextMock) {
                 @Override
                 String getTenant() {
                     return "The Tenant";
@@ -155,7 +155,7 @@ class LoggingCommonMDCFieldsFilterTest {
 
             setupDeploymentConfigMock(DeploymentConfigFixtures.defaults()
                 .withVersion("0.0.0"));
-            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantProviderMock);
+            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantContextMock);
 
             sut.filter(requestCtx);
         }
@@ -180,7 +180,7 @@ class LoggingCommonMDCFieldsFilterTest {
             );
 
             setupDeploymentConfigMock(DeploymentConfigFixtures.defaults());
-            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantProviderMock);
+            sut = new LoggingCommonMDCFieldsRequestFilter(configServiceMock, tenantContextMock);
 
             sut.filter(requestCtx);
         }

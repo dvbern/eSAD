@@ -68,6 +68,13 @@ public class ImpfstoffChargeBuilder {
 
     @NonNull
     @CanIgnoreReturnValue
+    public ImpfstoffChargeBuilder withAktiv(boolean aktiv) {
+        this.charge.setAktiv(aktiv);
+        return this;
+    }
+
+    @NonNull
+    @CanIgnoreReturnValue
     public ImpfstoffChargeBuilder forImpfstoff(@NonNull Impfstoff impfstoff) {
         this.charge.setImpfstoff(impfstoff);
         return this;

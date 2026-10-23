@@ -6,6 +6,7 @@
         <span>{{ 'untersuchung.tab.defaultwerte.info' | transloco }}</span>
         <button
           class="nav-link"
+          [disabled]="!store.defaultsLoaded()"
           (click)="loadDefaults()"
           data-testid="untersuchung-bewegungsapparat-defaultwerte">
           <svui-icon [useCase]="'edit'"></svui-icon>

@@ -84,7 +84,8 @@
 
   <!-- BUTTONS -->
   @if (canEdit()) {
-    <button customFormButtons svuiButton="primary" type="submit" data-testid="button-visieren">{{ getActionText() }}</button>
+    <button customFormButtons svuiButton="primary" type="submit" data-testid="button-visieren"
+            [disabled]="!readyToSave()">{{ getActionText() }}</button>
   }
 
 </form>

@@ -58,7 +58,7 @@ class RolesAugmentorTest {
     private final RolesAugmentor rolesAugmentor;
 
     @Inject
-    TenantProducer tenantProducer;
+    TenantContext tenantContext;
 
     private TenantSettingsService tenantSettingsServiceMock;
     private BenutzerService benutzerServiceMock;
@@ -270,7 +270,7 @@ class RolesAugmentorTest {
     void augmentWithRoles_shouldReturnSupportRolesForUrlTenant_whenDVBSupportMarkerInToken() {
         // ARRANGE
         when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
 
         SecurityIdentity identity = buildIdentityWithToken(
             TEST_EMAIL, TEST_USERNAME, "some-azp", DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER);
@@ -290,7 +290,6 @@ class RolesAugmentorTest {
     void augmentWithRoles_shouldReturnNoRoles_whenDVBSupportMarkerInTokenButUrlTenantIsNull() {
         // ARRANGE
         when(tenantSettingsServiceMock.isBenutzerverwaltungIgnoreFachRolleFromKeycloakEnabled()).thenReturn(false);
-        tenantProducer.setCurrentTenant(null);
 
         SecurityIdentity identity = buildIdentityWithToken(
             TEST_EMAIL, TEST_USERNAME, "some-azp", DVBSupportRoleUtil.DVB_SUPPORT_TENANT_MARKER);

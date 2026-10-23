@@ -21,7 +21,7 @@ import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffChargeService;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffMapper;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.ImpfstoffService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,7 +46,7 @@ public final class UntersuchungImpfungInternMapper {
     private final ImpfstoffChargeService impfstoffChargeService;
     private final BenutzerService benutzerService;
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final EinladungService einladungService;
 
     @Nullable
@@ -145,7 +145,7 @@ public final class UntersuchungImpfungInternMapper {
             untersuchungService.createCompleteImpfungenInternBasedOnLastAnlass(impfungen, lastEinladung);
             impfungenIntern = untersuchungImpfungInternService.findByUntersuchung(impfungen.getUntersuchung().getId());
         }
-        TenantEnum tenant = tenantProducer.produceTenant();
+        TenantEnum tenant = tenantContext.get();
         return impfungenIntern.stream().
             map(i -> UntersuchungImpfungInternMapper.toJson(i, tenant)).
             toList();
@@ -192,7 +192,7 @@ public final class UntersuchungImpfungInternMapper {
         UntersuchungImpfungIntern persisted =
             untersuchungImpfungInternService.persistWithOptimisticLocking(entity, saveJson.getVersion(), !wrappedId.isAnonymerEintrag());
         hasAuthorizationUntersuchung.accept(persisted.getUntersuchungImpfungen().getUntersuchung());
-        return toJson(persisted, tenantProducer.produceTenant());
+        return toJson(persisted, tenantContext.get());
     }
 
     private void replaceKrankheitImmunitaeten(

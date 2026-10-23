@@ -12,7 +12,7 @@
       {{ label() }}
       </span>
 
-      @if (controlType === 'radios' && required) {
+      @if (controlType === 'radios' && required()) {
         <svui-required/>
       }
     </div>

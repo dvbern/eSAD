@@ -17,6 +17,7 @@ const ErrorMessageTranslations: TranslationMap<typeof AppValidatorKeys> | Record
   email: 'ui.validation-error.email',
   equals: 'ui.validation-error.equals',
   esadId: 'ui.validation-error.esadId',
+  loginMethodsRequired: 'config.tenant.loginMethodsRequired',
   max: 'ui.validation-error.max',
   maxlength: 'ui.validation-error.maxlength',
   min: 'ui.validation-error.min',

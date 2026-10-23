@@ -18,12 +18,9 @@
 
 package ch.dvbern.oss.hemed.esc.api.features.search.types;
 
-import ch.dvbern.oss.hemed.esc.api.features.search.SearchRepo;
-import ch.dvbern.oss.hemed.esc.api.features.search.json.SearchJson;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
@@ -32,17 +29,18 @@ import java.util.UUID;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
+import ch.dvbern.dvbstarter.shared.i18n.datetime.DateConst;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.Util;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.QAnlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.QEinladung;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.QUntersuchungImpfungIntern;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.massnahmen.QUntersuchungImpfungenMassnahmen;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassArt;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassStatus;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.types.AnlassTyp;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.types.EinladungStatus;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.types.ImpfStatus;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.QImpfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.QImpfstoffCharge;
 import ch.dvbern.oss.hemed.esc.api.features.impfstoff.types.Krankheit;
@@ -56,12 +54,15 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.QSchule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.QKlasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.types.Klassenstufe;
+import ch.dvbern.oss.hemed.esc.api.features.search.SearchRepo;
+import ch.dvbern.oss.hemed.esc.api.features.search.json.SearchJson;
 import ch.dvbern.oss.hemed.esc.api.shared.anlass.anlassflags.QAnlassFlags;
 import ch.dvbern.oss.hemed.esc.api.shared.pagination.FilterCombination;
 import ch.dvbern.oss.hemed.esc.api.shared.pagination.FilterFieldJson;
 import ch.dvbern.oss.hemed.esc.api.shared.pagination.SortDirection;
 import ch.dvbern.oss.hemed.esc.api.shared.person.Geschlecht;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -181,13 +182,14 @@ public enum SearchColumns {
 
             Predicate hasNachkontrolle = anlassFlags.isNotNull()
                 .and(
-                    SearchColumns.combinePredicates(List.of(
-                        anlassFlags.nachkontrolleAnderes.eq(true),
-                        anlassFlags.nachkontrolleHoeren.eq(true),
-                        anlassFlags.nachkontrolleMotorik.eq(true),
-                        anlassFlags.nachkontrolleSehen.eq(true),
-                        anlassFlags.nachkontrolleSprache.eq(true)
-                    ), FilterCombination.OR)
+                    SearchColumns.combinePredicates(
+                        List.of(
+                            anlassFlags.nachkontrolleAnderes.eq(true),
+                            anlassFlags.nachkontrolleHoeren.eq(true),
+                            anlassFlags.nachkontrolleMotorik.eq(true),
+                            anlassFlags.nachkontrolleSehen.eq(true),
+                            anlassFlags.nachkontrolleSprache.eq(true)
+                        ), FilterCombination.OR)
                 );
 
             return Boolean.parseBoolean(filter.getFilterValue()) ? hasNachkontrolle : hasNachkontrolle.not();
@@ -244,38 +246,22 @@ public enum SearchColumns {
     NOTIZ_ZEITRAUM_VON(QNotiz.notiz.timestampErstellt, false) {
         @Override
         public Predicate createFilterTerm(FilterFieldJson<SearchColumns> filter) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_PATTERN);
-            OffsetDateTime dateToSearch = OffsetDateTime.of(
-                formatter.parse(filter.getFilterValue(), LocalDate::from),
-                LocalTime.MIDNIGHT,
-                ZoneOffset.UTC);
-            return QNotiz.notiz.timestampErstellt.after(dateToSearch);
+            return QNotiz.notiz.timestampErstellt.goe(startOfDay(toLocalDate(filter)));
         }
     },
     NOTIZ_ZEITRAUM_BIS(QNotiz.notiz.timestampErstellt, false) {
         @Override
         public Predicate createFilterTerm(FilterFieldJson<SearchColumns> filter) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_PATTERN);
-            OffsetDateTime dateToSearch = OffsetDateTime.of(
-                formatter.parse(filter.getFilterValue(), LocalDate::from),
-                LocalTime.MAX,
-                ZoneOffset.UTC);
-            return QNotiz.notiz.timestampErstellt.before(dateToSearch);
+            return QNotiz.notiz.timestampErstellt.lt(startOfNextDay(toLocalDate(filter)));
         }
     },
     NOTIZ_SCHULJAHR(QNotiz.notiz.timestampErstellt, false) {
         @Override
         public Predicate createFilterTerm(FilterFieldJson<SearchColumns> filter) {
             int schuljahr = Integer.parseInt(filter.getFilterValue());
-            return QNotiz.notiz.timestampErstellt.between(
-                OffsetDateTime.of(
-                    LocalDate.of(schuljahr, 8, 1),
-                    LocalTime.MIDNIGHT,
-                    ZoneOffset.UTC),
-                OffsetDateTime.of(
-                    LocalDate.of(schuljahr + 1, 7, 31),
-                    LocalTime.MIDNIGHT,
-                    ZoneOffset.UTC));
+            // Schuljahr: 1. August bis und mit 31. Juli des Folgejahres
+            return QNotiz.notiz.timestampErstellt.goe(startOfDay(LocalDate.of(schuljahr, 8, 1)))
+                .and(QNotiz.notiz.timestampErstellt.lt(startOfDay(LocalDate.of(schuljahr + 1, 8, 1))));
         }
     },
     NOTIZ_VERANTWORTLICHER_ID(QNotiz.notiz.verantwortlicher.id, false) {
@@ -420,7 +406,9 @@ public enum SearchColumns {
             return SearchColumns.combinePredicates(List.of(predicate), filter.getFilterCombinationMethod());
         }
     },
-    ANLASS_IMPFUNG_MASSNAHME_VORMERKUNG_FOLGETERMIN(QUntersuchungImpfungenMassnahmen.untersuchungImpfungenMassnahmen.vormerkenFuerGruppenFolgetermin, false) {
+    ANLASS_IMPFUNG_MASSNAHME_VORMERKUNG_FOLGETERMIN(
+        QUntersuchungImpfungenMassnahmen.untersuchungImpfungenMassnahmen.vormerkenFuerGruppenFolgetermin,
+        false) {
         @Override
         public Predicate createFilterTerm(FilterFieldJson<SearchColumns> filter) {
             Boolean expectedValue = Boolean.valueOf(filter.getFilterValue());
@@ -429,8 +417,6 @@ public enum SearchColumns {
 
         }
     },
-
-
 
     IMPFUNG_CHARGE(QImpfstoffCharge.impfstoffCharge.id, false) {
         @Override
@@ -463,6 +449,13 @@ public enum SearchColumns {
     public static final String NOT_ASSIGNED = "NOT_ASSIGNED";
     public static final String DATE_TIME_FORMAT_PATTERN = "yyyy-MM-dd";
     public static final char MULTI_VALUE_FILTER_SEPARATOR = ' ';
+
+    /**
+     * Zeitzone, in der die vom Client gelieferten Datums-Filter interpretiert werden. Die Filterwerte sind reine
+     * Daten ohne Zeitanteil, die betroffenen Spalten sind aber {@code timestamptz}, also Zeitpunkte. Wuerde der
+     * Tagesanfang in UTC gebildet, begaenne der Filter in der Schweiz erst um 01:00 bzw. 02:00 Uhr.
+     */
+    public static final ZoneId SEARCH_TIME_ZONE = DateConst.ZONE_ID;
 
     public abstract Predicate createFilterTerm(FilterFieldJson<SearchColumns> filter);
 
@@ -596,5 +589,25 @@ public enum SearchColumns {
     public static LocalDate toLocalDate(@NonNull FilterFieldJson<SearchColumns> filter) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_PATTERN);
         return formatter.parse(filter.getFilterValue(), LocalDate::from);
+    }
+
+    /**
+     * Beginn des Tages in {@link #SEARCH_TIME_ZONE} als inklusive Untergrenze fuer {@code timestamptz}-Spalten.
+     * {@code atStartOfDay(ZoneId)} beruecksichtigt Sommer-/Winterzeit: faellt Mitternacht in eine DST-Luecke,
+     * wird der erste gueltige Zeitpunkt des Tages geliefert.
+     */
+    @NonNull
+    private static OffsetDateTime startOfDay(@NonNull LocalDate date) {
+        return date.atStartOfDay(SEARCH_TIME_ZONE).toOffsetDateTime();
+    }
+
+    /**
+     * Beginn des Folgetages in {@link #SEARCH_TIME_ZONE} als exklusive Obergrenze fuer {@code timestamptz}-Spalten.
+     * Bewusst exklusiv statt {@code LocalTime.MAX}: Postgres speichert nur Mikrosekunden, ein Wert mit
+     * Nanosekunden-Anteil koennte beim Schreiben auf den naechsten Tag aufgerundet werden.
+     */
+    @NonNull
+    private static OffsetDateTime startOfNextDay(@NonNull LocalDate date) {
+        return startOfDay(date.plusDays(1));
     }
 }

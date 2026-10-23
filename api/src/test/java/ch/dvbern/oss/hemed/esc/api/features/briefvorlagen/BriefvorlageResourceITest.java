@@ -4,15 +4,21 @@ import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileUtil;
 import ch.dvbern.dvbstarter.shared.i18n.translations.AppLanguages;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
+import ch.dvbern.oss.commons.logging.mdc.CommonMDCField;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.briefvorlagen.json.BriefvorlageSaveJson;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileData;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreService;
+import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileStoreTransactionObserver;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
+import ch.dvbern.oss.hemed.esc.api.testutil.S3ObjectProbe;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.assertj.DocxAssert;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BriefvorlageBuilder;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.FileDataBuilder;
+import ch.dvbern.oss.hemed.esc.api.testutil.logging.InMemoryLogHandler;
 import ch.dvbern.oss.hemed.esc.api.testutil.restassured.RequestSpecUtil;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsAdminBS;
 import ch.dvbern.oss.hemed.esc.api.testutil.security.TestAsMpaSuperBS;
@@ -28,16 +34,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
 import io.restassured.response.ResponseOptions;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.jboss.logmanager.ExtLogRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,6 +63,7 @@ class BriefvorlageResourceITest extends AbstractITest {
     private final BriefvorlageService briefvorlageService;
     private final FixtureService fixtureService;
     private final ObjectMapper objectMapper;
+    private final S3ObjectProbe s3;
 
     @Override
     @BeforeEach
@@ -143,6 +154,67 @@ class BriefvorlageResourceITest extends AbstractITest {
         assertThat(result.getData().getType()).isEqualTo(BriefvorlageTypeSpec.KIND);
         assertThat(result.getData().getSprache()).isEqualTo(AppLanguagesSpec.DE);
         assertThat(result.getFileData().getFileName().getFileName()).isEqualTo(newFile.getName());
+    }
+
+    @Test
+    @TestAsSupportBS
+    void updateBriefvorlage_withStaleVersion_should_keep_old_file_and_delete_new_one() throws JsonProcessingException {
+        // ARRANGE
+        // the update deletes the old file and uploads the new one before the version check fails at flush
+        Briefvorlage briefvorlage = fixtureService.createBriefvorlage(BriefvorlageType.KIND);
+        String oldFile = briefvorlage.getFile().getFileInfoBucket().getFileIdInBucket();
+        InMemoryLogHandler bindingLog = InMemoryLogHandler.installFor(FileStoreService.class);
+
+        // ACT
+        try {
+            updateWithStaleVersion(briefvorlage);
+        } finally {
+            bindingLog.uninstall();
+        }
+
+        // ASSERT
+        String newFile = fileOfLogLine(bindingLog.flatEntries(), "upload bound to the transaction");
+        assertThat(briefvorlageService.getById(briefvorlage.getId()).getFile().getFileInfoBucket().getFileIdInBucket())
+            .isEqualTo(oldFile);
+        assertThat(s3.exists(s3.bucketOf(TenantEnum.BS), oldFile))
+            .as("the Briefvorlage still points to the old file")
+            .isTrue();
+        assertThat(s3.exists(s3.bucketOf(TenantEnum.BS), newFile))
+            .as("upload of the failed update")
+            .isFalse();
+    }
+
+    @Test
+    @TestAsSupportBS
+    void updateBriefvorlage_withStaleVersion_should_log_cleanup_traceable_to_the_request() throws JsonProcessingException {
+        // ARRANGE
+        Briefvorlage briefvorlage = fixtureService.createBriefvorlage(BriefvorlageType.KIND);
+        InMemoryLogHandler bindingLog = InMemoryLogHandler.installFor(FileStoreService.class);
+        InMemoryLogHandler outcomeLog = InMemoryLogHandler.installFor(FileStoreTransactionObserver.class);
+
+        // ACT
+        try {
+            updateWithStaleVersion(briefvorlage);
+        } finally {
+            bindingLog.uninstall();
+            outcomeLog.uninstall();
+        }
+
+        // ASSERT
+        String binding = logLine(bindingLog.flatEntries(), "upload bound to the transaction");
+        Matcher operation = Pattern.compile("op=\\w+ tx=\\S+").matcher(binding);
+        assertThat(operation.find())
+            .isTrue();
+        ExtLogRecord cleanup = (ExtLogRecord) outcomeLog.entries().stream()
+            .filter(entry -> InMemoryLogHandler.formattedMessage(entry).contains(operation.group()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("no cleanup log line for " + binding));
+        assertThat(InMemoryLogHandler.formattedMessage(cleanup))
+            .contains("origin=BriefvorlageService.saveBriefvorlageAttachmentInFilestorage")
+            .contains("transaction rolled back, file deleted in S3");
+        assertThat(cleanup.getMdc(CommonMDCField.RequestSource.name()))
+            .as("path of the request that caused the upload")
+            .contains(briefvorlage.getId().getId());
     }
 
     @Test
@@ -412,5 +484,35 @@ class BriefvorlageResourceITest extends AbstractITest {
         Assertions.assertThat(successKind).isNotNull();
         DocxAssert.assertThatDocx(new ByteArrayInputStream(successKind))
             .containsExactly(expectedTextKind);
+    }
+
+    private void updateWithStaleVersion(Briefvorlage briefvorlage) throws JsonProcessingException {
+        BriefvorlageSaveJson staleSaveJson = new BriefvorlageSaveJson(
+            "Neuer Name",
+            briefvorlage.getType(),
+            briefvorlage.getSprache(),
+            briefvorlage.getVersion() + 1);
+
+        api.briefvorlageResourceUpdateBriefvorlage()
+            ._fileMultiPart(TestUtil.loadTestWord())
+            .briefvorlageIdPath(briefvorlage.getId().getId())
+            .briefvorlageSaveJsonForm(objectMapper.writeValueAsString(staleSaveJson))
+            .execute(Function.identity())
+            .then()
+            .statusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode());
+    }
+
+    private static String logLine(List<String> lines, String text) {
+        return lines.stream()
+            .filter(line -> line.contains(text))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("no log line '" + text + "' in " + lines));
+    }
+
+    private static String fileOfLogLine(List<String> lines, String text) {
+        Matcher file = Pattern.compile("file='([^']+)'").matcher(logLine(lines, text));
+        assertThat(file.find())
+            .isTrue();
+        return file.group(1);
     }
 }

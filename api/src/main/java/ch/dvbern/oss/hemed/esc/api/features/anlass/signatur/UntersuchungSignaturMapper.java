@@ -11,7 +11,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -22,7 +22,7 @@ public class UntersuchungSignaturMapper {
 
     private final UntersuchungService untersuchungService;
     private final UntersuchungSignaturService untersuchungSignaturService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Nullable
     public static UntersuchungSignaturJson toJson(@Nullable UntersuchungSignatur signatur, @NonNull TenantEnum tenant) {
@@ -47,7 +47,7 @@ public class UntersuchungSignaturMapper {
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
-        return toJson(untersuchung.getUntersuchungSignatur(), tenantProducer.produceTenant());
+        return toJson(untersuchung.getUntersuchungSignatur(), tenantContext.get());
     }
 
     @NonNull
@@ -57,7 +57,7 @@ public class UntersuchungSignaturMapper {
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
-        return toJson(untersuchungSignaturService.signieren(untersuchung), tenantProducer.produceTenant());
+        return toJson(untersuchungSignaturService.signieren(untersuchung), tenantContext.get());
     }
 
     @NonNull
@@ -67,6 +67,6 @@ public class UntersuchungSignaturMapper {
     ) {
         Untersuchung untersuchung = untersuchungService.getOrCreateUntersuchung(wrappedId);
         hasAuthorizationUntersuchung.accept(untersuchung);
-        return toJson(untersuchungSignaturService.resetSignatur(untersuchung), tenantProducer.produceTenant());
+        return toJson(untersuchungSignaturService.resetSignatur(untersuchung), tenantContext.get());
     }
 }

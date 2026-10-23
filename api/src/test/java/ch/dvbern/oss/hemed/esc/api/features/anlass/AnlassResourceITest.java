@@ -41,7 +41,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.lehrperson.Lehrperson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.AktivitaetHistoryService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.DateTimeRange;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
@@ -94,7 +94,7 @@ class AnlassResourceITest extends AbstractITest {
     private final AnlassConfigService anlassConfigService;
     private final FixtureService fixtureService;
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Override
     @BeforeEach
@@ -290,7 +290,7 @@ class AnlassResourceITest extends AbstractITest {
     @TestAsAdminBE
     void createAnlass_without_titel_featureDisabled_succeeds() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnlassConfig config =
             anlassConfigService.getByAnlassTypAndStichtag(AnlassTyp.KLASSE_8, appClock.getToday().plusMonths(1));
@@ -341,7 +341,7 @@ class AnlassResourceITest extends AbstractITest {
     @TestAsAdminBE
     void updateAnlass_without_titel_featureDisabled_succeeds() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);
         AnlassConfig config = anlassConfigService.getByAnlassTypAndStichtag(
             AnlassTyp.KLASSE_8,

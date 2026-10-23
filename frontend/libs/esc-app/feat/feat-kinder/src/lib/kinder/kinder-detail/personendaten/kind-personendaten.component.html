@@ -63,7 +63,7 @@
   <!-- Nationalitaet -->
   <svui-form-control [label]="'kind.nationalitaet' | transloco"
                      [viewValue]="form.group.getRawValue().nationalitaet ?
-                     (('Land.' + form.group.getRawValue().nationalitaet | transloco) + ' (' + ('LandCode.' + this.dossierStore.selectedKind()?.landCode | transloco) + ')') : undefined"
+                     (('Land.' + form.group.getRawValue().nationalitaet | transloco) + ' (' + ('LandCode.' + (this.dossierStore.selectedKind()?.landCode ?? null) | transloco) + ')') : undefined"
                      [iconTopRight]="isExternalObject() ? {icon: 'escada_item', iconTooltip: 'global.import' | transloco: {schnittstelle: getImportSchnittstelle()}} : undefined">
     <ng-select
       svuiNgSelect

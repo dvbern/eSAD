@@ -7,9 +7,10 @@ import {
   DoCheck,
   inject,
   QueryList,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { Nullish, requireValue } from '@dvb/util-shared';
 import { ValidatedInputWithIdDirective } from '../inputs/validated-input-with-id.directive';
 import { RecursiveValidityCheckTrigger } from './recursive-validity-check-trigger';
@@ -47,7 +48,8 @@ export function hasRequiredValidator(abstractControl: AbstractControl): boolean 
 
 @Directive({ standalone: true })
 export class ValidatedControlWrapperDirective implements DoCheck, AfterViewInit {
-  required = false;
+  readonly #required = signal(false);
+  readonly required = this.#required.asReadonly();
 
   @ContentChildren(ValidatedInputWithIdDirective, { descendants: true })
   controlDirective: QueryList<ValidatedInputWithIdDirective> | undefined;
@@ -73,11 +75,11 @@ export class ValidatedControlWrapperDirective implements DoCheck, AfterViewInit 
     if (this.control) {
       // FIXME this does not recognize required-Validators at the beginning
       // required status: initial check
-      this.required = detectRequiredValidator(this.control);
+      this.#required.set(detectRequiredValidator(this.control));
       // required status: whenever the status changes
       this.control.statusChanges.pipe(takeUntilDestroyed(this.#destoryRef)).subscribe({
         next: () => {
-          this.required = detectRequiredValidator(requireValue(this.control));
+          this.#required.set(detectRequiredValidator(requireValue(this.control)));
         },
         error: console.error,
       });

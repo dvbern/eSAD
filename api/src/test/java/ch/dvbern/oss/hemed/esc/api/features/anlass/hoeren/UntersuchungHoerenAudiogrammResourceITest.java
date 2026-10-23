@@ -1,20 +1,19 @@
 package ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren;
 
 import java.util.List;
+import jakarta.ws.rs.core.Response.Status;
 
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.types.RequirementSetting;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintrag;
-import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintragService;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.AudiogrammBeurteilung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.Dezibel;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.hoeren.types.HoerenZusaetzlicheAngaben;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.Untersuchung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.untersuchung.UntersuchungService;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -29,9 +28,9 @@ import ch.dvbern.oss.hemed.esc.generated.restassured.dto.DezibelSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.HoerenZusaetzlicheAngabenSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenAudiogrammJsonSpec;
 import ch.dvbern.oss.hemed.esc.generated.restassured.dto.UntersuchungHoerenAudiogrammSaveJsonSpec;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.ResponseBody;
-import jakarta.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -49,10 +48,8 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
 
     private final UntersuchungService untersuchungService;
     private final UntersuchungHoerenAudiogrammService untersuchungHoerenAudiogrammService;
-    private final AnlassService anlassService;
-    private final AnonymerEintragService anonymerEintragService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Test
     @TestAsAdminBS
@@ -166,7 +163,7 @@ class UntersuchungHoerenAudiogrammResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void saveUntersuchungHoerenAudiogramm_anonym() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // Create anlass with arzt set (to pass authorizer)
         Benutzer schularzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);

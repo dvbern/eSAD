@@ -21,11 +21,14 @@ package ch.dvbern.oss.hemed.esc.api.shared.printer.anlass;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureException;
 import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppFailureMessage;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationException;
+import ch.dvbern.dvbstarter.infrastructure.errorhandling.AppValidationMessage;
 import ch.dvbern.dvbstarter.infrastructure.fileio.FileDownloadUtil;
 import ch.dvbern.dvbstarter.infrastructure.stereotypes.Service;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
@@ -36,11 +39,14 @@ import ch.dvbern.dvbstarter.shared.types.emailaddress.EmailAddress;
 import ch.dvbern.dvbstarter.shared.types.id.ID;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.Anlass;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.Einladung;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.einladung.EinladungService;
+import ch.dvbern.oss.hemed.esc.api.features.anlass.impfung.UntersuchungImpfungInternService;
+import ch.dvbern.oss.hemed.esc.api.features.impfstoff.Impfstoff;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Nachkontrolle;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.NachkontrolleService;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.fileio.FileInfo;
@@ -68,28 +74,36 @@ public class AnlassPrintService {
     private final AppClock appClock;
     private final AppLanguageProvider appLanguageProvider;
     private final FileStoreService fileStoreService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final TL tl;
     private final TenantSettingsService tenantSettingService;
     private final ConfigService configService;
+    private final UntersuchungImpfungInternService untersuchungImpfungInternService;
 
     @NonNull
-    public PrintResultDTO printAnlass(@NonNull ID<Anlass> anlassId) {
+    public PrintResultDTO printAnlass(@NonNull ID<Anlass> anlassId, @NonNull AnlassPrintVariant variant) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Anlass anlass = anlassService.getById(anlassId);
+            requirePrintVariantEnabled(anlass, variant);
             List<Nachkontrolle> nachkontrollen = new ArrayList<>();
             List<Einladung> einladungen = einladungService.findByAnlass(anlassId);
             einladungen.stream()
                 .map(einladung -> nachkontrolleService.findByDossier(einladung.getDossier().getId()))
                 .forEach(nachkontrolleOptional -> nachkontrolleOptional.ifPresent(nachkontrollen::add));
 
+            Map<Einladung, List<Impfstoff>> geplanteImpfstoffeByEinladung = variant == AnlassPrintVariant.IMPFEN
+                ? buildGeplanteImpfstoffeByEinladung(einladungen)
+                : null;
+
             AnlassPlanungPrintDTO dto = new AnlassPlanungPrintDTO(
                 anlass,
                 einladungen,
                 appClock.getToday(),
-                tenantProducer.produceTenant(),
+                tenantContext.get(),
                 (AppLanguages) appLanguageProvider.current(),
-                nachkontrollen
+                nachkontrollen,
+                variant,
+                geplanteImpfstoffeByEinladung
             );
 
             logPrintOfAnlass(dto, currentUserService.currentUserName());
@@ -100,6 +114,23 @@ public class AnlassPrintService {
         } catch (IOException e) {
             throw new AppFailureException(AppFailureMessage.internalError("Error when creating Anlass PDF"), e);
         }
+    }
+
+    private void requirePrintVariantEnabled(@NonNull Anlass anlass, @NonNull AnlassPrintVariant variant) {
+        AnlassConfig anlassConfig = anlass.getAnlassConfig();
+        if (variant == AnlassPrintVariant.IMPFEN && !anlassConfig.isShowAnlassPrintImpfen()) {
+            LOG.warn("There was an attempt to print an 'Anlass Print for geplante Impfungen' but the setting is disabled, aborting.");
+            throw new AppValidationException(AppValidationMessage.anlassPrintVariantDisabled(variant));
+        }
+    }
+
+    @NonNull
+    private Map<Einladung, List<Impfstoff>> buildGeplanteImpfstoffeByEinladung(@NonNull List<Einladung> einladungen) {
+        Map<Einladung, List<Impfstoff>> result = new HashMap<>();
+        for (Einladung einladung : einladungen) {
+            result.put(einladung, AnlassImpfenUtil.getGeplanteImpfstoffe(einladung, untersuchungImpfungInternService));
+        }
+        return result;
     }
 
     private void logPrintOfAnlass(

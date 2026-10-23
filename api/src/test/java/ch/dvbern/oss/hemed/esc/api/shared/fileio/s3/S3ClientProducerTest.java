@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.fileio.s3;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import io.quarkus.test.junit.QuarkusMock;
@@ -21,7 +21,7 @@ class S3ClientProducerTest extends AbstractITest {
 
 
     private final S3ClientProducer s3ClientProducer;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final ConfigService configService;
 
     private ConfigService configServiceMock;
@@ -50,7 +50,7 @@ class S3ClientProducerTest extends AbstractITest {
     void testGetS3AsyncClient_TenantBS() {
         // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
 
         // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
@@ -63,7 +63,7 @@ class S3ClientProducerTest extends AbstractITest {
     void testGetS3AsyncClient_TenantWIN() {
         // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
-        tenantProducer.setCurrentTenant(TenantEnum.WIN);
+        tenantContext.setCurrentTenant(TenantEnum.WIN);
 
         // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
@@ -76,7 +76,7 @@ class S3ClientProducerTest extends AbstractITest {
     void testGetS3AsyncClient_TenantBE() {
         // ARRANGE
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // ACT
         S3AsyncClient client = s3ClientProducer.getS3AsyncClient();
@@ -91,13 +91,13 @@ class S3ClientProducerTest extends AbstractITest {
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
 
         // ACT
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         S3AsyncClient clientBS = s3ClientProducer.getS3AsyncClient();
 
-        tenantProducer.setCurrentTenant(TenantEnum.WIN);
+        tenantContext.setCurrentTenant(TenantEnum.WIN);
         S3AsyncClient clientWIN = s3ClientProducer.getS3AsyncClient();
 
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         S3AsyncClient clientBE = s3ClientProducer.getS3AsyncClient();
 
         // ASSERT
@@ -116,7 +116,7 @@ class S3ClientProducerTest extends AbstractITest {
         S3AsyncClient singleBucketClient = s3ClientProducer.getS3AsyncClient();
 
         when(configServiceMock.isS3SingleBucket()).thenReturn(false);
-        tenantProducer.setCurrentTenant(TenantEnum.BS);
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         S3AsyncClient clientBS = s3ClientProducer.getS3AsyncClient();
 
         // ASSERT

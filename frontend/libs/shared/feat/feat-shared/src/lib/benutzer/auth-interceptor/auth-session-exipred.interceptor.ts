@@ -48,12 +48,15 @@ export function authSessionExpiredInterceptorFn(): HttpInterceptorFn {
         if (exception instanceof HttpErrorResponse && exception.status === HttpStatusCode.Unauthorized) {
           LOG.info('Session is probably expired. Checking with proxy...');
 
-          return oauth2Service.isAuthenticated().pipe(
-            switchMap((isAuthenticated) => {
-              if (!isAuthenticated) {
+          return oauth2Service.checkAuthentication().pipe(
+            switchMap((authCheckResult) => {
+              if (authCheckResult != 'authenticated') {
                 LOG.info('User is not authenticated. Triggering OAuth login...');
                 benutzerStore.onUserLoggedOut();
-                oauth2Service.signIn(window.location.href);
+                // Option 1 hybrid: no kc_idp_hint replay - the tenant realm's Keycloak login page
+                // offers the configured methods (server-side selection). `rd` (always relative,
+                // via toRelativeUrl) returns the user to this exact page afterwards.
+                oauth2Service.startOAuthFlow(oauth2Service.toRelativeUrl(window.location));
               } else {
                 LOG.info('User is authenticated according to oauth-proxy, relogin will not be triggered  ');
               }

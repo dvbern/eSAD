@@ -22,8 +22,8 @@ describe('StammdatenComponent', () => {
   });
 
   const mockService: FakeStammdatenService = {
-    loadById$: jest.fn().mockReturnValue(of(dbValue)),
-    update$: jest.fn().mockReturnValue(of(undefined)),
+    loadById$: vi.fn().mockReturnValue(of(dbValue)),
+    update$: vi.fn().mockReturnValue(of(undefined)),
   };
 
   beforeEach(async () => {
@@ -115,7 +115,7 @@ describe('StammdatenComponent', () => {
   describe('clicking the demo button', () => {
     beforeEach(() => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      jest.spyOn(window, 'alert').mockImplementation(() => {});
+      vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       component.demo();
     });

@@ -4,6 +4,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import ch.dvbern.dvbstarter.infrastructure.db.SmartJPAQuery;
 import ch.dvbern.dvbstarter.infrastructure.db.baserepo.BaseRepo;
@@ -21,11 +25,9 @@ import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.QBenutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.types.EntityAktivStatus;
+
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.types.Predicate;
-import jakarta.persistence.EntityGraph;
-import jakarta.transaction.Transactional;
-import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -37,6 +39,23 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class BenutzerRepo extends BaseRepo<Benutzer> {
 
     private final AppClock appClock;
+
+    /**
+     * Reads the Benutzer with a row lock, so that concurrent requests for the same Benutzer queue up
+     * instead of racing each other into an {@code OptimisticLockException} on the version column.
+     * <p>
+     * The lock is taken with a query rather than {@code db.findLocked()}, see
+     * {@code EinladungRepo#getByIdLockedQuery} for why that one does not lock.
+     */
+    @NonNull
+    public Benutzer getByIdLockedQuery(@NonNull ID<Benutzer> id) {
+        return db.select(QBenutzer.benutzer)
+            .from(QBenutzer.benutzer)
+            .where(QBenutzer.benutzer.id.eq(id.getUUID()))
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+            .fetchOne()
+            .orElseThrow(() -> new AppFailureException(AppFailureMessage.entityNotFound(id)));
+    }
 
     @NonNull
     public Optional<Benutzer> findByEmail(@NonNull EmailAddress email) {

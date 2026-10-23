@@ -36,7 +36,7 @@ import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizService;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizStatus;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.NotizTyp;
 import ch.dvbern.oss.hemed.esc.api.features.notizen.json.NotizSaveJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.CurrentUserService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.AutoNotizService;
 import ch.dvbern.oss.hemed.esc.api.shared.notizen.RemoveNotizService;
@@ -57,7 +57,7 @@ public class EinladungNotizMapper {
     private final EinladungService einladungService;
     private final CurrentUserService currentUserService;
     private final TL tl;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
 
     @NonNull
@@ -110,7 +110,7 @@ public class EinladungNotizMapper {
             getAbmeldungsnotizBemerkung(einladungSaveJson),
             NotizStatus.ABGESCHLOSSEN,
             NotizTyp.ABMELDUNG,
-            BenutzerMapper.toOptionJson(currentUserService.currentUserRef(), tenantProducer.produceTenant()),
+            BenutzerMapper.toOptionJson(currentUserService.currentUserRef(), tenantContext.get()),
             AnlassUtil.createAnlassLink(einladung),
             new ArrayList<>(),
             new ArrayList<>(),

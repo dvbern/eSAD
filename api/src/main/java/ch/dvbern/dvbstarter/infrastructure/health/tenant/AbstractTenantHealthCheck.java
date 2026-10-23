@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import ch.dvbern.dvbstarter.infrastructure.health.tenant.TenantHealthCheck.TenantInfos;
+import ch.dvbern.dvbstarter.infrastructure.health.tenant.TenantHealthCheck.TenantInfo;
 import ch.dvbern.dvbstarter.shared.clock.AppClock;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfig;
 import ch.dvbern.oss.hemed.esc.api.features.anlass.anlassconfig.AnlassConfigService;
@@ -34,7 +34,6 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.Berechtigung;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.BerechtigungName;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.BasePrinter;
@@ -75,7 +74,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         }
     }
 
-    private TenantProducer tenantProducer = null;
     private TenantSettingsService tenantSettingsService = null;
     private BenutzerService benutzerService = null;
     private AnlassConfigService anlassConfigService = null;
@@ -83,10 +81,7 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
     private ConfigService configService = null;
     private AppClock appClock = null;
 
-    /* we need all of those services injected */
-    @SuppressWarnings("java:S107")
     protected AbstractTenantHealthCheck(
-        @NonNull TenantProducer tenantProducer,
         @NonNull TenantSettingsService tenantSettingsService,
         @NonNull BenutzerService benutzerService,
         @NonNull AnlassConfigService anlassConfigService,
@@ -94,7 +89,6 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         @NonNull ConfigService configService,
         @NonNull AppClock appClock
     ) {
-        this.tenantProducer = tenantProducer;
         this.tenantSettingsService = tenantSettingsService;
         this.benutzerService = benutzerService;
         this.anlassConfigService = anlassConfigService;
@@ -103,18 +97,21 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         this.appClock = appClock;
     }
 
+    /**
+     * Must be called inside the tenant's own request context, see
+     * {@link ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService}.
+     */
     @NonNull
-    protected TenantHealthCheckResult runHealthChecks(@NonNull TenantInfos currentTenantInfos) {
-        tenantProducer.setCurrentTenant(currentTenantInfos.tenantEnum());
+    protected TenantHealthCheckResult runHealthChecks(@NonNull TenantInfo currentTenantInfo) {
         return new TenantHealthCheckResult(
-            currentTenantInfos.tenantEnum(),
-            areTenantSettingsPresent(currentTenantInfos.tenantEnum()),
-            isTenantHeaderLogoPresent(currentTenantInfos.tenantEnum()),
-            isSystemAdminPresent(currentTenantInfos),
-            systemAdminShouldNotBeReturnedByFindAllBenutzer(currentTenantInfos),
-            isAnlassConfigPresentForEveryAnlassTyp(currentTenantInfos),
-            isSchedulerConfigPresentForEverySchedulerTyp(currentTenantInfos),
-            isS3EncryptionKeyPresent(currentTenantInfos)
+            currentTenantInfo.tenantEnum(),
+            areTenantSettingsPresent(currentTenantInfo.tenantEnum()),
+            isTenantHeaderLogoPresent(currentTenantInfo.tenantEnum()),
+            isSystemAdminPresent(currentTenantInfo),
+            systemAdminShouldNotBeReturnedByFindAllBenutzer(currentTenantInfo),
+            isAnlassConfigPresentForEveryAnlassTyp(currentTenantInfo),
+            isSchedulerConfigPresentForEverySchedulerTyp(currentTenantInfo),
+            isS3EncryptionKeyPresent(currentTenantInfo)
         );
     }
 
@@ -143,25 +140,25 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         }
     }
 
-    private boolean isSystemAdminPresent(@NonNull TenantInfos tenantInfos) {
+    private boolean isSystemAdminPresent(@NonNull TenantInfo tenantInfo) {
         try {
-            Benutzer systemAdmin = benutzerService.getById(tenantInfos.systemAdminId());
+            Benutzer systemAdmin = benutzerService.getById(tenantInfo.systemAdminId());
             if (systemAdmin.getSystemRollen() != null) {
-                Set<Berechtigung> berechtigungen = systemAdmin.getSystemRollen().getBerechtigungen(tenantInfos.tenantEnum());
+                Set<Berechtigung> berechtigungen = systemAdmin.getSystemRollen().getBerechtigungen(tenantInfo.tenantEnum());
                 return berechtigungen.stream()
                     .anyMatch(b -> Objects.equals(b.getBerechtigungName(), BerechtigungName.SYSTEM_ADMIN));
             }
         } catch (Exception ex) {
             LOG.error(
                 "ESC-TENANT-READINESS-HEALTH-CHECK: System admin is not present for tenant: {}",
-                tenantInfos.tenantEnum(), ex);
+                tenantInfo.tenantEnum(), ex);
         }
         return false;
     }
 
-    private boolean systemAdminShouldNotBeReturnedByFindAllBenutzer(@NonNull TenantInfos tenantInfos) {
+    private boolean systemAdminShouldNotBeReturnedByFindAllBenutzer(@NonNull TenantInfo tenantInfo) {
         try {
-            Benutzer systemAdmin = benutzerService.getById(tenantInfos.systemAdminId());
+            Benutzer systemAdmin = benutzerService.getById(tenantInfo.systemAdminId());
             List<Benutzer> allBenutzer = benutzerService.findAllBenutzer();
             Validate.isTrue(!allBenutzer.isEmpty());
             Validate.isTrue(!allBenutzer.contains(systemAdmin));
@@ -169,14 +166,14 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
             LOG.error(
                 "ESC-TENANT-READINESS-HEALTH-CHECK: System admin should not be returned by findAllBenutzer for "
                     + "tenant: {}",
-                tenantInfos.tenantEnum(),
+                tenantInfo.tenantEnum(),
                 ex);
             return false;
         }
         return true;
     }
 
-    private boolean isAnlassConfigPresentForEveryAnlassTyp(@NonNull TenantInfos tenantInfos) {
+    private boolean isAnlassConfigPresentForEveryAnlassTyp(@NonNull TenantInfo tenantInfo) {
         try {
             LocalDate stichtag = appClock.getToday();
             for (AnlassTyp anlassTyp : AnlassTyp.values()) {
@@ -186,13 +183,13 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         } catch (Exception ex) {
             LOG.error(
                 "ESC-TENANT-READINESS-HEALTH-CHECK: Anlass config is not for all types present for tenant: {}",
-                tenantInfos.tenantEnum(), ex);
+                tenantInfo.tenantEnum(), ex);
             return false;
         }
         return true;
     }
 
-    private boolean isSchedulerConfigPresentForEverySchedulerTyp(@NonNull TenantInfos tenantInfos) {
+    private boolean isSchedulerConfigPresentForEverySchedulerTyp(@NonNull TenantInfo tenantInfo) {
         try {
             for (SchedulerTyp schedulerTyp : SchedulerTyp.values()) {
                 SchedulerConfig schedulerConfig = schedulerConfigService.getSchedulerConfig(schedulerTyp);
@@ -201,18 +198,18 @@ abstract class AbstractTenantHealthCheck implements HealthCheck {
         } catch (Exception ex) {
             LOG.error(
                 "ESC-TENANT-READINESS-HEALTH-CHECK: Scheduler config is not for all types present for tenant: {}",
-                tenantInfos.tenantEnum(), ex);
+                tenantInfo.tenantEnum(), ex);
             return false;
         }
         return true;
     }
 
-    private boolean isS3EncryptionKeyPresent(@NonNull TenantInfos tenantInfos) {
+    private boolean isS3EncryptionKeyPresent(@NonNull TenantInfo tenantInfo) {
         Optional<String> s3EncryptionKey = configService.getS3EncryptionKey();
         if (s3EncryptionKey.isEmpty() || s3EncryptionKey.get().isBlank()) {
             LOG.error(
                 "ESC-TENANT-READINESS-HEALTH-CHECK: S3 encryption key is not present for tenant: {}",
-                tenantInfos.tenantEnum());
+                tenantInfo.tenantEnum());
             return false;
         }
         return true;

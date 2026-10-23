@@ -31,7 +31,7 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.AnlassMapper;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.KindMapper;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.json.AnlassAktivitaetHistoryJson;
 import ch.dvbern.oss.hemed.esc.api.shared.aktivitaet.json.KindAktivitaetHistoryJson;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -41,7 +41,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public class AktivitaetHistoryMapper {
     private final AktivitaetHistoryService aktivitaetHistoryService;
     private final AppClock appClock;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     public static KindAktivitaetHistoryJson toKindAktivitaetJson(
@@ -62,7 +62,7 @@ public class AktivitaetHistoryMapper {
         return new AnlassAktivitaetHistoryJson(
             anlassAktivitaetHistory.getId(),
             EntityInfoJson.fromEntity(anlassAktivitaetHistory),
-            AnlassMapper.toJson(anlassAktivitaetHistory.getAnlass(), tenantProducer.produceTenant())
+            AnlassMapper.toJson(anlassAktivitaetHistory.getAnlass(), tenantContext.get())
         );
     }
 

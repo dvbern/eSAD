@@ -20,7 +20,7 @@ import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.KlasseService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.FixtureService;
@@ -80,7 +80,7 @@ class DossierResourceITest extends AbstractITest {
     private final AppClock appClock;
     private final OrganisationService organisationService;
     private final FixtureService fixtureService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @Override
     @BeforeEach
@@ -590,7 +590,7 @@ class DossierResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void updateDossierPapierakteStatus_throws_if_user_not_zustaendig() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         // Dossier gehoert einem Arzt einer anderen Organisation,
         // der aktuelle Benutzer (TestAsSchularztBE) ist nicht zustaendig
@@ -616,7 +616,7 @@ class DossierResourceITest extends AbstractITest {
     @TestAsSchularztBE
     void updateDossierVerantwortlichArzt_throws_if_user_not_zustaendig() {
         // ARRANGE
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
 
         Dossier existingDossier = createDossierOfOtherOrganisation();
         Benutzer arzt = fixtureService.readBenutzerWithBerechtigungen(TestAsSchularztBE.BENUTZER_ID_ID);

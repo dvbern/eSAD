@@ -6,7 +6,7 @@ import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerResourceHelper;
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.BenutzerService;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.FachRolle;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.benutzer.Benutzer;
 import ch.dvbern.oss.hemed.esc.api.testutil.AbstractITest;
 import ch.dvbern.oss.hemed.esc.api.testutil.builder.BenutzerBuilder;
@@ -31,7 +31,7 @@ class OrganisationResourceITest extends AbstractITest {
     private final OrganisationApiSpec api = OrganisationApiSpec.organisation(RequestSpecUtil.quarkusSpec());
 
     private final BenutzerService benutzerService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final BenutzerResourceHelper benutzerResourceHelper;
 
     @Override
@@ -85,7 +85,7 @@ class OrganisationResourceITest extends AbstractITest {
         // Hier muessen die "fremden" Schularzt-Organisationen direkt ueber die Services
         // angelegt werden, da der SCHULAERZTIN-Aufrufer nach den neuen Berechtigungs-Regeln
         // keine nicht-delegierbaren Rollen (SCHULAERZTIN) ueber den REST-Endpunkt anlegen darf.
-        tenantProducer.setCurrentTenant(TenantEnum.BE);
+        tenantContext.setCurrentTenant(TenantEnum.BE);
         Benutzer verantwortlicherArzt1 =
             benutzerResourceHelper.createSchularztAsOrganisationsChefDirectly(TenantEnum.BE);
         Benutzer verantwortlicherArzt2 =

@@ -7,7 +7,7 @@ import { SingleRadioWrapperComponent } from './single-radio-wrapper.component';
   standalone: true,
   template: `
     <svui-single-radio-wrapper label="checkbox label">
-      <input svuiRadio type="checkbox" value="input value" id="mycheckboxid" name="radio" />
+      <input svuiRadio type="radio" value="input value" id="mycheckboxid" name="radio" />
     </svui-single-radio-wrapper>
   `,
   imports: [RadioDirective, SingleRadioWrapperComponent],

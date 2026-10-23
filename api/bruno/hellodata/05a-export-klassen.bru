@@ -1,0 +1,63 @@
+meta {
+  name: 05a Export Klassen (NDJSON)
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/hellodata/v1/ndjson/klassen
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/x-ndjson
+}
+
+tests {
+  test("response is NDJSON", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getHeader("content-type")).to.contain("application/x-ndjson");
+  });
+
+  test("last line is the _meta sentinel line", function() {
+    // Without this line the stream was truncated and the load counts as failed -
+    // after HTTP 200 no error can be reported any more.
+    // Bruno parses the body when it happens to be valid JSON - which it is whenever the
+    // export contains a single line - so normalise back to text before splitting.
+    const body = res.getBody();
+    const raw = typeof body === "string" ? body : JSON.stringify(body);
+    const lines = raw.split("\n").filter(l => l.trim() !== "");
+    const meta = JSON.parse(lines[lines.length - 1])._meta;
+
+    expect(meta).to.not.equal(undefined);
+    expect(meta.status).to.equal("complete");
+    expect(meta.rowCount).to.equal(lines.length - 1);
+  });
+}
+
+docs {
+  Returns all Klassen as NDJSON: one JSON object per line,
+  terminated by a `_meta` line.
+
+  Each row carries the Klasse id, schuleId, bezeichnung, klassenstufe,
+  klasseSchulart and klasseAktivStatus.
+
+  Klassen are only exported for tenant BE - the BE-only access gate applies, so
+  `baseUrl` must point at the BE host.
+
+  Checking that streaming works (Bruno buffers the response, hence curl):
+
+      curl -N -w '\nstart=%{time_starttransfer}s total=%{time_total}s\n' \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Accept: application/x-ndjson" \
+        https://local-esc-be.localhost:6443/api/hellodata/v1/ndjson/klassen
+
+  If `time_starttransfer` is well below `time_total`, the cursor is live.
+  If both values are nearly equal, pgjdbc buffered the whole result set -
+  then the transaction boundary is wrong.
+}

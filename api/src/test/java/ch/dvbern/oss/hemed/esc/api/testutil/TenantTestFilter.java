@@ -2,7 +2,7 @@ package ch.dvbern.oss.hemed.esc.api.testutil;
 
 import ch.dvbern.oss.hemed.esc.api.features.benutzer.ensure.JsonWebTokenClaims;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.security.AuthenticationException;
 import io.quarkus.security.identity.CurrentIdentityAssociation;
@@ -25,7 +25,7 @@ import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 @IfBuildProfile("test") // Only active in test profile
 public class TenantTestFilter {
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final CurrentIdentityAssociation association;
 
     /**
@@ -50,7 +50,7 @@ public class TenantTestFilter {
         JsonWebToken jsonWebToken = (JsonWebToken) securityIdentity.getPrincipal();
         String tenantFromToken = jsonWebToken.getClaim(JsonWebTokenClaims.TENANT_CLAIM);
         if (tenantFromToken != null) {
-            tenantProducer.setCurrentTenant(TenantEnum.valueOf(tenantFromToken));
+            tenantContext.setCurrentTenant(TenantEnum.valueOf(tenantFromToken));
         } else {
             throw new IllegalStateException("No tenant found in token");
         }

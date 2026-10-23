@@ -40,8 +40,8 @@ export class AnlassPlanungPageObject extends BasePageObject {
     buttonSaveAbmeldung: () => this.page.getByTestId('button-confirm'),
     buttonAddImpfausweis: () => this.page.getByTestId('button-add-impfausweis'),
     buttonAddImpfausweisSuccess: () => this.page.getByTestId('button-add-impfausweis-success'),
-    buttonAddImpfeinverstaendnis: () => this.page.getByTestId('button-add-einverstaendnis'),
-    buttonAddImpfeinverstaendnisSuccess: () => this.page.getByTestId('button-add-einverstaendnis-success'),
+    buttonAddImpfeinverstaendnis: () => this.page.getByTestId('button-add-impfeinverstaendnis'),
+    buttonAddImpfeinverstaendnisSuccess: () => this.page.getByTestId('button-add-impfeinverstaendnis-success'),
     buttonAddFragebogen: () => this.page.getByTestId('button-add-fragebogen'),
     buttonAddFragebogenSuccess: () => this.page.getByTestId('button-add-fragebogen-success'),
   };

@@ -1,4 +1,4 @@
-import {defineConfig, devices, PlaywrightTestConfig} from '@playwright/test';
+import {defineConfig, PlaywrightTestConfig} from '@playwright/test';
 import {baseConfig, baseProjects} from "./playwright.base.conf";
 
 /**
@@ -11,8 +11,11 @@ const config: PlaywrightTestConfig = {
   retries: 0,
   projects: baseProjects.map(project => ({
     ...project,
-    dependencies: // disable automatic dependencies for ui mode
-      project.dependencies?.includes('anlass.create') ? ['setup'] :  project.dependencies,
+    // disable automatic dependencies for ui mode: re-running a single test must neither recreate its
+    // Anlass nor wipe the database it works on (the db-reset project can still be run on its own)
+    dependencies: project.dependencies?.some(dependency => ['anlass.create', 'db-reset'].includes(dependency))
+      ? ['setup']
+      : project.dependencies,
   }))
 };
 export default defineConfig(config);

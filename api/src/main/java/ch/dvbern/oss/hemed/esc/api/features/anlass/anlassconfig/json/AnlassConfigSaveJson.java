@@ -89,6 +89,11 @@ public class AnlassConfigSaveJson {
     @Schema(required = true)
     private boolean showImpfeinverstaendnis;
 
+    // Ausdrucke
+    @NotNull
+    @Schema(required = true)
+    private boolean showAnlassPrintImpfen;
+
     // Daten
 
     @NotNull

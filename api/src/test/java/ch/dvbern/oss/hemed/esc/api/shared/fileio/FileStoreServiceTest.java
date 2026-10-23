@@ -16,6 +16,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.mutiny.core.buffer.Buffer;
 import lombok.RequiredArgsConstructor;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.async.ResponsePublisher;
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @RequiredArgsConstructor
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class FileStoreServiceTest extends AbstractITest {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(5);
@@ -35,31 +38,27 @@ class FileStoreServiceTest extends AbstractITest {
 
     @Test
     @TestAsAdminBS
-    void testUploadAndDeleteFile() {
+    void testUploadAndDeleteFile() throws IOException {
         FileUpload fileUpload = TestUtil.fileToFileUpload(TestUtil.loadTestSimpleEscadaFile(), "test-file.txt");
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
         String fileIdInBucket = fileInfo.getFileIdInBucket();
+        byte[] content = Files.readAllBytes(fileUpload.filePath());
         PutObjectResponse putObjectResponse =
-            fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
+            fileStoreService.uploadToS3Async(fileInfo.getMediaType().toString(), content, fileInfo)
+                .await()
+                .atMost(TIMEOUT);
 
-        assertThat(putObjectResponse).isNotNull();
-        assertThat(putObjectResponse.eTag()).isNotNull();
+        assertThat(putObjectResponse)
+            .isNotNull();
+        assertThat(putObjectResponse.eTag())
+            .isNotNull();
 
         DeleteObjectResponse deleteObjectResponse =
-            fileStoreService.deleteInS3Async(fileIdInBucket).await().atMost(TIMEOUT);
-        assertThat(deleteObjectResponse).isNotNull();
-    }
-
-    @Test
-    @TestAsAdminBS
-    void testDeleteNonExistentFile() {
-        // ACT & ASSERT
-        var response = fileStoreService.deleteFileWithIdAsyncAndReturnResponseIgnoringErrors(
-            "non-existent-file",
-            "test-response"
-        ).await().atMost(TIMEOUT);
-
-        assertThat(response).isEqualTo("test-response");
+            fileStoreService.deleteInS3Async(fileIdInBucket)
+                .await()
+                .atMost(TIMEOUT);
+        assertThat(deleteObjectResponse)
+            .isNotNull();
     }
 
     @Test
@@ -70,14 +69,18 @@ class FileStoreServiceTest extends AbstractITest {
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
         String fileIdInBucket = fileInfo.getFileIdInBucket();
         byte[] originalBytes = Files.readAllBytes(fileUpload.filePath());
-        fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
+        fileStoreService.uploadToS3Async(fileInfo.getMediaType().toString(), originalBytes, fileInfo)
+            .await()
+            .atMost(TIMEOUT);
 
         // ACT
         // await the completion stage
         ResponsePublisher<GetObjectResponse> responsePublisher =
             fileStoreService.getFileAsync(fileIdInBucket).toCompletableFuture().get();
-        assertThat(responsePublisher).isNotNull();
-        assertThat(responsePublisher.response().eTag()).isNotNull();
+        assertThat(responsePublisher)
+            .isNotNull();
+        assertThat(responsePublisher.response().eTag())
+            .isNotNull();
         assertThat(responsePublisher.response().contentType())
             .as("Tika detects csv as text/plain since there are no magic bytes in a csv")
             .isEqualTo("text/plain");
@@ -86,9 +89,12 @@ class FileStoreServiceTest extends AbstractITest {
             // Use the byteBuffer
             byte[] dst = new byte[byteBuffer.remaining()];
             byteBuffer.get(dst);
-            assertThat(dst).isNullOrEmpty();
-            assertThat(dst).hasSameSizeAs(originalBytes);
-            assertThat(dst).isEqualTo(originalBytes);
+            assertThat(dst)
+                .isNullOrEmpty();
+            assertThat(dst)
+                .hasSameSizeAs(originalBytes);
+            assertThat(dst)
+                .isEqualTo(originalBytes);
             System.out.println("Received bytes: " + new String(dst, StandardCharsets.UTF_8));
         });
     }
@@ -101,7 +107,9 @@ class FileStoreServiceTest extends AbstractITest {
         FileInfo fileInfo = FileInfoS3Mapper.mapFileUploadToFileInfoWithMIMEDetect(fileUpload, FileTyp.ESCADA_SYNC);
         String fileIdInBucket = fileInfo.getFileIdInBucket();
         byte[] originalBytes = Files.readAllBytes(fileUpload.filePath());
-        fileStoreService.uploadToS3Async(fileUpload, fileInfo).await().atMost(TIMEOUT);
+        fileStoreService.uploadToS3Async(fileInfo.getMediaType().toString(), originalBytes, fileInfo)
+            .await()
+            .atMost(TIMEOUT);
 
         // ACT
         ResponseBytes<GetObjectResponse> response =
@@ -109,9 +117,10 @@ class FileStoreServiceTest extends AbstractITest {
         var loadedBytes = response.asByteArray();
 
         // ASSERT
-        assertThat(loadedBytes).isNotEmpty()
-        .hasSameSizeAs(originalBytes)
-        .isEqualTo(originalBytes);
+        assertThat(loadedBytes)
+            .isNotEmpty()
+            .hasSameSizeAs(originalBytes)
+            .isEqualTo(originalBytes);
     }
 
     @Test
@@ -123,6 +132,7 @@ class FileStoreServiceTest extends AbstractITest {
         // ACT
         Buffer buffer = FileStoreService.toBuffer(ByteBuffer.wrap(testBytes));
         // ASSERT
-        assertThat(buffer.toString()).hasToString(testString);
+        assertThat(buffer.toString())
+            .hasToString(testString);
     }
 }

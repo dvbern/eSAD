@@ -10,7 +10,7 @@ import ch.dvbern.dvbstarter.shared.i18n.translations.TL;
 import ch.dvbern.dvbstarter.shared.i18n.translations.TLProducer;
 import ch.dvbern.oss.commons.i18nl10n.I18nMessage;
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class MailHelperServiceTest {
     private TL tl;
 
     @Mock
-    private TenantProducer tenantProducer;
+    private TenantContext tenantContext;
 
     @InjectMocks
     private MailHelperService mailHelperService;
@@ -125,7 +125,7 @@ class MailHelperServiceTest {
         String originalSubject = "Test Subject";
         when(configService.isStufeProd()).thenReturn(false);
         when(configService.getEnvironment()).thenReturn(DeploymentEnvironment.UNIT_TEST);
-        when(tenantProducer.produceTenant()).thenReturn(TenantEnum.BS);
+        when(tenantContext.get()).thenReturn(TenantEnum.BS);
 
         // ACT
         String result = mailHelperService.prepareSubject(originalSubject);

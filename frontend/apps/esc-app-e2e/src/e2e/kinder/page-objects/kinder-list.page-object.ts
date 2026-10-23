@@ -23,5 +23,10 @@ export class KinderListPageObject extends BasePageObject {
 
   elements = {
     linkKinder: () => this.page.getByTestId('link-kinder'),
+    // The column filters have no test id; their accessible name comes from the column header.
+    filterNachname: () => this.page.getByRole('textbox', {name: 'Filter Nachname'}),
+    rows: () => this.page.locator('tbody tr'),
+    // Search box in the page header, reachable from anywhere in the application.
+    globalKindSearch: () => this.page.locator('feat-kind-search').getByRole('combobox'),
   }
 }

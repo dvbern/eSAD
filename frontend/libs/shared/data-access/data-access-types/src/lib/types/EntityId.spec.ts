@@ -1,17 +1,16 @@
 import {isNilEntityId, isValidEntityId, nilEntityId, randomEntityId} from './EntityId';
 
-Object.defineProperty(globalThis, 'crypto', {
-  value: {
-    randomUUID: jest.fn(),
-  },
-});
-
 describe('EntityId', () => {
   beforeEach(() => {
     const validUUID = '00000000-0000-4000-8000-000000000001';
-    (globalThis.crypto.randomUUID as jest.Mock)
+    vi.spyOn(globalThis.crypto, 'randomUUID')
       .mockReturnValue(validUUID);
   })
+
+  // Test files share one environment, so the spy must not outlive this file
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   describe('randomEntityId', () => {
 

@@ -1,7 +1,7 @@
 package ch.dvbern.oss.hemed.esc.api.shared.fileio.s3;
 
 import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import io.quarkiverse.amazon.common.AmazonClient;
 import jakarta.enterprise.context.RequestScoped;
@@ -18,7 +18,7 @@ public class S3ClientProducer {
     private final Instance<S3AsyncClient> s3AsyncClientWIN;
     private final Instance<S3AsyncClient> s3SingleBucketClient;
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
     private final ConfigService configService;
 
     @Inject
@@ -27,7 +27,7 @@ public class S3ClientProducer {
         @AmazonClient("win") Instance<S3AsyncClient> s3AsyncClientWIN,
         @AmazonClient("be") Instance<S3AsyncClient> s3AsyncClientBE,
         @AmazonClient("default") Instance<S3AsyncClient> s3SingleBucketClient,
-        TenantProducer tenantProducer,
+        TenantContext tenantContext,
         ConfigService configService
 
     ) {
@@ -36,10 +36,17 @@ public class S3ClientProducer {
         this.s3AsyncClientBE = s3AsyncClientBE;
         this.s3SingleBucketClient = s3SingleBucketClient;
 
-        this.tenantProducer = tenantProducer;
+        this.tenantContext = tenantContext;
         this.configService = configService;
     }
 
+    /**
+     * The produced client must stay {@code @Dependent} (no scope on this method): the tenant is resolved on every
+     * injection. Consumers hold the client in their fields and must therefore not live longer than the tenant's
+     * request context, i.e. never inject it into {@code @ApplicationScoped}/{@code @Singleton} beans and never
+     * switch the tenant inside a request context (use
+     * {@link ch.dvbern.oss.hemed.esc.api.shared.scheduler.PerTenantRunnerService}).
+     */
     @Produces
     public S3AsyncClient getS3AsyncClient() {
 
@@ -48,7 +55,7 @@ public class S3ClientProducer {
             return s3SingleBucketClient.get();
         }
 
-        TenantEnum tenantEnum = tenantProducer.produceTenant();
+        TenantEnum tenantEnum = tenantContext.get();
         return switch (tenantEnum) {
             case BS -> s3AsyncClientBS.get();
             case WIN -> s3AsyncClientWIN.get();

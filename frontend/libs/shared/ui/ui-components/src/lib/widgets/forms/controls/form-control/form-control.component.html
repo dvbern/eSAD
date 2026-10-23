@@ -4,7 +4,7 @@
   <svui-form-control-top [minHeight]="isEditMode() && topLabelVisibility() ==='visible'"
                          [iconTopRight]="iconTopRight()">
     @if (controlType !== 'checkbox') {
-      <svui-form-control-top-label [required]="required && isEditMode()"
+      <svui-form-control-top-label [required]="required() && isEditMode()"
                                    [controlId]="id"
                                    [visibility]="topLabelVisibility()"
       >

@@ -13,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 @Slf4j
 public class HibernateTenantResolver implements TenantResolver {
 
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     @NonNull
     @Override
@@ -21,14 +21,15 @@ public class HibernateTenantResolver implements TenantResolver {
         return TenantEnum.BS.getHibernateMultiTenancyIdentifier();
     }
 
+    /**
+     * No silent fallback to {@link #getDefaultTenantId()}: a forgotten tenant would otherwise read and write the
+     * data of the default tenant. {@link TenantContext#get()} fails loudly instead.
+     */
     @NonNull
     @Override
     public String resolveTenantId() {
-        TenantEnum currentTenant = this.tenantProducer.produceTenant();
-        if (currentTenant != null) {
-            return currentTenant.getHibernateMultiTenancyIdentifier();
-        }
-        return getDefaultTenantId();
+        return tenantContext.get()
+            .getHibernateMultiTenancyIdentifier();
     }
 
     @NonNull

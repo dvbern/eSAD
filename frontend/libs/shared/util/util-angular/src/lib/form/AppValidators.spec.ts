@@ -305,6 +305,11 @@ describe('AppValidators', () => {
   });
 
   describe('nonPastDates', () => {
+    // Test files share one environment, so fake timers must not leak into later files
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it.each([undefined, null])('accepts for nullish input', (input) => {
       const control = fb.control(input, {
         validators: [AppValidators.nonPastDates(new Date())],
@@ -318,7 +323,7 @@ describe('AppValidators', () => {
       [new Date('2024-01-02'), new Date('2024-06-06')],
     )('accepts for valid input: %s', (input) => {
       const date = new Date('2024-01-01');
-      jest.useFakeTimers().setSystemTime(date);
+      vi.useFakeTimers().setSystemTime(date);
       const control = fb.control(input, {
         validators: [AppValidators.nonPastDates(date)],
       });
@@ -331,7 +336,7 @@ describe('AppValidators', () => {
       [new Date('2024-01-01')],
     )('accepts for equal input: %s', (input) => {
       const date = new Date('2024-01-01');
-      jest.useFakeTimers().setSystemTime(date);
+      vi.useFakeTimers().setSystemTime(date);
       const control = fb.control(input, {
         validators: [AppValidators.nonPastDates(date)],
       });
@@ -344,7 +349,7 @@ describe('AppValidators', () => {
       [new Date('2023-12-31'), new Date('2023-06-06')],
     )('rejects for invalid input: %s', (input) => {
       const date = new Date('2024-01-01');
-      jest.useFakeTimers().setSystemTime(date);
+      vi.useFakeTimers().setSystemTime(date);
       const control = fb.control(input, {
         validators: [AppValidators.nonPastDates(date)],
       });

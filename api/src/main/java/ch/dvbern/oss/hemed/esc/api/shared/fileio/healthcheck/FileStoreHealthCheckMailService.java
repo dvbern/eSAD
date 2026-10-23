@@ -91,7 +91,10 @@ class FileStoreHealthCheckMailService {
             .append(" of ")
             .append(total)
             .append("):").append(BR);
-        items.stream().limit(max).sorted().forEach(id -> sb.append("  ").append(id).append(BR));
+        items.stream()
+            .sorted()
+            .limit(max)
+            .forEach(id -> sb.append("  ").append(id).append(BR));
         if (total > max) {
             sb.append("  ... +").append(total - max).append(" more").append(BR);
         }
@@ -108,7 +111,10 @@ class FileStoreHealthCheckMailService {
         StringBuilder sb = new StringBuilder();
         sb.append("FileStore drift report — tenant: ").append(tenantLabel)
             .append(", DB-only: ").append(report.dbOnlyTotal())
-            .append(", S3-only: ").append(report.s3OnlyTotal()).append("\n\n");
+            .append(" (ignored: ").append(report.dbOnlyIgnored()).append(')')
+            .append(", S3-only: ").append(report.s3OnlyTotal())
+            .append(" (ignored: ").append(report.s3OnlyIgnored()).append(')')
+            .append("\n\n");
         sb.append("=== IN DB ONLY ===\n");
         report.dbOnly().stream().sorted().forEach(id -> sb.append(id).append('\n'));
         sb.append("\n=== IN S3 ONLY ===\n");

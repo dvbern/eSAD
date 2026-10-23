@@ -5,7 +5,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 
-import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantProducer;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantContext;
+import ch.dvbern.oss.hemed.esc.api.shared.auth.TenantEnum;
 import ch.dvbern.oss.hemed.esc.api.shared.config.service.ConfigService;
 import ch.dvbern.oss.hemed.esc.api.testutil.TestUtil;
 import io.quarkus.mailer.Attachment;
@@ -32,7 +33,7 @@ class MailDAOTest {
     private final MailDAO mailDAO;
     private final MockMailbox mailbox;
     private final ConfigService configService;
-    private final TenantProducer tenantProducer;
+    private final TenantContext tenantContext;
 
     private static final String TO_ADDRESS = "target@example.com";
     private static final String SUBJECT = "have a look";
@@ -50,6 +51,7 @@ class MailDAOTest {
 
     @BeforeEach
     void setUp() {
+        tenantContext.setCurrentTenant(TenantEnum.BS);
         tempAttachment = TestUtil.createTempFileFor(
             Path.of("MailDaoTest", ATTACHMENT_NAME),
             ATTACHMENT_NAME
@@ -57,7 +59,7 @@ class MailDAOTest {
         mailbox.clear();
         if (!configService.isStufeProd()) {
             subjecPrefix =
-                String.format("eSAD%s: ", String.format(" (%s, %s)", configService.getEnvironment(), tenantProducer.produceTenant()));
+                String.format("eSAD%s: ", String.format(" (%s, %s)", configService.getEnvironment(), tenantContext.get()));
             isNotProdHint = "<br><br>Diese Nachricht wurde aus einem Testsystem versendet.";
         }
         if (configService.isMailOverridingRecipientsEnabled()) {

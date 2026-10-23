@@ -37,7 +37,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload;
 @Transactional(TxType.NOT_SUPPORTED)
 public class EscadaWorkerService {
 
-    private final EscadaService escadaService;
+    private final EscadaSyncEventService escadaSyncEventService;
     private final FileValidationService fileValidationService;
     private final EventBus eventBus;
 
@@ -45,7 +45,7 @@ public class EscadaWorkerService {
         // check the filetype
         fileValidationService.requireFiletypeIsAllowed(fileUpload, FileTyp.ESCADA_SYNC);
         // store the sync data in a file
-        EscadaSyncEvent escadaSyncEvent = escadaService.saveEscadaSyncData(fileUpload);
+        EscadaSyncEvent escadaSyncEvent = escadaSyncEventService.saveEscadaSyncData(fileUpload);
         LOG.info("ESCADA: sending event for processing ");
         eventBus.requestAndForget(EscadaService.ESCADA_SYNC_EVENT_ADDRESS, escadaSyncEvent);
     }

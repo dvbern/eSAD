@@ -19,12 +19,13 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslocoService } from '@jsverse/transloco';
 import { TranslatedEnumViewValuePipe } from './translated-enum-view-value.pipe';
+import type { Mock } from 'vitest';
 
 describe('TranslatedEnumViewValuePipe', () => {
-  let translateMock: jest.Mock<string, [string]>;
+  let translateMock: Mock<(key: string) => string>;
 
   beforeEach(() => {
-    translateMock = jest.fn((key: string) => key);
+    translateMock = vi.fn((key: string) => key);
 
     TestBed.configureTestingModule({
       providers: [

@@ -3,26 +3,29 @@ import {formatFiles, getProjects, Tree} from '@nx/devkit';
 import * as fs from 'fs';
 import {createTreeWithEmptyWorkspace} from 'nx/src/generators/testing-utils/create-tree-with-empty-workspace';
 import * as path from 'path';
-import * as prompts from 'prompts';
+import prompts from 'prompts';
 import libGenerator, {prefixMap} from './generator';
 import {LibGeneratorSchema} from './schema';
+import type {Mock} from 'vitest';
 
-jest.mock('@nx/angular/generators', () => ({
-    libraryGenerator: jest.fn(),
+vi.mock('@nx/angular/generators', () => ({
+    libraryGenerator: vi.fn(),
 }));
 
-jest.mock('@nx/devkit', () => ({
-    formatFiles: jest.fn(),
-    getProjects: jest.fn().mockReturnValue(new Map([['dummy-app', {}]])),
+vi.mock('@nx/devkit', () => ({
+    formatFiles: vi.fn(),
+    getProjects: vi.fn().mockReturnValue(new Map([['dummy-app', {}]])),
 }));
 
-jest.mock('prompts', () => jest.fn());
+vi.mock('prompts', () => ({
+    default: vi.fn(),
+}));
 
-jest.mock('fs', () => ({
-    ...jest.requireActual('fs'),
+vi.mock('fs', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('fs')>()),
     promises: {
-        readFile: jest.fn(),
-        writeFile: jest.fn(),
+        readFile: vi.fn(),
+        writeFile: vi.fn(),
     },
 }));
 
@@ -31,7 +34,7 @@ describe('libGenerator', () => {
     let schema: LibGeneratorSchema;
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         tree = createTreeWithEmptyWorkspace({layout: 'apps-libs'});
     });
 
@@ -58,7 +61,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (prompts as unknown as jest.Mock)
+            (prompts as unknown as Mock)
                 .mockResolvedValueOnce({appName: 'esc-app'});
 
             const normalizedSchema = await libGenerator(tree, schema);
@@ -128,7 +131,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (prompts as unknown as jest.Mock).mockResolvedValueOnce({
+            (prompts as unknown as Mock).mockResolvedValueOnce({
                 isGeneratedApi: 'yes',
             });
 
@@ -150,7 +153,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (prompts as unknown as jest.Mock)
+            (prompts as unknown as Mock)
                 .mockResolvedValueOnce({appName: 'esc-app'});
 
             await libGenerator(tree, schema);
@@ -170,7 +173,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (prompts as unknown as jest.Mock).mockResolvedValueOnce({
+            (prompts as unknown as Mock).mockResolvedValueOnce({
                 isGeneratedApi: 'yes',
             });
 
@@ -197,7 +200,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (prompts as unknown as jest.Mock).mockResolvedValueOnce({
+            (prompts as unknown as Mock).mockResolvedValueOnce({
                 isGeneratedApi: 'no',
             });
 
@@ -226,7 +229,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (getProjects as jest.Mock).mockReturnValue(
+            (getProjects as Mock).mockReturnValue(
                 new Map([
                     ['test-app', {}],
                     ['example-app', {}],
@@ -236,7 +239,7 @@ describe('libGenerator', () => {
                 ]),
             );
 
-            (prompts as unknown as jest.Mock)
+            (prompts as unknown as Mock)
                 .mockResolvedValueOnce({appName: 'test-app'});
 
             await libGenerator(tree, schema);
@@ -262,7 +265,7 @@ describe('libGenerator', () => {
                 directory: '',
             };
 
-            (prompts as unknown as jest.Mock)
+            (prompts as unknown as Mock)
                 .mockResolvedValueOnce({appName: 'esc-app'});
 
             await libGenerator(tree, schema);
@@ -292,8 +295,8 @@ describe('libGenerator', () => {
             const initialProjects = ['library1', 'library2'];
             const expectedProjects = [...initialProjects, 'util-test-lib'].sort();
 
-            (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(initialProjects));
-            (fs.promises.writeFile as jest.Mock).mockResolvedValue(Promise.resolve());
+            (fs.promises.readFile as Mock).mockResolvedValue(JSON.stringify(initialProjects));
+            (fs.promises.writeFile as Mock).mockResolvedValue(Promise.resolve());
 
             await libGenerator(tree, schema);
 
@@ -307,7 +310,7 @@ describe('libGenerator', () => {
             const schema: LibGeneratorSchema = {name: 'existing-lib', type: 'util', scope: 'shared', directory: ''};
             const initialProjects = ['library1', 'util-existing-lib', 'library2'];
 
-            (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(initialProjects));
+            (fs.promises.readFile as Mock).mockResolvedValue(JSON.stringify(initialProjects));
 
             await libGenerator(tree, schema);
 
@@ -319,7 +322,7 @@ describe('libGenerator', () => {
             const initialProjects = ['z-library', 'a-library'];
             const expectedProjects = [...initialProjects, 'feat-another-lib'].sort();
 
-            (fs.promises.readFile as jest.Mock).mockResolvedValue(JSON.stringify(initialProjects));
+            (fs.promises.readFile as Mock).mockResolvedValue(JSON.stringify(initialProjects));
 
             await libGenerator(tree, schema);
 

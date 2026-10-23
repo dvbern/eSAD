@@ -7,9 +7,11 @@ import ch.dvbern.oss.hemed.esc.api.features.anlass.anonymereintrag.AnonymerEintr
 import ch.dvbern.oss.hemed.esc.api.features.kinder.Kind;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.PrintResultDTO;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrintService;
+import ch.dvbern.oss.hemed.esc.api.shared.printer.anlass.AnlassPrintVariant;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.anonymer.AnonymerEintragPrintService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintService;
 import ch.dvbern.oss.hemed.esc.api.shared.printer.kinderdossier.KinderdossierPrintVariant;
+
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -22,8 +24,8 @@ public final class PrinterMapper {
     private final AnonymerEintragPrintService anonymerEintragPrintService;
 
     @NonNull
-    public PrintResultDTO printKinderdossier(@NonNull KinderdossierPrintVariant variation, @NonNull ID<Kind> kindId) {
-        return kinderdossierPrintService.printKinderdossier(variation, kindId, null);
+    public PrintResultDTO printKinderdossier(@NonNull KinderdossierPrintVariant variant, @NonNull ID<Kind> kindId) {
+        return kinderdossierPrintService.printKinderdossier(variant, kindId, null);
     }
 
     @NonNull
@@ -35,8 +37,8 @@ public final class PrinterMapper {
     }
 
     @NonNull
-    public PrintResultDTO printAnlass(@NonNull ID<Anlass> anlassId) {
-        return anlassPrintService.printAnlass(anlassId);
+    public PrintResultDTO printAnlass(@NonNull ID<Anlass> anlassId, @NonNull AnlassPrintVariant variant) {
+        return anlassPrintService.printAnlass(anlassId, variant);
     }
 
     @NonNull

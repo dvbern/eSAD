@@ -28,8 +28,6 @@ import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSaveResultJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSchuleAndKlasseSaveJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.json.KindSucheOptionsJson;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.KontaktPersonKindMapper;
-import ch.dvbern.oss.hemed.esc.api.features.kinder.kontakt_person_kind.json.KontaktPersonKindListJson;
 import ch.dvbern.oss.hemed.esc.api.features.kinder.types.KindSaveModeDuplikat;
 import ch.dvbern.oss.hemed.esc.api.features.schule.Schule;
 import ch.dvbern.oss.hemed.esc.api.features.schule.klasse.Klasse;
@@ -60,7 +58,6 @@ public class KindResource {
         List.of(Berechtigung.KINDER_SCHREIBEN_MEDIZINISCH, Berechtigung.KINDER_SCHREIBEN_NICHT_MEDIZINISCH);
 
     private final KindMapper kindMapper;
-    private final KontaktPersonKindMapper kontaktPersonKindMapper;
     private final DossierMapper dossierMapper;
     private final AuthorizerService authorizerService;
 
@@ -173,16 +170,6 @@ public class KindResource {
         @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
     ) {
         return kindMapper.getById(kindId);
-    }
-
-    @GET
-    @Path("/{kindId}/kontaktpersonen")
-    @RateLimit(RateLimitConst.DEFAULT_LIMIT)
-    @RolesAllowed({ BerechtigungName.KINDER_LESEN_MEDIZINISCH, BerechtigungName.KINDER_LESEN_NICHT_MEDIZINISCH })
-    public KontaktPersonKindListJson findAktivKindKontaktPersonen(
-        @NotNull @NonNull @PathParam("kindId") ID<Kind> kindId
-    ) {
-        return new KontaktPersonKindListJson(kontaktPersonKindMapper.findAktivByKind(kindId));
     }
 
     @PUT
